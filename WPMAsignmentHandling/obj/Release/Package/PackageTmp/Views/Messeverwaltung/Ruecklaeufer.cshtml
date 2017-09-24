@@ -1,0 +1,99 @@
+﻿@model ICollection<WPMAsignmentHandling.Models.Paket>
+
+
+@{
+    ViewBag.Title = "Rückläufer"; 
+    
+}
+
+@section Ueberschrift{
+    Rückläufer
+}
+
+
+
+<div class="appMainArea">
+    <div class="mainFunctions">
+        <table>
+            @using (Ajax.BeginForm("Ruecklaeufersuche", "Messeverwaltung", new AjaxOptions { InsertionMode = InsertionMode.Replace, UpdateTargetId = "Ruecklaeuferliste" }, new { id = "RuecklaeuferListeForm" }))
+            {
+                <tr>
+                    <td>
+                        <input type="text" name="FilterEins" class="extralarge" value="" />
+                    </td>
+                    <td>
+                        <input type="submit" value="Suchen" id="BtnRueckSuche" />
+                    </td>
+                    <td style="min-width:30PX"></td>
+                    <td style="font-size:14PX">
+                        <input type="radio" name="SuchFilterRadio" value="1" class="SuchFilterRadio" checked="checked" /> <label style="margin-right:30PX">Offen</label>
+                    </td>
+                    <td style="font-size:14PX">
+                        <input type="radio" name="SuchFilterRadio" value="2" class="SuchFilterRadio" /> <label style="margin-right:30PX">Abgerechnet (letzten 250)</label>
+                    </td>
+                    <td style="font-size:14PX">
+                        <input type="radio" name="SuchFilterRadio" value="3" class="SuchFilterRadio" /> <label style="margin-right:30PX">Alle (letzten 250)</label>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+
+    <div id="Ruecklaeuferliste" class="Auflistung">
+        @Html.Partial("Ruecklaeuferliste")
+    </div>
+</div>
+
+<div class="Buttons">
+    @using (Html.BeginForm("ArtikelBearbeiten", "Artikelverwaltung", FormMethod.Post, new { id = "RuecklaeuferAuswahl" }))
+    {
+
+        <table>
+            <tr>
+                <td>
+                    @Html.ActionLink("Fertig", "Index", "Messeverwaltung")
+                </td>
+                <td style="min-width:30px"></td>
+                <td>
+                    @*<input type="button" value="Excel Tabelle Rückläufer" name="ExcelRuecklaeufer" id="ExcelRuecklaeufer" class="activ" />*@
+                    @Html.ActionLink("Excel Tabelle Rückläufer", "GenerateRucklaeuferExcel", "Messeverwaltung")
+                </td>
+                <td>
+                    <input type="button" value="Offene Rückläufer als Abgerechnet markieren" name="OffeneAbrechnen" id="OffeneAbrechnen" class="activ" />
+                </td>
+            </tr>
+        </table>
+    }
+</div>
+
+<script type="text/javascript">
+
+    $('.SuchFilterRadio').change(function () {
+         $('#RuecklaeuferListeForm').submit();
+     });
+
+     $("RuecklaeuferAuswahl").submit(function () {
+         return false;
+     });
+
+     $('#OffeneAbrechnen').click(function () {
+         $.ajax({
+             url: "/Messeverwaltung/CloseAllOpenRuecklaeufer",
+             type: 'Post',
+             async: false,
+             cache: false,
+             timeout: 30000,
+             error: function () {
+                 alert("error");
+             },
+             success: function (msg) {
+                 if (msg) {
+                     $('.RueckActive').attr('checked', false);
+                     $('.RueckAktivSpan').css("background-color", "lightsalmon");
+                     $('.strAktiv').text("abgerechnet");
+                     setTableHeaderSize();
+                 }
+             }
+         });
+     });
+</script>

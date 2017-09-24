@@ -1,0 +1,232 @@
+﻿@model WPMAsignmentHandling.Models.Bestandsaenderung
+
+@{WPMAsignmentHandling.Models.Artikel artikel = (WPMAsignmentHandling.Models.Artikel)ViewData["artikel"];}
+
+@{
+    ViewBag.Title = "Artikelbestand Ändern";
+}
+@section Ueberschrift{
+   Artikelbestand Ändern
+}
+
+@using (Html.BeginForm("BestandAnpassen", "Artikelverwaltung", FormMethod.Post, new { id = "BestandAendern" }))
+{
+    <div class="appMainArea">
+        <table>
+            <tr>
+                <th>
+                    @Html.Label("Artikelnummer")
+                </th>
+                <td>
+                    @if (artikel.Artikelnummer != null) { 
+                        @Html.Label(artikel.Artikelnummer)
+                    }
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.Label("Messe:")
+                </th>
+                @if (artikel.MesseartikelAllgemein)
+                {
+                    <td>
+                        @Html.Label("Allgemein") 
+                    </td>
+                }
+                @if (artikel.Landesmesseartikel)
+                {
+                    <td>
+                        @Html.Label("Intern")
+                    </td>
+                }
+                @if(artikel.Messe != null)
+                {
+                    <td>
+                        @Html.Label(artikel.Messe.Name) 
+                    </td>
+                }
+            </tr>
+            <tr>
+                <th>
+                    @Html.Label("Artikelart:")
+                </th>
+                <td>
+                    @Html.Label(artikel.artikelart.Art) 
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.Label("Artikelname:")
+                </th>
+                <td>
+                    @Html.Label(artikel.Name) 
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.Label("Artikelsprache:")
+                </th>
+                <td>
+                    @Html.Label(artikel.Sprache.Sprache) 
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.Label("Artikelformat:")
+                </th>
+                <td>
+                    @Html.Label(artikel.Format) 
+                </td>
+            </tr>
+            @if (artikel.Gewicht > 0)
+            {
+                <tr>
+                    <th>
+                        @Html.Label("Gewicht:")
+                    </th>
+                    <td>
+                        @Html.Label(artikel.Gewicht.ToString()) Gramm
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td colspan="4">
+                    <hr />
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.Label("Aktueller Bestand:")
+                </th>
+                <td>
+                    @Html.Label(artikel.Bestand.ToString()) Stück
+                </td>
+            </tr>
+            
+            <tr>
+                <th>
+                    @Html.Label("Grund")
+                </th>
+                <td>
+                    @Html.DropDownListFor(model => Model.Grund, (SelectList)ViewBag.Bestandarten, "-Bitte Wählen-")
+                    @Html.ValidationMessageFor(model => Model.Grund)
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.Label("Änderungsmenge")
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.Menge, null, new { @class = "small" }) Stück
+                    @Html.ValidationMessageFor(model => Model.Menge)
+                </td>
+                
+                <th>
+                    
+                    @if (ViewBag.ErrMenge != null)
+                    {
+                        <span class="redbig">Bestand würde ins negative gehen!</span>
+                    }
+                </th>
+            </tr>
+            @if (artikel.Gewicht <= 0)
+            {
+                <tr>
+                    <th>
+                        Gewicht
+                    </th>
+                    <td>
+                        <input type="text" name="Gewicht" id="Gewicht" value="0" class="small" /> Gramm
+                        <span id='errGewicht' class="redbig" style="display:none">Gewicht eintragen!</span>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                <tr><td><input type="hidden" name="Gewicht" id="Gewicht" value="@artikel.Gewicht" class="small" /> </td></tr>
+            }
+            <tr>
+                <th>
+                    Datum
+                </th>
+                <td>
+                    <input data-val="true" id="Datum" name="Datum" type="text" value="@DateTime.Now.ToString("dd.MM.yyyy")" class="medium"/>
+                    @Html.HiddenFor(model => model.ArtikelID, artikel.ArtikelID)
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => Model.Bemerkung)
+                </th>
+                <td>
+                    <input data-val="true" class="extralarge" id="Bemerkung" name="Bemerkung" type="text" value="" data-val-mandatoryif="Bitte den Titel des Mailings eintragen!" data-val-mandatoryif-mailingselected="Grund" />
+                    <span class="field-validation-valid" data-valmsg-for="Bemerkung" data-valmsg-replace="true"></span>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="Buttons">
+    <table class="Buttons">
+                <tr>
+                    <td>
+                        <input type="submit" name="Aendern" value="Speichern" />
+                    </td>
+                    <td>
+                        @Html.ActionLink("Abbrechen", "Index", "Artikelverwaltung")
+                    </td>
+                </tr>
+    </table>
+    </div>
+}
+
+<script type="text/javascript">
+
+    jQuery.validator.unobtrusive
+          .adapters.addSingleVal("mandatoryIf", "mailingSelected");
+
+    jQuery.validator.addMethod("mandatoryIf",
+        function (val, element, mailingSelected) {
+            var modelPrefix = element.name.substr(
+                                0, element.name.lastIndexOf(".") + 1)
+            var otherVal = $("[name=" + modelPrefix + mailingSelected + "]").val();
+            if (otherVal == "15") {
+                if (!val) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    );
+
+
+    $('#Menge').on("keydown", function (e) {
+        if (e.keyCode == 109) {
+            return;
+        }
+            checkInputNumber(e);
+            return;
+    });
+    $('#Menge').on("keyup", function (e) {
+        if ($(this).val().length > 1) {
+            var menge = parseInt($(this).val());
+            var bestand = "@artikel.Bestand";
+            var sum = bestand + menge;
+        }
+    });
+
+    $(function () {
+        $("#Datum").datepicker({ dateFormat: 'dd.mm.yy' });
+    });
+
+    $("#BestandAendern").submit(function (e) {
+        if ($('#Gewicht').val() <= 0) {
+            $('#errGewicht').show();
+        }
+
+        if ($('#Grund').valid() && $('#Menge').valid() && parseFloat($('#Gewicht').val().replace(',', '.')) > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+</script>

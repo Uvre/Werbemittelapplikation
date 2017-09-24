@@ -1,0 +1,82 @@
+﻿@model ICollection<WPMAsignmentHandling.Models.Kunde>
+
+@{
+    ViewBag.Title = "Kundenverwaltung";
+}
+@section Ueberschrift{
+   Kundenveraltung
+}
+<div class="appMainArea">
+    <div class="mainFunctions">
+        <table>
+            @using (Ajax.BeginForm("Suchen", "Kundenverwaltung", new AjaxOptions
+            {
+                OnBegin = "showLoading",
+                OnSuccess = "hideLoading",
+                InsertionMode = InsertionMode.Replace,
+                UpdateTargetId = "Kundenliste"
+            }))
+            {
+                <tr>
+                    <td>
+                        <input type="text" name="FilterEins" class="extralarge" />
+                    </td>
+                    <td>
+                        <input type="submit" value="Suchen" id="BtnKundensuche"  />      
+                    </td>
+                    <td style="font-size:14PX; padding-left:20PX">
+                        (Die Anzeige der Kunden ist 500 Datensätze begrenzt)
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+    <div id="Kundenliste" class="Auflistung">
+        @Html.Partial("Kundenliste")
+    </div>
+
+</div>
+<div class="Buttons">
+    @using (Html.BeginForm("KundeBearbeiten", "Kundenverwaltung", FormMethod.Post))
+    {
+
+             <table >
+                 <tr>
+                     <td>
+                         <input type="hidden" id="KundeID" name="KundeID" value="0" />
+                        <input type="submit" value="Kunde Anlegen" name="KundeAnlegen" id="KundeAnlegen" class="activ" disabled="disabled"/>
+                     </td>
+                     <td>
+                       <input type="submit" value="Kundendaten Ändern" name="DatenAendern" id="DatenAendern" class="activ" disabled="disabled"/>
+                     </td>
+                     <td>
+                       <input type="submit" value="Details Anzeigen" name="DetailsAnzeigen" id="DetailsAnzeigen" class="activ" disabled="disabled"/>
+                     </td>
+                 </tr>
+             </table>
+    }
+</div>
+
+<script type="text/javascript">
+    $("#Kundenliste").on('change', 'input#KundeAuswahl', function () {
+        var KundeID = parseInt($(this).val());
+        $('#KundeID').val(KundeID);
+        $('#DatenAendern').removeAttr('disabled', 'disabled');
+        $('#DetailsAnzeigen').removeAttr('disabled', 'disabled');
+        var count = 0;
+        $('#KundenlisteTablle tr').each(function () {
+            count++;
+            if (count % 2 == 0) {
+                $(this).attr('class', 'grey');
+            } else {
+                $(this).attr('class', 'white');
+            }
+        });
+        $('#KundeRadio_' + KundeID).attr('class', 'green');
+    });
+    $('#BtnKundensuche').click(function () {
+        $('#KundeAnlegen').removeAttr('disabled', 'disabled');
+        $('#DatenAendern').attr('disabled', 'disabled');
+        $('#DetailsAnzeigen').attr('disabled', 'disabled');
+    });
+</script>

@@ -1,0 +1,302 @@
+﻿@model IEnumerable<WPMAsignmentHandling.Models.Werbemittelauftrag>
+
+
+@{var Artikel = new List<WPMAsignmentHandling.Models.Artikel>();}
+@if (Model != null && Model.Count() > 0)
+{
+    foreach (var auftrag in Model)
+    {
+        foreach (var artikel in auftrag.Auftragsmengen)
+        {
+            if (Artikel.Count == 0)
+            {
+                Artikel.Add(artikel.artikel);
+            }
+            else
+            {
+                if (Artikel.SingleOrDefault(r => r.ArtikelID == artikel.artikel.ArtikelID) == null)
+                {
+                    Artikel.Add(artikel.artikel);
+                }
+            }
+        }
+    }
+}
+
+
+@{
+    ViewBag.Title = "Werbemittelverwaltung";
+    string radio_2 = "checked='checked'"; string radio_3 = ""; string radio_1 = ""; string suchtext = "";
+    if (Session["FilterWerbemittel"] != null)
+    {
+        if (Session["FilterWerbemittel"].ToString() == "2")
+        {
+            radio_2 = "checked='checked'";
+        }
+        if (Session["FilterWerbemittel"].ToString() == "3")
+        {
+            radio_3 = "checked='checked'";
+            radio_2 = "";
+        }
+        if (Session["FilterWerbemittel"].ToString() == "1")
+        {
+            radio_1 = "checked='checked'";
+            radio_2 = "";
+        }
+    }
+    if (Session["SuchtextWerbemittel"] != null)
+    {
+        suchtext = Session["SuchtextWerbemittel"].ToString();
+    }
+}
+
+@section Ueberschrift{
+    Werbemittelverwaltung
+}
+
+<div class="appMainArea">
+    <div class="mainFunctions">
+        <table>
+            @using (Ajax.BeginForm("Auftragsuche", "Werbemittelverwaltung", new AjaxOptions
+            {
+                OnBegin = "showLoading",
+                OnSuccess = "hideLoading",
+                UpdateTargetId = "Auftragliste",
+                InsertionMode = InsertionMode.Replace,
+                HttpMethod = "Post"
+            }, new { id = "AuftragsListeForm" }))
+            {
+                <tr>
+                    <td >
+                        <input type="text" name="FilterEins" value="@suchtext" class="extralarge"/>
+                    </td>
+                    <td style="font-size:14PX">
+                        <input type="submit" value="Suchen" id="BtnAuftragsuche" /> 
+                    </td>
+                    <td style="min-width:30PX"></td>
+                    <td style="font-size:14PX">
+                        <input type="radio" name="SuchFilterRadio" value="2" class="SuchFilterRadio" @radio_2 /> <label style="margin-right:30PX">Offene Aufträge</label>
+                    </td>
+                    <td style="font-size:14PX">
+                        <input type="radio" name="SuchFilterRadio" value="3" class="SuchFilterRadio" @radio_3 /> <label style="margin-right:30PX">Versendete Aufträge  ( Letzten 200 )</label>
+                    </td>
+                    <td style="font-size:14PX">
+                        <input type="radio" name="SuchFilterRadio" value="1" class="SuchFilterRadio" @radio_1/> <label style="margin-right:30PX">Alle Aufträge  ( Letzten 200 )</label>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+    
+    <div id="Auftragliste" class="Auflistung">
+        @Html.Partial("Auftragliste")
+    </div>
+</div>
+<div class="Buttons">
+    @using (Html.BeginForm("AuftragBearbeiten", "Werbemittelverwaltung", FormMethod.Post))
+    {
+        
+            <table >
+                <tr>
+                    <td>
+                        <input type="hidden" id="AuftragID" name="AuftragID" value="0" />
+                        <input type="submit" value="Auftrag Anlegen" name="AuftragAnlegen" id="AuftragAnlegen" class="activ" />
+                    </td>
+                    <td>
+                        <input type="submit" value="Auftragsdaten Ändern" name="DatenAendern" id="DatenAendern" class="activ" disabled="disabled" />
+                    </td>
+                    <td>
+                        <input type="submit" value="Auftragsdetails" name="Auftragsdetails" id="Auftragsdetails" class="activ" disabled="disabled" />
+                    </td>
+                    <td style="min-width:30PX"></td>
+                    <td>
+                        <input type="submit" value="Auftrag Packen" name="AuftragPacken" id="AuftragPacken" class="activ" disabled="disabled" />
+                    </td>
+                    <td>
+                        <input type="button" value="Packliste" name="PacklisteBtn" id="PacklisteBtn" class="activ" />
+                    </td>
+                </tr>
+            </table>
+        
+    }
+</div>
+
+<div id="printArt" class="printArt">
+    <h3>Packliste</h3>
+    <table>
+        <tr>
+            <th>
+                Artikelnummer
+            </th>
+            <th>
+                Messe
+            </th>
+            <th>
+                Artikelart
+            </th>
+            <th>
+                Artikelname
+            </th>
+            <th>
+                Sprache
+            </th>
+            <th>
+                Format
+            </th>
+            <th>
+                Lagerplatz
+            </th>
+            <th>
+                Bestand
+            </th>
+            <th>
+                Menge
+            </th>
+        </tr>
+        @if (Model != null)
+        {
+            List<WPMAsignmentHandling.Models.Artikel> Artikell = Artikel.Where(r => r.Messe != null).OrderBy(r=> r.Messe.Name).ThenBy(r => r.artikelart.Art).ToList();
+            List<WPMAsignmentHandling.Models.Artikel> OrderedArtikel = Artikell.Concat(Artikel.Where(r => r.Messe == null).OrderBy(r => r.artikelart.Art).ToList()).ToList();
+            foreach (var item in OrderedArtikel)
+            {
+                int menge = 0;
+                foreach (var auftrag in Model)
+                {
+                    foreach (var artikel in auftrag.Auftragsmengen)
+                    {
+                        if (artikel.artikel.ArtikelID == item.ArtikelID)
+                        {
+                            menge += artikel.menge - artikel.gelieferteMenge;
+                        }
+                    }
+                }
+                if (menge > 0)
+                {
+                    <tr>
+                        <td>
+                            @item.Artikelnummer
+                        </td>
+                        @if (item.MesseartikelAllgemein)
+                        {
+                            <td>
+                                Allgemein
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                @item.Messe.Name
+                            </td>
+                        }
+                        <td style="text-align:left">
+                            @item.artikelart.Art
+                        </td>
+                        <td>
+                            @item.Name
+                        </td>
+                        <td>
+                            @item.Sprache.Sprache
+                        </td>
+                        <td>
+                            @item.Format
+                        </td>
+                        <td>
+                            @item.Lagerplatz
+                        </td>
+                        <td>
+                            @item.Bestand 
+                        </td>
+                        <td>
+                            @{string BestandzuGering = "!!!";}
+                            @menge 
+                            @if (item.Bestand < menge) { 
+                                @BestandzuGering
+                            }
+                        </td>
+                      
+                    </tr>
+                }
+            }
+        }
+        else
+        {
+            <tr>
+                <td>
+                    Keine Auftäge ausgewählt!
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+
+<div id="packliste" class="packliste">
+    
+</div>
+
+<script type="text/javascript">
+    $('#BtnAuftragsuche').click(function () {
+        $('#DatenAendern').attr('disabled', 'disabled');
+        $('#AuftragPacken').attr('disabled', 'disabled');
+        $('#Auftragsdetails').attr('disabled', 'disabled');
+    });
+
+    $('.SuchFilterRadio').change(function () {
+        $('#AuftragsListeForm').submit();
+    });
+
+    $("#Auftragliste").on('change', '.AuftragsWahl', function () {
+        var AuftragsID = parseInt($(this).val());
+        $('#AuftragID').val(AuftragsID);
+        var status = $('#status_' + AuftragsID).text(); 
+        if (status == 'versendet' ) {
+            $('#DatenAendern').attr('disabled', 'disabled');
+            $('#AuftragPacken').attr('disabled', 'disabled');
+            $('#Auftragsdetails').removeAttr('disabled');
+        }
+        if (status == 'Packen' || status == 'Teillieferung' || status == 'Nachfragen' || status == "Auf Artikel warten" || status == 'restmengen') {
+            $('#DatenAendern').removeAttr('disabled');
+            $('#AuftragPacken').removeAttr('disabled');
+            $('#Auftragsdetails').removeAttr('disabled');
+
+        }
+        var count = 0;
+        $('#AuftraegeTable tr').each(function () {
+            count++;
+            if (count % 2 == 0) {
+                $(this).attr('class', 'grey');
+            } else {
+                $(this).attr('class', 'white');
+            }
+        });
+
+        $('#AuftraegeRadio_' + AuftragsID).attr('class', 'green');
+
+    });
+
+    $('#PacklisteBtn').click(function () {
+        $('#packliste').html($('#printArt').html());
+        $('#printArt').dialog('open');
+    });
+
+    $('#printArt').dialog({
+        autoOpen: false,
+        title: 'Packliste Drucken',
+        width: 900,
+        height: 500,
+        resizable: true,
+        buttons: {
+            'Drucken': function () {
+                $(this).dialog('close');
+                window.print();
+            },
+            'Schließen': function () {
+                $(this).dialog('close');
+            }
+        }
+    });
+    //function showLoading() {
+    //alert("happens");
+    ////$('#DivLoading').show();
+    //}
+</script>

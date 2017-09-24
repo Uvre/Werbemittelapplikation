@@ -1,0 +1,206 @@
+﻿@model ICollection<WPMAsignmentHandling.Models.Artikel>
+
+@{
+    ViewBag.Title = "Artikelverwaltung"; string suchtext = "";
+    string radio_1 = "checked='checked'"; string radio_2 = ""; string radio_3 = "";  
+    if (Session["FilterArtikel"] != null)
+    {
+        if (Session["FilterArtikel"].ToString() == "1")
+        {
+            radio_1 = "checked='checked'";
+        }
+        if (Session["FilterArtikel"].ToString() == "2")
+        {
+            radio_2 = "checked='checked'";
+            radio_3 = "";
+        }
+        if (Session["FilterArtikel"].ToString() == "3")
+        {
+            radio_3 = "checked='checked'";
+            radio_2 = "";
+        }
+    }
+    if (Session["SuchtextArtikel"] != null)
+    {
+        suchtext = Session["SuchtextArtikel"].ToString();
+    }
+}
+@section Ueberschrift{
+   Artikelverwaltung
+}
+
+<div class="appMainArea">
+    <div id="mycan" width="200" height="200" style="background-color:forestgreen"></div>
+    <div class="mainFunctions">
+        <table>
+            @using (Ajax.BeginForm("Artikelsuche", "Artikelverwaltung", new AjaxOptions
+            {
+                OnBegin = "showLoading",
+                OnSuccess = "hideLoading",
+                InsertionMode = InsertionMode.Replace,
+                UpdateTargetId = "Artikelliste"
+            }, new { id = "ArtikelListeForm" }))
+            {
+                <tr>
+                    <td>
+                        <input type="text" name="FilterEins" class="extralarge" value="@suchtext" />
+                    </td>
+                    <td>
+                        <input type="submit" value="Suchen" id="BtnArtikelsuche" />
+                    </td>
+                    <td style="min-width:30PX"></td>
+                    <td style="font-size:14PX">
+                        <input type="radio" name="SuchFilterRadio" value="1" class="SuchFilterRadio" @radio_1 /> <label style="margin-right:30PX">Aktive Artikel</label>
+                    </td>
+                    <td style="font-size:14PX">
+                        <input type="radio" name="SuchFilterRadio" value="2" class="SuchFilterRadio" @radio_2 /> <label style="margin-right:30PX">Inaktive Artikel</label>
+                    </td>
+                    <td style="font-size:14PX">
+                        <input type="radio" name="SuchFilterRadio" value="3" class="SuchFilterRadio" @radio_3 /> <label style="margin-right:30PX">Alle Artikel</label>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+
+    <div id="Artikelliste" class="Auflistung">
+        @Html.Partial("Artikelliste")
+    </div>
+</div>
+
+<div id="Lagerliste" class="packliste" >
+    
+</div>
+
+<div class="Buttons">
+    @using (Html.BeginForm("ArtikelBearbeiten", "Artikelverwaltung", FormMethod.Post, new { id = "ArtikelAuswahls" }))
+    {
+    
+         <table >
+             <tr>
+                 <td>
+                    <input type="hidden" value="0" id="ArtikelID" name="ArtikelID" />
+                    <input type="submit" value="Artikel Anlegen" name="ArtikelAnlegen" id="ArtikelAnlegen" class="activ" disabled="disabled"/>
+                 </td>
+                 <td>
+                   <input type="submit" value="Artikeldaten Ändern" name="ArtikelAendern" id="ArtikelAendern" class="activ" disabled="disabled"/>
+                 </td>
+                 <td>
+                    <input type="submit" value="Bestand Ändern" name="BestandAendern" id="BestandAendern" class="activ" disabled="disabled"/>
+                 </td>
+                 <td>
+                   <input type="submit" value="Details Anzeigen" name="DetailsAnzeigen" id="DetailsAnzeigen" class="activ" disabled="disabled"/>
+                 </td>
+                 <td>
+                     <input type="button" value="Lagerliste" name="LagerlisteDrucken" id="LagerlisteDrucken" class="activ" />  
+                 </td>
+             </tr>
+         </table>
+    }
+</div>
+
+
+<div id="ArtikellistePreview">
+
+</div>
+
+
+ <script type="text/javascript">
+
+     $('.SuchFilterRadio').change(function () {
+         $('#ArtikelListeForm').submit();
+     });
+
+     $("ArtikelAuswahls").submit(function () {
+         alert($('#ArtikelID').val());
+         return false;
+     });
+
+     $('#BtnArtikelsuche').click(function () {
+        $('#ArtikelAnlegen').removeAttr('disabled', 'disabled');
+        $('#DetailsAnzeigen').attr('disabled', 'disabled');
+        $('#BestandAendern').attr('disabled', 'disabled');
+        $('#ArtikelBearbeiten').attr('disabled', 'disabled');
+        $('#ArtikelAendern').attr('disabled', 'disabled');
+     });
+
+     $('#LagerlisteDrucken').click(function () {
+         $('#Lagerliste').html('<h3>Lagerliste</h3><table id="LagerlisteTabelle">' + $("#ArtikelTabelle").html() + '</table>');
+         $("#LagerlisteTabelle tr").each(function () {
+             $(this).find("td:eq(1)").remove();
+             $(this).find("th:eq(1)").remove();
+             $(this).find("td:eq(8)").remove();
+             $(this).find("th:eq(8)").remove();
+             //$(this).find("td:eq(1)").each("img").css('height','100PX')
+         });
+         $("#LagerlisteTabelle tr td img").each(function () {
+             var upcan = document.createElement("canvas");
+             var upctx = upcan.getContext('2d');
+             var pb = new Image();
+             pb.src = $(this).attr('src'); //give here proper path
+             pb.onload = function () {
+                 x = 75 / pb.height
+                 upcan.height = 75
+                 upcan.width = pb.width*x*0.8
+                 imgHeight = pb.height*x
+                 imgWidth = pb.width*x
+                 upctx.drawImage(pb, 0, 0, imgWidth, imgHeight);
+             };
+             $(this).parent().html(upcan)
+            
+
+
+         });
+         $('#ArtikellistePreview').html($('#LagerlisteTabelle'))
+         
+         $('#ArtikellistePreview').dialog('open');
+         //window.print();
+     });
+
+     $('#ArtikellistePreview').dialog({
+         autoOpen: false,
+         width: 600,
+         height: 800,
+         resizable: true,
+         title: 'Lagerliste',
+         buttons:
+             [
+                 {
+                     text: 'Drucken',
+                     click: function () {
+                         $(this).dialog('close');
+                         $('#Lagerliste').append($('#LagerlisteTabelle'))
+                         window.print();
+                     }
+                 },
+                 {
+                     text: 'Abbrechen',
+                     click: function () {
+                         $(this).dialog('close');
+                     }
+                 }
+             ]
+     });
+
+
+     $("#Artikelliste").on('change', 'input#ArtikelAuswahl', function () {
+         
+         var ArtikelID = parseInt($(this).val());
+         $('#ArtikelID').val(ArtikelID);
+         $('#DetailsAnzeigen').removeAttr('disabled', 'disabled');
+         $('#BestandAendern').removeAttr('disabled', 'disabled');
+         $('#ArtikelBearbeiten').removeAttr('disabled', 'disabled');
+         $('#ArtikelAendern').removeAttr('disabled', 'disabled');
+         var count = 0;
+         $('#ArtikelTabelle tr').each(function () {
+             count++;
+             if (count % 2 == 0) {
+                 $(this).attr('class', 'grey');
+             } else {
+                 $(this).attr('class', 'white');
+             }
+         });
+         $('#ArtikelLine_'+ArtikelID).attr('class', 'green');
+     });
+
+</script>

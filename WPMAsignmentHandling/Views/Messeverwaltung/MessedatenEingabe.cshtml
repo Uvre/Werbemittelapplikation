@@ -1,0 +1,263 @@
+﻿@model WPMAsignmentHandling.Models.Messe
+
+@{
+    ViewBag.Title = "Messedaten";
+}
+
+@{
+    string ConAction = "MesseSpeichern"; string ButtonValue = "Anlegen"; string heading = "Messe Anlegen"; string action = HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString();
+    string active = "true"; DateTime Erstellungsdatum = DateTime.Now; string isLandesmesse = "false";
+    
+    if (action == "MesseAenderungSpeichern" || action == "Aendern")
+    {
+        ConAction = "MesseAenderungSpeichern";
+        ButtonValue = "Speichern";
+        heading = "Messedaten Ändern";
+        active= Model.Active.ToString();
+        Erstellungsdatum = Model.Erstellungsdatum;
+        isLandesmesse = Model.isLandesmesse.ToString();
+    }
+}
+
+@section Ueberschrift{
+   @heading
+}
+
+    @using (Html.BeginForm(ConAction, "Messeverwaltung", FormMethod.Post, new { id = "MesseDateneingabe" }))
+    {
+    <div class="appMainArea">
+        @Html.ValidationSummary(true)
+        @if(Model != null){
+            @Html.HiddenFor(model => Model.MesseID)
+        }
+        <input id="isLandesmesse" name="isLandesmesse" type="hidden" value="@isLandesmesse" />
+        <input id="Erstellungsdatum" name="Erstellungsdatum" type="hidden" value="@Erstellungsdatum" />
+        <input id="Active" name="Active" type="hidden" value="@active" />
+        <table>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => Model.Name)
+                    
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.Name, new { @class = "extralarge" })
+                    @Html.ValidationMessageFor(model => Model.Name)
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Webadresse)
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.Webadresse, new { @class = "extralarge" })
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Startdatum)
+                </th>
+                <td>
+                    @Html.EditorFor(model => Model.Startdatum, new { @class = "small" })
+                    @Html.ValidationMessageFor(model => Model.Startdatum)
+                    @if (ViewData["Datumvergangenheit"] != null)
+                    {
+                        <label class="redbig">@ViewData["Datumvergangenheit"].ToString()</label>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Enddatum)
+                </th>
+                <td>
+
+                    @Html.EditorFor(model => Model.Enddatum, new { @class = "medium" })
+                    @Html.ValidationMessageFor(model => Model.Enddatum)
+                    @if (ViewData["EndvorStart"] != null)
+                    {
+                        <label class="redbig">@ViewData["EndvorStart"].ToString()</label>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.AbrechungsPreisStandardpaket)
+                </th>
+                <td>
+                    
+                    @if (Model != null)
+                    {
+                        @Html.EditorFor(model => Model.AbrechungsPreisStandardpaket, new { htmlAttributes = new { @class = "small" } }) 
+                    }
+                    else
+                    {
+                        float preis = ViewBag.StandardpreisPaket; 
+                        @Html.EditorFor(model => Model.AbrechungsPreisStandardpaket, new { htmlAttributes = new { @class = "small", @Value = @preis.ToString("0.00") } })
+                    }
+                    € 
+                    @Html.ValidationMessageFor(model => Model.AbrechungsPreisStandardpaket)
+                </td>
+            </tr>
+        </table>
+        <hr />
+        <table>
+            <tr>
+                <th >
+                    Position
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.Position_1)
+                </td>
+                <th >
+                    Position 
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.Position_2)
+                </td>
+                <th >
+                    Position
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.Position_3)
+                </td>
+                <th>
+                    Position
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.Position_4)
+                </td>
+                <th colspan="2">
+                    Mailadresse Banner
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    Name
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.ProjektleiterName)
+                </td>
+                <th>
+                    Name
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.ProjektleiterVizeName)
+                </td>
+                <th>
+                    Name
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.KommunikationsleiterName)
+                </td>
+                <th>
+                    Name
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.KommunikationsleiterVizeName)
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Telefon
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.ProjektleiterTelefon)
+                </td>
+                <th>
+                    Telefon
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.ProjektleiterVizeTelefon)
+                </td>
+                <th>
+                    Telefon
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.KommunikationsleiterTelefon)
+                </td>
+                <th>
+                    Telefon
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.KommunikationsleiterVizeTelefon)
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    E-Mail
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.ProjektleiterEmail, new { @class = "large" })
+                </td>
+                <th>
+                    E-Mail
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.ProjektleiterVizeEmail, new { @class = "large" })
+                </td>
+                <th>
+                    E-Mail
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.KommunikationsleiterEmail, new { @class = "large" })
+                </td>
+                <th>
+                    E-Mail
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.KommunikationsleiterVizeEmail, new { @class = "large" })
+                </td>
+                <th>
+                    E-Mail
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.Bannerkontakt, new { @class = "large" })
+                </td>
+            </tr>
+        </table>
+        <hr />
+        <table>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => Model.Bemerkung)
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Model.Bemerkung, new { @class = "extralarge" })
+                </td>
+            </tr>
+        </table>
+    </div>
+        
+    
+}
+ 
+
+<div class="Buttons">
+    <table>
+        <tr>
+            <td>
+                <input type="button" id="SpeichernBtn" value="@ButtonValue" />
+            </td>
+            <td>
+                @Html.ActionLink("Abbrechen", "Index", "Messeverwaltung")
+            </td>
+        </tr>
+    </table>
+</div>   
+
+<script type="text/javascript">
+
+    $('#SpeichernBtn').click(function () {
+        $('#MesseDateneingabe').submit();
+    });
+
+    $(function () {
+        $("#Startdatum").datepicker({ dateFormat: 'dd.mm.yy' });
+    });
+
+    $(function () {
+        $("#Enddatum").datepicker({ dateFormat: 'dd.mm.yy' });
+    });
+
+
+</script>

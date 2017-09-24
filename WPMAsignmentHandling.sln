@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPMAsignmentHandling", "WPMAsignmentHandling\WPMAsignmentHandling.csproj", "{8EFFBA1F-A049-4BCF-956E-A7663D287DD5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WPMAsignmentHandling_Test", "ControllerTest\WPMAsignmentHandling_Test.csproj", "{591638F5-3F41-40A8-8F2E-88B18AEDA573}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8EFFBA1F-A049-4BCF-956E-A7663D287DD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EFFBA1F-A049-4BCF-956E-A7663D287DD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EFFBA1F-A049-4BCF-956E-A7663D287DD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EFFBA1F-A049-4BCF-956E-A7663D287DD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{591638F5-3F41-40A8-8F2E-88B18AEDA573}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{591638F5-3F41-40A8-8F2E-88B18AEDA573}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{591638F5-3F41-40A8-8F2E-88B18AEDA573}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{591638F5-3F41-40A8-8F2E-88B18AEDA573}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

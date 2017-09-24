@@ -1,0 +1,59 @@
+﻿@model WPMAsignmentHandling.Models.Werbemittelauftrag
+
+   <h3>
+       @Model.Kennzeichnung
+   </h3>
+   <table>
+           @foreach (var Artikel in Model.Auftragsmengen)
+           {
+            <tr>
+                @if (Artikel.menge > Artikel.gelieferteMenge)
+                {
+                    var NochNichtAusgeleiferteMenge = Artikel.menge - Artikel.gelieferteMenge;
+
+                    if (NochNichtAusgeleiferteMenge > Artikel.artikel.Bestand)
+                    {
+                        <td>
+                            <img id="Artikelbild" src="~/images/red-dot.png" style="max-height:20px; height:20px;">
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <img id="Artikelbild" src="~/images/green-dot.png" style="max-height:20px; height:20px;">
+                        </td>
+                    }
+                }
+                else
+                {
+                    <td>
+                        <img id="Artikelbild" src="~/images/green-tick.png" style="max-height:20px; height:20px;">
+                    </td>
+                }
+                <td>
+                    @if (!String.IsNullOrEmpty(Artikel.artikel.Bildpfad) && @System.IO.File.Exists(Server.MapPath("~/images/Artikelbilder/" + Artikel.artikel.Bildpfad)))
+                    {
+                        <img id="Artikelbild" src="~/images/Artikelbilder/@Artikel.artikel.Bildpfad" style="max-height:20px; height:20px;">
+                    }
+                    else
+                    {
+                        <img id="Artikelbild" src="~/images/NoPicture.png" style="max-height:20px; height:20px;">
+                    }
+                </td>
+                <td>
+                    @Artikel.artikel.Name
+                </td>
+                <td>
+
+                </td>
+            </tr>
+           }
+       <tr>
+           <td colspan="4" style="padding: 20px 0 0 10px">
+               <img id="Artikelbild" src="~/images/green-tick.png" style="max-height:15PX; height:15PX; "> geliefert 
+               <img id="Artikelbild" src="~/images/green-dot.png" style="max-height:15PX; height:15PX; margin-left:7px"> Bestand ausreichend 
+               <img id="Artikelbild" src="~/images/red-dot.png" style="max-height:15PX; height:15PX; margin-left:7px"> Bestand zu gering
+           </td>
+       </tr>
+   </table>
+  

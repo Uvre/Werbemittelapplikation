@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "Confirm Email";
+}
+
+@section Ueberschrift{
+    Werbemittelapplikation Direct Mail Service Winkhardt
+}
+
+
+<div class="appMainArea">
+    <fieldset style="background-color:white; margin:0; padding-left:10PX; text-align:left">
+        <legend>Mailadresse bestätigt</legend>
+        <span class="successMessage">Vielen Dank für die Bestätigung Ihrer Mailadresse.</span>
+        <br />
+        <br />
+        @Html.ActionLink("Zum Login", "Login", "Account", null)
+    </fieldset>
+</div>

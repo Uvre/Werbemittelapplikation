@@ -1,0 +1,178 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+    
+    <head>
+        <meta charset="utf-8" />
+        <title>@ViewBag.Title</title>
+        <link href="~/DMS_Favicon_2.jpg" rel="shortcut icon" type="image/x-icon" />
+        <meta name="viewport" content="width=device-width" />
+        @*@Styles.Render("~/Content/base/css")
+        @Scripts.Render("~/bundles/modernizr")*@
+        @Styles.Render("~/Content/themes/base/css")
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryui")
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/bundles/globalize")
+        
+        @Styles.Render("~/Content/css")
+    </head>
+    <body onLoad="JavaScript:checkRefresh();">
+        <input type="hidden" value="" id="refresh" />
+
+        <header>
+            @{string aktiveHome = ""; string aktiveArtikelverwaltung = ""; string aktiveWerbemittelverwaltung = ""; string aktiveKundenverwaltung = ""; string aktiveMesseverwaltung = ""; string aktiveAdministration = ""; string aktiveBenutzerverwaltung = "";}
+            @if (@HttpContext.Current.Request.RequestContext.RouteData.Values["Controller"].ToString() == "Home")
+            {
+                aktiveHome = "navHeadAct"; 
+            }
+            @if (@HttpContext.Current.Request.RequestContext.RouteData.Values["Controller"].ToString() == "Artikelverwaltung")
+            {
+                aktiveArtikelverwaltung = "navHeadAct"; 
+            }
+            @if (@HttpContext.Current.Request.RequestContext.RouteData.Values["Controller"].ToString() == "Werbemittelverwaltung")
+            {
+                aktiveWerbemittelverwaltung = "navHeadAct"; 
+            }
+            @if (@HttpContext.Current.Request.RequestContext.RouteData.Values["Controller"].ToString() == "Messeverwaltung")
+            {
+                aktiveMesseverwaltung = "navHeadAct"; 
+            }
+            @if (@HttpContext.Current.Request.RequestContext.RouteData.Values["Controller"].ToString() == "Kundenverwaltung")
+            {
+                aktiveKundenverwaltung = "navHeadAct"; 
+            }
+            @if (@HttpContext.Current.Request.RequestContext.RouteData.Values["Controller"].ToString() == "Administration")
+            {
+                aktiveAdministration = "navHeadAct"; 
+            }
+            @if (@HttpContext.Current.Request.RequestContext.RouteData.Values["Controller"].ToString() == "Benutzerverwaltung")
+            {
+                aktiveBenutzerverwaltung = "navHeadAct";
+            }
+           
+            <ul class="Head">
+                <li class="@aktiveHome">@Html.ActionLink("Home", "Index", "Home", null, new { @class = "navlink" })</li>
+                <li class="@aktiveArtikelverwaltung">@Html.ActionLink("Artikelverwaltung", "Index", "Artikelverwaltung", null, new { @class = "navlink" })</li>
+                <li class="@aktiveWerbemittelverwaltung">@Html.ActionLink("Werbemittelverwaltung", "Index", "Werbemittelverwaltung", null, new { @class = "navlink" })</li>
+                <li class="@aktiveMesseverwaltung">@Html.ActionLink("Messeverwaltung", "Index", "Messeverwaltung", null, new { @class = "navlink" })</li>
+                <li class="@aktiveKundenverwaltung">@Html.ActionLink("Kundenverwaltung", "Index", "Kundenverwaltung", null, new { @class = "navlink" })</li>
+                @if (User.IsInRole("Administrator"))
+                {
+                    <li class="@aktiveAdministration">@Html.ActionLink("Administration", "Index", "Administration", null, new { @class = "navlink" })</li>
+                }
+                @if (User.IsInRole("Administrator"))
+                {
+                    <li class="@aktiveBenutzerverwaltung">@Html.ActionLink("Benutzerverwaltung", "Index", "Benutzerverwaltung", null, new { @class = "navlink" })</li>
+                }
+            </ul>
+
+
+
+            @if (User.Identity.IsAuthenticated)
+                {
+                    using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "" }))
+                    {
+                        
+                        //@Html.AntiForgeryToken()
+                        <span style="position:absolute; top:1.5%; right:20pX; color:white; font-size:16px; font-weight:bold">Angemeldet als: @User.Identity.Name <input type="submit" value="Logout" style="margin-left:10px" /></span>
+                    }
+                }
+                
+        </header>
+        <hr class="borderMax" />
+        <section class="SiteHeader">
+            <h2 id="topheading">
+                @RenderSection("Ueberschrift" , required: true)
+            </h2>
+        </section>
+        <hr class="borderMin" />
+                 @RenderBody()
+        @RenderSection("scripts", required: false)
+
+        <div id="PicPreview" style="position:absolute;">
+
+        </div>
+
+
+        <div id="DivLoading" style="background-color:black; display:none; opacity:0.7; position:absolute; top:10%; text-align:center; height:84%; margin:0; width:100%; ">
+            <div style="position:absolute; top:40%; left:50%; ">
+                <img src="~/images/ajax_loader_orange_256.gif" style=" height:100PX;width:100PX;">
+                <p style="color:white">Daten werden geladen...</p>
+            </div>
+        </div>
+        
+    </body>
+    
+</html>
+
+
+<script>
+
+    $.validator.methods.range = function (value, element) {
+        var Value = parseFloat(value.replace(',', '.'));
+        var isFloat = false;
+        if (typeof Value === 'number') {
+            if (Value % 1 === 0) {
+                isFloat = true;
+            } else {
+                isFloat = true;
+            }
+        }
+        return this.optional(element) ||
+            isFloat;
+    }
+    $.validator.methods.number = function (value, element) {
+        var Value = parseFloat(value.replace(',', '.'));
+        var isFloat = false;
+        if (typeof Value === 'number') {
+            if (Value % 1 === 0) {
+                isFloat = true;
+            } else {
+                isFloat = true;
+            }
+        } 
+      return this.optional(element) ||
+          isFloat;
+    }
+    $.validator.methods.date = function (value, element) {
+        var check = false;
+        var re = /^\d{1,2}\.\d{1,2}\.\d{4}$/;
+        if (re.test(value)) {
+            var adata = value.split('.');
+            var dd = parseInt(adata[0], 10);
+            var mm = parseInt(adata[1], 10);
+            var yyyy = parseInt(adata[2], 10);
+            var xdata = new Date(yyyy, mm - 1, dd);
+            if ((xdata.getFullYear() == yyyy) && (xdata.getMonth() == mm - 1) && (xdata.getDate() == dd))
+                check = true;
+            else
+                check = false;
+        } else
+            check = false;
+        return this.optional(element) || check;
+    };
+
+  $(window).keydown(function (e) {
+      key = e.keyCode||e.which;
+      if (key == 13 && e.target.tagName != 'TEXTAREA') {
+          e.preventDefault();
+      }
+      if (key == 8 && e.target.tagName != 'INPUT' && e.target.tagName != 'TEXTAREA') {
+          e.preventDefault();
+      }
+  });
+  $(window).resize(function () {
+          setTableHeaderSize();
+  });
+
+  //function Loadingsuccess() {
+  //    // Disable the button and hide the other image here 
+  //    // or you can hide the whole div like below
+  //    $('#DivLoading').show();
+    //}
+  
+  
+
+  
+  
+</script>

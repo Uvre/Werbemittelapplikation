@@ -1,0 +1,91 @@
+﻿@model IEnumerable<WPMAsignmentHandling.Models.Werbemittelauftrag>
+
+@{
+    ViewBag.Title = "Packliste";
+}
+
+@section Ueberschrift{
+   Packliste Erstellen
+}
+
+    @using (Ajax.BeginForm("PacklisteErstellen", "Werbemittelverwaltung", new AjaxOptions { OnSuccess = "openpackliste", UpdateTargetId = "printArt" }, new { id = "schnikschnak" }))
+    {
+    <div class="appMainArea">
+        @Html.Partial("PacklisteAuftraege", Model)
+    </div>
+    <div class="Buttons">
+        <table >
+            <tr>
+                <td>
+                    <input type="submit" id="packlisteanfertigen" value="Packliste anfertigen" />
+                </td>
+                <td>
+                    @Html.ActionLink("Abbrechen", "Index", "Werbemittelverwaltung")
+                </td>
+            </tr>
+        </table>
+    </div>
+    }
+    
+
+
+
+
+<div id="packliste" class="packliste">
+    
+</div>
+<div id="printArt" class="printArt">
+    
+</div>
+
+<script type="text/javascript">
+    $('#MesseSuchen').click(function () {
+        var Messename = $("#SBMesse").val();
+        $("#Messedetails").load('@Url.Action("MesseWaehlen", "Werbemittelverwaltung")' + '?Messename=' + encodeURIComponent(Messename))
+    });
+    $('#MesseSuchen').click(function () {
+        var Messename = $("#SBMesse").val();
+        $("#Auftraege").load('@Url.Action("MesseAuftraegeWaehlen", "Werbemittelverwaltung")' + '?Messename=' + encodeURIComponent(Messename))
+    });
+
+    function openpackliste() {
+        $('#packliste').html($('#shit').html());
+        $('#printArt').dialog('open');
+    }
+
+    $('#printArt').dialog({
+        autoOpen: false,
+        title: 'Packliste Drucken',
+        width: 900,
+        height: 500,
+        resizable: true,
+        buttons: {
+            'Drucken': function () {
+                $(this).dialog('close');
+                window.print();
+            },
+            'Schließen': function () {
+                $(this).dialog('close');
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        $("#SBMesse").keypress(function () {
+            $(this).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Werbemittelverwaltung/AutoSearchMesse",
+                        dataType: "Json",
+                        data: {
+                            term: request.term,
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>

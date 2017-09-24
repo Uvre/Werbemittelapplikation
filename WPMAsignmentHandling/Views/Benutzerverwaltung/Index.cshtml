@@ -1,0 +1,160 @@
+﻿@model IQueryable<WPMAsignmentHandling.Models.ApplicationUser>
+
+@{
+    ViewBag.Title = "Benutzerverwaltung";
+    
+}
+@section Ueberschrift{
+    Benutzerverwaltung
+}
+
+
+<div class="appMainArea">
+    <h3>Benutzer</h3>
+    <table id="Benutzer" class="input">
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Nachname
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Telefonnummer
+            </th>
+            <th>
+                Benutzerrolle
+            </th>
+            @*<th>
+                Passwort
+            </th>*@
+        </tr>
+        @{int i = 0;}
+        @foreach (var AppUser in Model)
+        {
+            string tel = "";
+            if (AppUser.Telefonnummer != null)
+            {
+                tel = AppUser.Telefonnummer;
+            }
+            i++;
+            <tr>
+                <td>
+                    @i. 
+                </td>
+                <td>
+                    <input type="text" id="Vorname_@AppUser.Id" value="@AppUser.Vorname" class="" />
+                </td>
+                <td>
+                    <input type="text" id="Nachname_@AppUser.Id" value="@AppUser.Nachname" class="" />
+                </td>
+                <td>
+                    <input type="text" id="Email_@AppUser.Id" value="@AppUser.Email" class="large" />
+                </td>
+                <td>
+                    <input type="text" id="Telefonnummer_@AppUser.Id" value="@AppUser.Telefonnummer" class="" />
+                </td>
+                @if (AppUser.Roles.ElementAt(0).RoleId == "2a21d867-e861-4623-bae6-a798e9a7eb6b")
+                {
+                    <td>
+                        <select id="Roles_@AppUser.Id" class="Roles">
+                            <option value="2a21d867-e861-4623-bae6-a798e9a7eb6b" selected>Messe-MA</option>
+                            <option value="93ccbba4-e1b4-4472-ae01-4dce86d5f588">Winkhardt-MA</option>
+                            <option value="0bfe036a-0eb6-4798-89d6-23c258ceeeb5">Admin</option>
+                        </select>
+                    </td>
+                }
+                @if (AppUser.Roles.ElementAt(0).RoleId == "93ccbba4-e1b4-4472-ae01-4dce86d5f588")
+                {
+                    <td>
+                        <select id="Roles_@AppUser.Id" class="Roles">
+                            <option value="2a21d867-e861-4623-bae6-a798e9a7eb6b">Messe-MA</option>
+                            <option value="93ccbba4-e1b4-4472-ae01-4dce86d5f588" selected>Winkhardt-MA</option>
+                            <option value="0bfe036a-0eb6-4798-89d6-23c258ceeeb5">Admin</option>
+                        </select>
+                    </td>
+                }
+                @if (AppUser.Roles.ElementAt(0).RoleId == "0bfe036a-0eb6-4798-89d6-23c258ceeeb5")
+                {
+                    <td>
+                        <select id="Roles_@AppUser.Id" class="Roles">
+                            <option value="2a21d867-e861-4623-bae6-a798e9a7eb6b">Messe-MA</option>
+                            <option value="93ccbba4-e1b4-4472-ae01-4dce86d5f588">Winkhardt-MA</option>
+                            <option value="0bfe036a-0eb6-4798-89d6-23c258ceeeb5" selected>Admin</option>
+                        </select>
+                    </td>
+                }
+                
+                <td>
+                    <input type="button" id="BtnAenderungUser_@AppUser.Id" class="BtnAenderungUser" value="Änderung Speichern" style="display:none" />
+                </td>
+                <td>
+                    <input type="button" id="BtnSentConfirmationMail_@AppUser.Id" class="BtnSentConfirmationMail" value="Aktivierungsmail Senden" style="display:none" />
+                </td>
+                <td>
+                    <a href="/Benutzerverwaltung/RemoveUser?UserID=@AppUser.Id">Löschen</a>
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+<div class="Buttons">
+    <table>
+        <tr>
+            <td>
+                @Html.ActionLink("Fertig", "Index", "Benutzervewaltung")
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script>
+    $('.input').on('keyup', 'input[type=text]', function () {
+        //var Kennzeichnung = $(this).attr('id').substring(0, 2);
+        var start = $(this).attr('id').indexOf("_") + 1;
+        var end = $(this).attr('id').length;
+        var ID = $(this).attr('id').substring(start, end);
+        $('#BtnAenderungUser_' + ID).show();
+    });
+
+    $('.Roles').on('change', function () {
+        var start = $(this).attr('id').indexOf("_") + 1;
+        var end = $(this).attr('id').length;
+        var ID = $(this).attr('id').substring(start, end);
+        $('#BtnAenderungUser_' + ID).show();
+    });
+
+
+    $('.BtnAenderungUser').on('click', function () {
+        var start = $(this).attr('id').indexOf("_") + 1;
+        var end = $(this).attr('id').length;
+        var UserID = $(this).attr('id').substring(start, end);
+        var Vorname = $('#Vorname_' + UserID).val();
+        var Nachname = $('#Nachname_' + UserID).val();
+        var Email = $('#Email_' + UserID).val();
+        var Tel = $('#Telefonnummer_' + UserID).val();
+        var Role = $('#Roles_' + UserID).val();
+        $.ajax({
+            url: "/Benutzerverwaltung/BenutzerdatenAendern",
+            type: 'Post',
+            async: true,
+            cache: false,
+            datatype: 'Json',
+            timeout: 30000,
+            data: {UserID:UserID, Vorname: Vorname, Nachname: Nachname, Email: Email, Tel: Tel, Role: Role },
+            error: function (err) {
+                alert("Error");
+            },
+            success: function (e) {
+                $('#BtnAenderungUser_' + UserID).hide();
+            }
+        });
+    });
+</script>

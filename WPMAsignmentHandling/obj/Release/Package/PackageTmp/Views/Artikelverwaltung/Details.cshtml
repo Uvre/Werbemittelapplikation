@@ -1,0 +1,282 @@
+﻿@model WPMAsignmentHandling.Models.Artikel
+
+
+
+@{
+    ViewBag.Title = "Artikeldetails";
+}
+@section Ueberschrift{
+   Artikeldetails
+}
+<div class="appMainArea">
+    <div class="AuflistungNotFixed">
+    <table>
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                @Html.DisplayName("Messe")
+            </th>
+            <th>
+                @Html.DisplayName("Artikelnummer")
+            </th>
+            <th>
+                @Html.DisplayName("artikelart")
+            </th>
+            <th>
+                @Html.DisplayName("Artikelname")
+            </th>
+            <th>
+                @Html.DisplayName("Sprache")
+            </th>
+            <th>
+                @Html.DisplayNameFor(m => m.AuflageCharge)
+            </th>
+            <th>
+                @Html.DisplayName("Format")
+            </th>
+            <th>
+                @Html.DisplayNameFor(m => m.Breite)
+            </th>
+            <th>
+                @Html.DisplayNameFor(m => m.Hoehe)
+            </th>
+            <th>
+                @Html.DisplayNameFor(m => m.Laenge)
+            </th>
+            <th>
+                @Html.DisplayName("Gewicht")
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PreisProVE)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Verpackungseinheit)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Kartoninhalt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Meldebestand)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sicherheitsbestand)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Lagerplatz)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Bemerkung)
+            </th>
+            <th>
+                @Html.DisplayName("Erstellungsdatum")
+            </th>
+            <th>
+                @Html.DisplayName("Bestand")
+            </th>
+        </tr>   
+        <tr class="white">
+            <td>
+                @if (Model != null && !String.IsNullOrEmpty(Model.Bildpfad) && @System.IO.File.Exists(Server.MapPath("~/images/Artikelbilder/" + Model.Bildpfad)))
+                {
+                    <img id="Artikelbild" onmouseover="showDivImageDisplay(this);" onmouseout="hideDivImageDisplay();" src="~/images/Artikelbilder/@Model.Bildpfad" style="max-height:25PX; height:25PX;">
+                }
+                else
+                {
+                    <img id="Artikelbild" onmouseover="showDivImageDisplay(this);" onmouseout="hideDivImageDisplay();" src="~/images/NoPicture.png" style="max-height:25PX; height:25PX;">
+                }
+
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Messe.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Artikelnummer)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.artikelart.Art)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Sprache.Sprache)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.AuflageCharge)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Format)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Breite)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Hoehe)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Laenge)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Gewicht)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.PreisProVE)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Verpackungseinheit)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Kartoninhalt)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Meldebestand)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Sicherheitsbestand)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Lagerplatz)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Bemerkung)
+            </td>
+            <td>
+                @Html.DisplayFor(model => model.Erstellungsdatum)
+                <input type="hidden" id="ArtikelID" value="@Model.ArtikelID" />
+            </td>
+            <td >
+               <label  id="ColumnBestand">@Html.DisplayFor(model => model.Bestand)</label> 
+            </td>      
+        </tr>
+        </table>
+    </div>
+    <hr />
+    @if (Model.Messe != null)
+    {
+        @Html.Partial("Messedetails", Model.Messe)
+    }else{
+        <div>
+            <h3>Allgemeiner Messeartikel</h3>
+        </div>
+    }
+        
+    <hr style="clear:both"/>
+    <div class="AuflistungNotFixed">
+        <h3> Bestandsänderungen</h3>
+        <table>
+            <tr>
+               <th>
+                   Datum
+               </th> 
+                <th>
+                   Grund
+               </th> 
+                <th>
+                   Auftraggeber
+               </th> 
+                <th>
+                   Menge
+               </th>
+                <th>
+                   Bemerkung
+                </th>
+                <td style="border:none; background-color:whitesmoke"></td> 
+            </tr>
+            @{int count = 0; var BAeordered = Model.BAE.OrderByDescending(r => r.Datum).ToList();}
+            @foreach (var item in BAeordered)
+            {
+                count++;
+                string color = "white";
+                if (count % 2 == 0)
+                {
+                    color = "grey";
+                }
+                <tr class="@color" id="RowBAE_@item.BestandsaenderungID">
+                    <td>
+                        @Html.DisplayFor(modelitem => item.Datum)
+                    </td>
+                    <td>
+                        @item.Grund
+                    </td>
+                    @if (item.WMA != null)
+                    {
+                     <td>
+                        @item.WMA.kunde.Name
+                    </td> 
+                    }else{
+                     <td>
+                        -
+                    </td> 
+                    }
+                    @if(item.BAEArt != null){
+                        if(item.BAEArt.Art){
+                            <td>
+                               @item.Menge.ToString()
+                            </td>
+                        }else{
+                            <td>
+                               - @item.Menge.ToString()
+                            </td>
+                        }
+                    }else{
+                        <td>
+                            @item.Menge.ToString()
+                        </td>
+                    }
+                    <td>
+                        @item.Bemerkung
+                    </td> 
+                 @*   @if (item.WMA == null)
+                    {
+                        <td style="border:none; background-color:whitesmoke">
+                            <input type="button" value="Bestandsänderung Löschen" id="BtnBAE_@item.BestandsaenderungID" class="BtnBAE" />
+                        </td>
+                    }*@
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+<div class="Buttons">
+    <table>
+        <tr>
+            <td>
+                @Html.ActionLink("Fertig", "Index", "Artikelverwaltung")
+            </td>
+            <td style="min-width:30px"></td>
+            @if(Model.Auftragsmengen.Count() == 0){
+                <td>
+                    <input type="button" id="ArtikelLoeschen" name="ArtikelLoeschen" value="Artikel Löschen" />
+                </td>
+            }else{
+                <td class="redbig">
+                    Artikel kann nicht gelöscht werden
+                </td>
+            }
+        </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    $('#ArtikelLoeschen').click(function () {
+        $('<div></div>').appendTo('body').html('<div><h3 style="margin-top:50PX;text-align:center">Soll der Artikel wirklich gelöscht werden?</h2></div>')
+            .dialog({
+                autoOpen: true,
+                width: 700,
+                height: 250,
+                resizable: true,
+                title: 'Sicherheitsabfrage',
+                buttons: {
+                    'Ja': function (e) {
+                        $(this).dialog('close');
+                        window.location.href = "/Artikelverwaltung/ArtikelLoeschen?ArtikelID=@Model.ArtikelID";
+                    },
+                    'Nein': function (e) {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+    });
+</script>

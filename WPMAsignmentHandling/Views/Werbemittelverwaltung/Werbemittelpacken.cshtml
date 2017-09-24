@@ -1,0 +1,1640 @@
+﻿@model WPMAsignmentHandling.Models.Werbemittelauftrag
+
+
+
+@{
+    ViewBag.Title = "Werbemittel Packen";
+}
+
+@section Ueberschrift{
+   Werbemittel Packen - @Model.Kennzeichnung
+}
+
+<div class="appMainArea" >
+    @{List<WPMAsignmentHandling.Models.Auftragsmenge> auftragsmengen = Model.Auftragsmengen.OrderBy(r => r.artikel.MesseartikelAllgemein).ThenBy(r => r.artikel.artikelart.Art).ThenBy(r => r.artikel.Name).ToList();
+      var nat = "disabled";
+      var inter = "disabled";
+      var Messe = "";
+      List<WPMAsignmentHandling.Models.Paketpreis> paketpreise = (List<WPMAsignmentHandling.Models.Paketpreis>) ViewData["Paketpreise"];
+      bool abweichendeRechnungsadresse = false;
+      WPMAsignmentHandling.Models.Kontakdaten Kontakt = null;
+      if (Model.Lieferadresse != null)
+      {
+          Kontakt = Model.Lieferadresse;
+          if (Model.Lieferadresse.Land.land == "Deutschland")
+          {
+              nat = "";
+          }
+          else
+          {
+              inter = "";
+          }
+          if(Model.Lieferadresse.Name == "Landesmesse Stuttgart GmbH")
+          {
+              nat = "disabled";
+              inter = "disabled";
+              Messe = "disabled";
+          }
+      } 
+      else
+      {
+          Kontakt = Model.Auftraggeberadresse;
+          if (Model.Auftraggeberadresse.Land.land == "Deutschland")
+          {
+              nat = "";
+          }
+          else
+          {
+              inter = "";
+          }
+          if (Kontakt.Name == "Landesmesse Stuttgart GmbH")
+          {
+              nat = "disabled";
+              inter = "disabled";
+              Messe = "disabled";
+          }
+      }
+      if (Model.Rechnungsadresse != null)
+      {
+
+          if (Model.Rechnungsadresse.Land != null && Model.Rechnungsadresse.Land.LandID != Kontakt.Land.LandID)
+          {
+              abweichendeRechnungsadresse = true;
+          }
+          if (Model.Rechnungsadresse.Ort != null && Model.Rechnungsadresse.Ort != Kontakt.Ort)
+          {
+              abweichendeRechnungsadresse = true;
+          }
+
+          if (Model.Rechnungsadresse.Strasse != null && Model.Rechnungsadresse.Strasse != Kontakt.Strasse)
+          {
+              abweichendeRechnungsadresse = true;
+          }
+          
+      }
+    }
+
+    @*Variablen*@
+    <input type="hidden" value="@Model.Auftragsmengen.Count" id="Artikelanzahl" />
+
+
+    
+
+    <input type="hidden" value="@abweichendeRechnungsadresse.ToString()" name="abwReAd" id="abwReAd" />
+    
+    
+
+    <h3>Bestelldatum: @Html.DisplayFor(model => model.Erstellungsdatum)</h3>
+    <hr style="clear:both"/>
+    
+    <table style="margin-top:0">
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <th colspan="4">
+                            <h3 style="font-weight:bold; padding-left:0; margin-left:0">Messe: <a style="font-size:16px"  href="@Model.messe.Webadresse" target="_blank">   @Model.messe.Name</a></h3>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.messe.Startdatum)
+                            @Html.DisplayFor(model => model.messe.Startdatum)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.messe.Enddatum)
+                            @Html.DisplayFor(model => model.messe.Enddatum)
+                        </th>
+                    </tr>
+                    @if (Model.Bemerkung != null)
+                    {
+                        <tr>
+                            <td style="font-size:14px; font-weight:bold; padding:10px 0 10px 5px" colspan="2">
+                                
+                                Info zur Messe: 
+                                <span class="redverybig">@Model.messe.Bemerkung!</span>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </td>
+       </tr>
+        <tr>
+            <td>
+                <hr />
+            </td>
+       </tr>
+       <tr>
+            <td>
+                <div class="Standarddaten">
+                    <h3>Lieferadresse</h3>
+                    <table>
+                        <tr>
+                            <th>
+                                Firma
+                            </th>
+                            <td>
+                                @Kontakt.Name
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Name
+                            </th>
+                            <td>
+                                @Kontakt.Name2
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Adresszusatz
+                            </th>
+                            <td>
+                                @Kontakt.Name3
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Strasse
+                            </th>
+                            <td>
+                                @Kontakt.Strasse
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Plz/Ort
+                            </th>
+                            <td>
+                                @Kontakt.PLZ @Kontakt.Ort
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                Land
+                            </th>
+                            <td>
+                                @Kontakt.Land.land
+                            </td>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                            <hr />   
+                            </th>
+                        </tr>
+                        <tr>
+                            <th>
+                                Halle/Stand
+                            </th>
+                            <td>
+                                @Model.HalleUStand
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+            @if (Model.Rechnungsadresse != null)
+            {
+                <td>
+                    <div class="Standarddaten">
+                        <h3>Rechungsadresse</h3>
+                        <table>
+                            <tr>
+                                <th>
+                                    Firma
+                                </th>
+                                <td>
+                                    @Model.Rechnungsadresse.Name
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Name
+                                </th>
+                                <td>
+                                    @Model.Rechnungsadresse.Name2
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Adresszusatz
+                                </th>
+                                <td>
+                                    @Model.Rechnungsadresse.Name3
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Strasse
+                                </th>
+                                <td>
+                                    @Model.Rechnungsadresse.Strasse
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Plz/Ort
+                                </th>
+                                <td>
+                                    @Model.Rechnungsadresse.PLZ @Model.Rechnungsadresse.Ort
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Land
+                                </th>
+                                <td>
+                                    @Model.Rechnungsadresse.Land.land
+                                </td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">
+                                    <hr />
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Halle/Stand
+                                </th>
+                                <td>
+                                    @Model.HalleUStand
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            }
+        </tr>
+    </table>
+        
+        
+    
+    <hr />
+    <div id="Artikelliste" class="AuflistungNotFixed">
+        <input type="hidden" value="@Model.Auftragsmengen.Count()" id="AMcount" />
+        <table>
+            @*<tr>
+                <th colspan="10" style="background-color:black">Bestellte Artikel</th>
+            </tr>*@
+            <tr>
+                <th>
+
+                </th>
+                <th>
+                    @Html.DisplayName("Artikelnummer")
+                </th>
+                <th style="text-align:left">
+                    @Html.DisplayName("Artikelart")
+                </th>
+                <th>
+                    @Html.DisplayName("Name")
+                </th>
+                <th>
+                    @Html.DisplayName("Sprache")
+                </th>
+                <th>
+                    @Html.DisplayName("Auflage/Charge/MHD")
+                </th>
+                <th>
+                    @Html.DisplayName("Format")
+                </th>
+                <th>
+                    @Html.DisplayName("Breite")
+                </th>
+                <th>
+                    @Html.DisplayName("Höhe")
+                </th>
+                <th>
+                    @Html.DisplayName("Tiefe")
+                </th>
+                <th>
+                    @Html.DisplayName("Gewicht")
+                </th>
+                <th>
+                    @Html.DisplayName("Inhalt pro Verpackungseinheit")
+                </th>
+                <th>
+                    @Html.DisplayName("Kartoninhalt")
+                </th>
+                <th>
+                    @Html.DisplayName("Lagerplatz")
+                </th>
+                <th>
+                    @Html.DisplayName("Bestand")
+                </th>
+                <th>
+                    @Html.DisplayName("Auftragsmenge (A4 Bögen)")
+                </th>
+                <th>
+                    @Html.DisplayName("Gelieferte Menge (A4 Bögen)")
+                </th>
+                <th>
+                    @Html.DisplayName("Zusatz")
+                </th>
+                <th>
+                    @Html.DisplayName("Bemerkung")
+                </th>
+            </tr>
+    
+            @{int count = 0; }
+            @foreach (var item in auftragsmengen)
+            {
+                count++;
+                string color = "white";
+                if (count % 2 == 0)
+                {
+                    color = "grey";
+                }
+            <tr class="@color">
+                <td>
+                    @if (item != null && !String.IsNullOrEmpty(item.artikel.Bildpfad) && @System.IO.File.Exists(Server.MapPath("~/images/Artikelbilder/" + item.artikel.Bildpfad)))
+                    {
+                        <img id="Artikelbild" onmouseover="showDivImageDisplay(this);" onmouseout="hideDivImageDisplay();" src="~/images/Artikelbilder/@item.artikel.Bildpfad" style="max-height:25PX; height:25PX;">
+                    }
+                    else
+                    {
+                        <img id="Artikelbild" onmouseover="showDivImageDisplay(this);" onmouseout="hideDivImageDisplay();" src="~/images/NoPicture.png" style="max-height:20PX; height:20PX;">
+                    }
+
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.artikel.Artikelnummer)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.artikel.artikelart.Art)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.artikel.Name)
+                    <input type="hidden" id="artikelname_@count" value="@item.artikel.Name" />
+                    <input type="hidden" id="artikelArt_@count" value="@item.artikel.artikelart.Art" />
+                    <input type="hidden" id="AMID_@count" value="@item.AuftragsmengeID" />
+                    @if (item.artikel.artikelart.ArtikelartID == 3)
+                    {
+                        <input type="hidden" id="BMK_@count" value="true" />
+                    }
+                    @{bool bkm = false;
+                      if (item.artikel.artikelart.ArtikelartID == 2 || item.artikel.artikelart.ArtikelartID == 3 || item.artikel.artikelart.ArtikelartID == 37)
+                      {
+                          bkm = true;
+                      }
+                    }
+                    <input type="hidden" id="BKM_@item.AuftragsmengeID" value="@bkm.ToString()" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.artikel.Sprache.Sprache)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.artikel.AuflageCharge)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.artikel.Format)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.artikel.Breite) 
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.artikel.Hoehe) 
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.artikel.Laenge) 
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.artikel.Gewicht) g
+                    <input type="hidden" value="@item.artikel.Gewicht" id="gewicht_@item.AuftragsmengeID" />
+                </td>
+                <td>
+                    @Html.DisplayFor(model => item.artikel.Verpackungseinheit)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.artikel.Kartoninhalt) 
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.artikel.Lagerplatz)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.artikel.Bestand)
+                    <input type="hidden" value="@item.artikel.Bestand" id="bestand_@item.AuftragsmengeID" />
+                </td> 
+                <td>
+                    @Html.DisplayFor(modelItem => item.menge)
+                    @{string boegenText = "";}
+                            @if (item.artikel.artikelart.ArtikelartID == 2 || item.artikel.artikelart.ArtikelartID == 3 || item.artikel.artikelart.ArtikelartID == 37){
+                                int boegen = item.menge / 20;
+                                if (item.menge % 20 > 0)
+                                {
+                                    boegen++;
+                                }
+                                boegenText = "(" + (boegen).ToString() +")";
+                            }
+                            @boegenText
+                    <input type="hidden" value="@item.menge" id="auftragsMenge_@item.AuftragsmengeID" />
+                    <input type="hidden" value="@item.gelieferteMenge" id="gelieferteMenge_@item.AuftragsmengeID" />
+                </td> 
+                <td>
+                    @Html.DisplayFor(modelItem => item.gelieferteMenge)
+                    @if (item.artikel.artikelart.ArtikelartID == 2 || item.artikel.artikelart.ArtikelartID == 3 || item.artikel.artikelart.ArtikelartID == 37)
+                    {
+                        int boegen = item.gelieferteMenge / 20;
+                        if (item.gelieferteMenge % 20 > 0)
+                        {
+                            boegen++;
+                        }
+                        boegenText = "(" + (boegen).ToString() +")";
+                   }
+                   @boegenText
+                   <input type="hidden" value="0" id="eingetrageneMenge_@item.AuftragsmengeID" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.artikel.artikelart.Bemerkung)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.artikel.Bemerkung)
+                </td> 
+            </tr>
+            }
+            
+            </table>
+        </div>
+    <h3>Bemerkung </h3>
+    <textarea readonly="readonly" style="width:50%;height:50PX; resize:  both; color:red; font-weight:bold;margin:10Px 0Px 5Px 10Px" >@Model.Bemerkung</textarea>
+    <hr />
+    
+    @using (Html.BeginForm("WMABearbeitungSpeichern", "Werbemittelverwaltung", FormMethod.Post, new { @id = "Paketverschickung" }))
+    {
+        <input type="hidden" value="@Model.WerbemittelauftragID" name="WerbemittelauftragID" />
+        <input type="hidden" value="1" id="HighPID" name="HighPID" />
+        <input type="hidden" value="@paketpreise.ElementAt(0).Preis" name="briefKlein" id="briefKlein" />
+        <input type="hidden" value="@paketpreise.ElementAt(1).Preis" name="briefGros" id="briefGros" />
+        <input type="hidden" value="@paketpreise.ElementAt(2).Preis" name="briefIntKlein" id="briefIntKlein" />
+        <input type="hidden" value="@paketpreise.ElementAt(3).Preis" name="briefIntMittel" id="briefIntMittel" />
+        <input type="hidden" value="@paketpreise.ElementAt(4).Preis" name="briefIntGros" id="briefIntGros" />
+        <input type="hidden" value="@DateTime.Now.ToString()" name="startPacken" id="startPacken" />
+        <table id="Pakete">
+                <tr>
+                    <td id="Paket_1"  style="vertical-align:top">
+                        <div class="Standarddaten" >
+                            <h3>Paket</h3>
+                                <table>
+                                    
+                                    @foreach (var item in auftragsmengen)
+                                    {
+                                        int restMenge = item.menge - item.gelieferteMenge;
+                                          if (item.artikel.Bestand >= item.menge - item.gelieferteMenge)
+                                          {
+                                              if (item.menge != item.gelieferteMenge)
+                                              {
+                                                <tr>
+                                                    <th>
+                                                        <span id="Artikelname_PID1_AID(@item.AuftragsmengeID)">@item.artikel.Name</span> <span style="font-weight:lighter; font-style:italic">(@restMenge)</span> 
+                                                    </th>
+                                                    <td>
+                                                        <input type="button" id="BtnMenge_PID1_AID(@item.AuftragsmengeID)" name="BtnMenge_PID1_AID(@item.AuftragsmengeID)" class="BtnMenge" value="Teilmenge"/>
+                                                        <input type="checkbox" id="CBMenge_PID1_AID(@item.AuftragsmengeID)" name="CBMenge_PID1_AID(@item.AuftragsmengeID)" class="CBMenge"/> 
+                                                        <input type="text" id="Tmenge_PID1_AID(@item.AuftragsmengeID)" name="Tmenge_PID1_AID(@item.AuftragsmengeID)" class="Tmenge" style="display:none"/>
+                                                        
+                                                        @*@if (item.artikel.artikelart.ArtikelartID == 3)
+                                                        {
+                                                            <span>Rechnung</span> <input type="checkbox" id="BKMRechnung_PID1_AID(@item.AuftragsmengeID)" name="BKMRechnung_PID1_AID(@item.AuftragsmengeID)" class="BKMRechnung"/> 
+                                                        }*@
+                                                    </td>                       
+                                                </tr>
+                                              }
+                                              else
+                                              {
+                                                <tr>
+                                                    <th>
+                                                        
+                                                       @item.artikel.Name <span style="font-weight:lighter; font-style:italic">(@restMenge)</span>
+                                                    </th>
+                                                    <td>
+                                                        Artikel bereits versendet.
+                                                    </td>                       
+                                                </tr>
+                                              }
+                                          }
+                                          else
+                                          {
+                                            <tr>
+                                                <th>
+                                                   @item.artikel.Name <span style="font-weight:lighter; font-style:italic">(@restMenge)</span>
+                                                </th>
+                                                <td>
+                                                   Artikelbestand reicht nicht aus!
+                                                </td>                       
+                                            </tr>
+                                          }
+                                    }
+                                    <tr><td colspan="2"><hr /></td></tr>
+                                    <tr>
+                                        <th>
+                                            Versandart
+                                        </th>
+                                        <td>
+                                            <input type="hidden" id="Hd_Va_1" name="Hd_Va_1" class="Hd_Va" />
+                                            <select id="Dd_Pa_1" name="Dd_Pa_1" class="Dd_Pa">
+                                              <option value="0">Bitte Wählen...</option>
+                                              <option value="1" @nat>Brief</option>
+                                              <option value="2" @nat>DHL</option>
+                                              <option value="3" @nat>DHL Express</option>
+                                              <option value="4" @inter>Brief International</option>
+                                              <option value="5" @inter>DHL International</option>
+                                              <option value="6" @inter>DHL Internat. Express</option>
+                                              <option value="7">Messecar</option>
+                                              <option value="8" @Messe>Kurier</option>
+                                              <option value="9" @Messe>Abholung</option>
+                                            </select> 
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Gewicht
+                                        </th>
+                                        <td>
+                                            <input type="text" id="Tb_Ge_1" name="Tb_Ge_1" class="Tb_Ge"  /> kg  <label  style="font-style:italic">(<span id="La_SollGe_1">0</span> kg) Sollgewicht</label>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Preis
+                                        </th>
+                                        <td>
+                                            <input type="text" id="Tb_Pr_1" name="Tb_Pr_1" class="Tb_Pr"  /> €
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Paketnummer
+                                        </th>
+                                        <td>
+                                            <input type="text" id="Tb_Pn_1" name="Tb_Pn_1" class="Tb_Pn" style="width:150PX" />
+                                        </td>
+                                    </tr>
+                                    
+                            <tr><td colspan="2"><hr /></td></tr>
+                            <tr>
+                                <td colspan="2">
+                                    <input type="button" id="Btn_Ett_1" value="Etikett drucken" class="Btn_Ett" disabled="disabled" /> 
+                                    <input type="button" id="Btn_De_1" value="Löschen" class="Btn_De" style="margin-left:15PX"/> 
+                                    <input type="button" value="Abschließen" id="Btn_Ab_1" class="Btn_Ab" style="margin-left:15PX" />
+                                </td>
+                            </tr>
+                            </table>
+                            </div>
+                        </td>
+                        <td id="Paket_2">
+                            <input type="button" value="Paket Hinzufügen" id="Btn_addPaket_2" class="Btn_addPaket" disabled="disabled" style="font-size:13Px;margin-left:20PX"/>                        
+                        </td>
+                </tr>
+            </table>
+    }
+</div>
+
+<div class="Buttons">
+    <table >
+        <tr>
+            <td>
+                <input type="button" value="Fertig" id="Fertig" />
+            </td>
+            <td>
+                @Html.ActionLink("Abbrechen", "Index", "Werbemittelverwaltung")
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+<div id="printArt" class="printArt">
+    <table id="PacklisteArtikelDialog">
+        <tr>
+            <th>
+                Messe
+            </th>
+            <th>
+                Artikelart
+            </th>
+            <th>
+                Artikelname
+            </th>
+            <th>
+                Sprache
+            </th>
+            <th>
+                Format
+            </th>
+            <th>
+                Lagerplatz
+            </th>
+            <th>
+                Bestand
+            </th>
+            <th>
+                Menge
+            </th>
+        </tr>       
+        @foreach (var artikel in auftragsmengen)
+        {
+            if (artikel.menge > artikel.gelieferteMenge)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(model => artikel.artikel.Messe.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => artikel.artikel.artikelart.Art)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => artikel.artikel.Name)
+                    </td>
+                     <td>
+                        @Html.DisplayFor(model => artikel.artikel.Sprache.Sprache)
+                    </td>
+                     <td>
+                        @Html.DisplayFor(model => artikel.artikel.Format)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => artikel.artikel.Lagerplatz)
+                    </td>
+                     <td>
+                        @Html.DisplayFor(model => artikel.artikel.Bestand)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(model => artikel.menge)
+                    </td>
+                    @if (artikel.menge > artikel.artikel.Bestand)
+                    {
+                        <td class ="redbig">
+                            @Html.Label("  Bestand zu gering (" + artikel.artikel.Bestand + ")")
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <input type="checkbox" />
+                        </td>
+                    }
+                </tr>
+            }
+        }
+    </table>
+</div>
+
+@*<div id="packliste"class="packliste"> 
+    <h1>
+        @Model.Kennzeichnung - Artikel
+    </h1>
+    <table id="packlisteArtikelPrint">
+        
+    </table>
+</div>*@
+
+<div id="waitForData" style="vertical-align:central; text-align:center">
+    <img src="~/images/ajax_loader_orange_256.gif" style="min-height:100PX;min-width:100PX">
+</div>
+
+<div id="PacketLabelPrint" style="position: relative; vertical-align:bottom; padding-left:1cm; height:18cm; text-align:left; margin-bottom:2cm; max-width:10cm; font-family: Arial;">
+    
+    <img  src="~/images/Etiketten_mit_Winkhardt_Logo.png" style="position:relative; margin-bottom:0;max-width:9cm;min-width:9cm">
+    <div style="text-align:right; margin-top:0; font-size:8px; font-family: Arial;width:9cm">
+        @Model.Kennzeichnung
+    </div>
+    <table id="KundeLabelPrint" style=" font-size:12Px; margin-bottom:1cm;max-width:10cm">
+        
+    </table>
+    <table id="labelMesseArtikelPrint" style="font-size:12Px; margin-top:15PX; margin-bottom:10px; max-width:10cm">
+
+    </table>
+    <hr style="margin-top:1cm" />
+</div>
+
+
+<div id="PacketLabelScreen" style="position: relative; vertical-align: bottom; padding-left: 1cm; display: table-cell; height: 18cm; max-width:10cm; text-align: left; font-family: Arial;">
+    <hr />
+    <img src="~/images/Etiketten_mit_Winkhardt_Logo.png" style="position:relative; width:9cm">
+    <div style="text-align:right; margin-top:0; font-size:8px; font-family: Arial;width:9cm">
+        @Model.Kennzeichnung
+    </div>
+    <table id="KundeLabelScreen" style="font-size:12Px;margin-bottom:1cm;">
+        <tr>
+            <th>
+                @Kontakt.Name
+            </th>
+        </tr>
+        @if(!String.IsNullOrEmpty(Kontakt.Name2)){
+            <tr>
+                <th>
+                    @Kontakt.Name2
+                </th>
+            </tr>
+        }
+        @if(!String.IsNullOrEmpty(Kontakt.Name3)){
+            <tr>
+                <th>
+                    @Kontakt.Name3
+                </th>
+            </tr>
+        }
+        <tr>
+            <th>
+                @Kontakt.Strasse
+            </th>
+        </tr>
+        <tr>
+            <th>
+                @Kontakt.PLZ @Kontakt.Ort
+            </th>
+        </tr>
+        @if (Kontakt.Land.land != "Deutschland"){
+            <tr>
+                <th>
+                    @Kontakt.Land.land
+                </th>
+            </tr>
+        }
+        </table>
+
+         <table id="labelMesseArtikel" style="font-size:12Px; margin-top:20PX; margin-bottom:20px; max-width:10cm">
+                @*<tr><th>@Model.messe.Name</th></tr>
+                @foreach(var artikel in Model.Auftragsmengen){
+                    <tr><td>- @artikel.menge @artikel.artikel.artikelart.Art  @artikel.artikel.Name </td></tr>
+                }*@
+         </table>
+        
+</div>
+
+<div class="DisableLayerAll" id="WarningAbwReAd" name="WarningAbwReAd" >
+
+    Rechungsadresse weicht von Lieferadresse ab!
+    <br />
+    Rechnung nicht dem Paket beilegen!
+</div>
+
+<script type="text/javascript">
+    $('#packliste').click(function () {
+        $('#packlisteArtikelPrint').html("");
+        $('#packlisteArtikelPrint').append($('#PacklisteArtikelDialog').html());
+        $('#printArt').dialog('open');
+    });
+
+    $('#printArt').dialog({
+        autoOpen: false,
+        width: 900,
+        height: 500,
+        resizable: true,
+        title: "Packliste",
+        buttons: {
+            'Drucken': function () {
+                $(this).dialog('close');
+                $('#PacketLabelPrint').attr('class', 'hidden');
+                window.print();
+                $('#PacketLabelPrint').removeClass();
+            },
+            'Schließen': function () {
+                $(this).dialog('close');
+            }
+        }
+    });
+
+    var Fertig = false;
+    $('#Fertig').click(function () {
+        Fertig = true;
+        var allGepackt = true;
+        $('.Btn_Ab').each(function () {
+            if (!$(this).prop('disabled') == true) {
+                allGepackt = false;
+                alert("Nicht alle angelegten Pakete wurden abgeschlossen!");
+            }
+        });
+        $('.Tb_Pr').each(function () {
+            if ($(this).val().length == 0) {
+                allGepackt = false;
+                alert("Nicht alle Paketpreise sind angegeben!");
+            }
+        });
+        $('.Tb_Pn').each(function () {
+            if ($(this).val().length == 0) {
+                allGepackt = false;
+                alert("Nicht alle Paketnummern sind angegeben!");
+            }
+        });
+        $('.Tb_Ge').each(function () {
+            if ($(this).val().length == 0) {
+                allGepackt = false;
+                alert("Gewichtsangaben fehlen!");
+            }
+        });
+
+        var allesVerpakt = true;
+        @for (int i = 0; i < Model.Auftragsmengen.Count(); i++)
+            {
+                int j = i + 1;
+                int AID = auftragsmengen.ElementAt(i).AuftragsmengeID;
+                @: var Menge = parseInt(@auftragsmengen.ElementAt(i).menge) - parseInt(@auftragsmengen.ElementAt(i).gelieferteMenge) - parseInt($('#eingetrageneMenge_@AID').val());
+                @: if (Menge != 0) { allesVerpakt = false; }
+                                                                                                                            }
+
+        if (allGepackt) {
+            if (!allesVerpakt) {
+                $('<div></div>').appendTo('body').html('<div><h3 style="margin-top:20PX;text-align:center">Es sind noch nicht alle Artikel verpackt worden!</h3><h3 style="margin-top:20PX;text-align:center">Verpacken trotzdem beenden und Speichern? </h3></div>')
+                   .dialog({
+                       autoOpen: true,
+                       width: 700,
+                       height: 250,
+                       resizable: true,
+                       title: 'Sicherheitsabfrage',
+                       buttons: {
+                           'Ja': function (e) {
+                               $(this).dialog('close');
+                               $('.CBMenge').removeAttr('disabled');
+                               @{Session["SuchtextWerbemittel"] = null; Session["FilterWerbemittel"] = null;}
+                               $('#Paketverschickung').submit();
+
+                           },
+                           'Nein': function (e) {
+                               $(this).dialog('close');
+                               Fertig = false;
+                               return false;
+                           }
+                       }
+                   });
+            } else {
+                $('.CBMenge').removeAttr('disabled');
+                @{Session["SuchtextWerbemittel"] = null; Session["FilterWerbemittel"] = null;}
+                $('#Paketverschickung').submit();
+
+            }
+        } else {
+            Fertig = false;
+            return false;
+        }
+    });
+
+    $('#Pakete').on('click', ".Btn_addPaket", function () {
+        var BTid = $(this).attr("id");
+        var startindex = BTid.lastIndexOf("_") + 1;
+        var id = BTid.substr(startindex, BTid.length);
+        var newid = parseInt(id) + 1;
+        $('#Paket_' + id).remove();
+        $('#HighPID').val(id);
+        var Paketinfo =
+        '<tr><td colspan="2"><hr /></td></tr>'
+                + '<tr><th> Versandart </th><td> <input type="hidden" id="Hd_Va_' + id + '" name="Hd_Va_' + id + '" class="Hd_Va" /><select id="Dd_Pa_' + id + '" name="Dd_Pa_' + id + '" class="Dd_Pa"> <option value="0">Bitte Wählen...</option> <option value="1" @nat>Brief</option> <option value="2" @nat>DHL</option> <option value="3" @nat>DHL Express</option><option value="4" @inter>Brief International</option> <option value="5" @inter>DHL International</option><option value="6" @inter>DHL Internat. Express</option><option value="7" >Messecar</option><option value="8" @Messe>Kurier</option><option value="9" @Messe>Abholung</option></select> </td></tr>'
+                + '<tr><th> Gewicht </th><td> <input type="text" id="Tb_Ge_' + id + '" name="Tb_Ge_' + id + '" class="Tb_Ge" /> kg  <label style="font-style:italic">(<span id="La_SollGe_' + id + '">0</span> kg) Sollgewicht</label> </td></tr> '
+                + '<tr><th> Preis </th><td> <input type="text" id="Tb_Pr_' + id + '" name="Tb_Pr_' + id + '" class="Tb_Pr"  /> €</td></tr> '
+                + '<tr><th> Paketnummer </th><td> <input type="text" style="width:150PX" id="Tb_Pn_' + id + '" name="Tb_Pn_' + id + '" class="Tb_Pn" /> ';
+        var artikelEingabe = '<td style="vertical-align:top" id="Paket_' + id + '"> <div class="Standarddaten" > <h3>Paket</h3>'
+            + ' <table id="table_' + id + '"> ';
+
+        for (var i = 1; i <= parseInt($('#AMcount').val()) ; i++) {
+
+            var Restmenge = parseInt($('#auftragsMenge_' + $('#AMID_' + i.toString()).val()).val()) - parseInt($('#gelieferteMenge_' + $('#AMID_' + i.toString()).val()).val()) - parseInt($('#eingetrageneMenge_' + $('#AMID_' + i.toString()).val()).val());
+
+            if (parseInt($('#bestand_' + $('#AMID_' + i.toString()).val()).val()) >= parseInt($('#auftragsMenge_' + $('#AMID_' + i.toString()).val()).val()) - parseInt($('#gelieferteMenge_' + $('#AMID_' + i.toString()).val()).val())) {
+                if (parseInt($('#auftragsMenge_' + $('#AMID_' + i.toString()).val()).val()) - parseInt($('#gelieferteMenge_' + $('#AMID_' + i.toString()).val()).val()) > parseInt($('#eingetrageneMenge_' + $('#AMID_' + i.toString()).val()).val())) {
+
+                    var BKM = "";
+
+                    //if ($('#BMK_' + i).length) {
+
+                    //    BKM = '<span>Rechnung</span> <input type="checkbox" class="BKMRechnung" id="BKMRechnung_PID' + id + '_AID(' + $('#AMID_' + i.toString()).val() + ')" name="BKMRechnung_PID' + id + '_AID(' + $('#AMID_' + i.toString()).val() + ')"/>';
+                    //}
+                    artikelEingabe += '<tr><th>' + $('#artikelname_' + i.toString()).val() + ' <span style="font-weight:lighter; font-style:italic">(' + Restmenge + ')</span></th><td> <input type="button" id="BtnMenge_PID' + id + '_AID(' + $('#AMID_' + i.toString()).val() + ')" name="BtnMenge_PID' + id + '_AID(' + $('#AMID_' + i.toString()).val() + ')" value="Teilmenge" class="BtnMenge"/>'
+                        + '<input type="checkbox" id="CBMenge_PID' + id + '_AID(' + $('#AMID_' + i.toString()).val() + ')" name="CBMenge_PID' + id + '_AID(' + $('#AMID_' + i.toString()).val() + ')" class="CBMenge"/> '
+                        + '<input type="text" id="Tmenge_PID' + id + '_AID(' + $('#AMID_' + i.toString()).val() + ')" name="Tmenge_PID' + id + '_AID(' + $('#AMID_' + i.toString()).val() + ')" class="Tmenge" style="display:none"/>' + BKM + '</td></tr>';
+
+                } else {
+                    artikelEingabe += '<tr><th>' + $('#artikelname_' + i.toString()).val() + ' <span style="font-weight:lighter; font-style:italic">(' + Restmenge + ')</span></th><td> Benötigte Menge bereits verpackt!</td></tr> ';
+                }
+            } else {
+                artikelEingabe += '<tr><th>' + $('#artikelname_' + i.toString()).val() + ' <span style="font-weight:lighter; font-style:italic">(' + Restmenge + ')</span></th><td> Artikelbestand reicht nicht aus!</td></tr> ';
+            }
+        }
+
+        var buttons = '<tr><td colspan="2"><hr /></td></tr>'
+               + '<tr><td colspan="2"><input type="button" id="Btn_Ett_' + id + '" value="Etikett Drucken"  class="Btn_Ett" disabled="disabled"/> <input type="button" value="Löschen" style="margin-left:15PX" class="Btn_De" id="Btn_De_' + id + '"/><input type="button" value="Abschließen" id="Btn_Ab_' + id + '" class="Btn_Ab" style="margin-left:15PX" /></td></tr>'
+               + '</table></div></td>'
+               + '<td id="Paket_' + newid + '"><input type="button" value="Paket&#10;Hinzufügen" id="Btn_addPaket_' + newid + '" class="Btn_addPaket" disabled="disabled" style="font-size:13Px;margin-left:20PX"/></td>';
+        var all = artikelEingabe + Paketinfo + buttons;
+        $('#Pakete tr:first').append(all);
+    });
+
+    $('#Pakete').on('click', ".Btn_De", function () {
+        var BTid = $(this).attr("id");
+        var startindex = BTid.lastIndexOf("_") + 1;
+        var id = BTid.substr(startindex, BTid.length);
+        if (parseInt(id) > 1) {
+            $('#Paket_' + id).remove();
+            var oldID = parseInt(id) + 1;
+            $('#Btn_addPaket_' + oldID).removeAttr('disabled');
+            $('#Btn_addPaket_' + oldID).attr('id', 'Btn_addPaket_' + id);
+            $('#Paket_' + oldID).attr('id', 'Paket_' + id);
+        } else {
+
+            for (var i = 1; i <= parseInt($('#AMcount').val()) ; i++) {
+                $('#Tmenge_PID' + id + '_AID\\(' + $('#AMID_' + i.toString()).val() + '\\)').val('');
+            }
+            $('#Tb_Pn_' + id).val('');
+            $('#Tb_Pr_' + id).val('');
+            $('#Tb_Ge_' + id).val('');
+            $('option:first', '#Dd_Pa_' + id).prop("enabled", "enabled");
+            $('#Dd_Pa_' + id).val('0');
+            $('#Btn_Ett_' + id).attr('disabled', 'disabled');
+        }
+    });
+
+    var sollGewicht = 0;
+    $('#Pakete').on('click', ".BtnMenge", function () {
+        var TbID = $(this).attr('id');
+        var start_PID = TbID.indexOf('D') + 1;
+        var end_PID = TbID.indexOf('_', start_PID);
+        var PID = TbID.substring(start_PID, end_PID);
+        var start_AID = TbID.indexOf('(') + 1;
+        var end_AID = TbID.indexOf(')', start_AID);
+        var AID = TbID.substring(start_AID, end_AID);
+        var auftragsMenge = $('#auftragsMenge_' + AID).val();
+        var gelieferteMenge = $('#gelieferteMenge_' + AID).val();
+        var eingetrageneMenge = $('#eingetrageneMenge_' + AID).val();
+        var erlaubteMenge = parseInt(auftragsMenge) - parseInt(eingetrageneMenge) - parseInt(gelieferteMenge);
+        sollGewicht = parseFloat($('#La_SollGe_' + PID).text().replace(',', '.'));
+        if ($(this).val() == "Teilmenge") {
+            $('#BtnMenge_PID' + PID + '_AID\\(' + AID + '\\)').val('Komplett');
+            if ($('#CBMenge_PID' + PID + '_AID\\(' + AID + '\\)').prop('checked')) {
+                sollGewicht -= erlaubteMenge * parseFloat($('#gewicht_' + AID).val().replace(",", ".")) / 1000;
+            }
+            $('#CBMenge_PID' + PID + '_AID\\(' + AID + '\\)').attr('checked', false);
+            $('#CBMenge_PID' + PID + '_AID\\(' + AID + '\\)').hide();
+            $('#Tmenge_PID' + PID + '_AID\\(' + AID + '\\)').show();
+            $('#Tmenge_PID' + PID + '_AID\\(' + AID + '\\)').val('0');
+            $('#Tmenge_PID' + PID + '_AID\\(' + AID + '\\)').focus();
+        } else {
+            $('#BtnMenge_PID' + PID + '_AID\\(' + AID + '\\)').val('Teilmenge');
+            var TBMenge = parseInt($('#Tmenge_PID' + PID + '_AID\\(' + AID + '\\)').val());
+            if (TBMenge > 0) {
+                sollGewicht -= TBMenge * parseFloat($('#gewicht_' + AID).val().replace(",", ".")) / 1000;
+            }
+            $('#CBMenge_PID' + PID + '_AID\\(' + AID + '\\)').show();
+            $('#Tmenge_PID' + PID + '_AID\\(' + AID + '\\)').hide();
+            $('#Tmenge_PID' + PID + '_AID\\(' + AID + '\\)').val('0');
+        }
+        var sollAktuell = sollGewicht.toFixed(3);
+        var sollAktuelltext = sollAktuell.replace('.', ',');
+        $('#La_SollGe_' + PID).text(sollAktuelltext);
+    });
+
+    $('#Pakete').on('keydown', ".Tmenge", function (e) {
+        if ($(this).val().length > 0) {
+            TBMengeOld = $(this).val();
+        }
+        checkInputNumber(e);
+    });
+
+    $('#Pakete').on('focus', ".Tmenge", function (e) {
+        $(this).select();
+        var TbID = $(this).attr('id');
+        var start_PID = TbID.indexOf('D') + 1;
+        var end_PID = TbID.indexOf('_', start_PID);
+        var PID = TbID.substring(start_PID, end_PID);
+        var start_AID = TbID.indexOf('(') + 1;
+        var end_AID = TbID.indexOf(')', start_AID);
+        var AID = TbID.substring(start_AID, end_AID);
+        var TBMenge = parseInt($('#Tmenge_PID' + PID + '_AID\\(' + AID + '\\)').val());
+        if (TBMenge > 0) {
+            sollGewicht -= TBMenge * parseFloat($('#gewicht_' + AID).val().replace(",", ".")) / 1000;
+        }
+    });
+
+    $('#Pakete').on('focusout', ".Tmenge", function (e) {
+        var TbID = $(this).attr('id');
+        var start_PID = TbID.indexOf('D') + 1;
+        var end_PID = TbID.indexOf('_', start_PID);
+        var PID = TbID.substring(start_PID, end_PID);
+        var start_AID = TbID.indexOf('(') + 1;
+        var end_AID = TbID.indexOf(')', start_AID);
+        var AID = TbID.substring(start_AID, end_AID);
+        var TBMenge = parseInt($('#Tmenge_PID' + PID + '_AID\\(' + AID + '\\)').val());
+        if (TBMenge > 0) {
+            sollGewicht += TBMenge * parseFloat($('#gewicht_' + AID).val().replace(",", ".")) / 1000;
+        }
+        var sollAktuell = sollGewicht.toFixed(3);
+        var sollAktuelltext = sollAktuell.replace('.', ',');
+        $('#La_SollGe_' + PID).text(sollAktuelltext);
+    });
+
+    $('#Pakete').on('keyup', ".Tmenge", function () {
+        var TbID = $(this).attr('id');
+        var start_PID = TbID.indexOf('D') + 1;
+        var end_PID = TbID.indexOf('_', start_PID);
+        var PID = TbID.substring(start_PID, end_PID);
+        var start_AID = TbID.indexOf('(') + 1;
+        var end_AID = TbID.indexOf(')', start_AID);
+        var AID = TbID.substring(start_AID, end_AID);
+        var auftragsMenge = $('#auftragsMenge_' + AID).val();
+        var gelieferteMenge = $('#gelieferteMenge_' + AID).val();
+        var eingetrageneMenge = $('#eingetrageneMenge_' + AID).val();
+        var erlaubteMenge = parseInt(auftragsMenge) - parseInt(eingetrageneMenge) - parseInt(gelieferteMenge);
+        if (parseInt($(this).val()) > erlaubteMenge) {
+            $(this).val('0');
+            alert("Eingetragene Menge liegt über der zulässigen Menge");
+        }
+    });
+
+    $('#Pakete').on('change', ".CBMenge", function () {
+        var TbID = $(this).attr('id');
+        var start_PID = TbID.indexOf('D') + 1;
+        var end_PID = TbID.indexOf('_', start_PID);
+        var PID = TbID.substring(start_PID, end_PID);
+        var start_AID = TbID.indexOf('(') + 1;
+        var end_AID = TbID.indexOf(')', start_AID);
+        var AID = TbID.substring(start_AID, end_AID);
+        var auftragsMenge = $('#auftragsMenge_' + AID).val();
+        var gelieferteMenge = $('#gelieferteMenge_' + AID).val();
+        var eingetrageneMenge = $('#eingetrageneMenge_' + AID).val();
+        var erlaubteMenge = parseInt(auftragsMenge) - parseInt(eingetrageneMenge) - parseInt(gelieferteMenge);
+        if ($(this).prop('checked')) {
+            sollGewicht += erlaubteMenge * parseFloat($('#gewicht_' + AID).val().replace(",", ".")) / 1000;
+        } else {
+            sollGewicht -= erlaubteMenge * parseFloat($('#gewicht_' + AID).val().replace(",", ".")) / 1000;
+        }
+
+        //sollGewicht = sollGewicht.toFixed(2);
+        var sollAktuell = sollGewicht.toFixed(3);
+        var sollAktuelltext = sollAktuell.replace('.', ',');
+        $('#La_SollGe_' + PID).text(sollAktuelltext);
+    });
+
+    $('#Pakete').on('keydown', ".Tb_Ge", function (e) {
+        checkInputNumberComma(e);
+    });
+
+    $('#Pakete').on('keydown', ".Tb_Pr", function (e) {
+        checkInputNumberComma(e);
+    });
+
+    $('#Pakete').on('keydown', ".Tb_Pn", function (e) {
+        checkInputNumber(e);
+    });
+
+    $('#Pakete').on('keyup', ".Tb_Ge", function () {
+        var value = parseFloat($(this).val().replace(',', '.'));
+        var BTid = $(this).attr("id");
+        var startindex = BTid.lastIndexOf("_") + 1;
+        var id = BTid.substr(startindex, BTid.length);
+        if ($(this).val().length >= 4 && value < 0.020) {
+            alert("Gewichtsangaben von weniger als 0,02kg sind nicht möglich");
+            $(this).val("0");
+
+        }
+
+        if (value > 30 && ($('#Dd_Pa_' + id).val() == 2 || $('#Dd_Pa_' + id).val() == 3 || $('#Dd_Pa_' + id).val() == 5 || $('#Dd_Pa_' + id).val() == 6)) {
+            alert("Ein Gewicht von mehr als 30kg ist nicht möglich");
+            $(this).val("0");
+        }
+        if ($('#Dd_Pa_' + id).val() == 1) {
+            if (value > 1) {
+                alert("Ein Gewicht größer als 1kg ist für Briefe nicht möglich");
+                $(this).val('0');
+                $('#Tb_Pr_' + id).val('');
+            }
+            if (value <= 0.500 && value > 0.0) {
+                $('#Tb_Pr_' + id).val(parseFloat($('#briefKlein').val().replace(",", ".")).toFixed(2).toString().replace(".", ","));
+            }
+            if (value <= 1 && value > 0.5) {
+                $('#Tb_Pr_' + id).val(parseFloat($('#briefGros').val().replace(",", ".")).toFixed(2).toString().replace(".", ","));
+            }
+        }
+        if ($('#Dd_Pa_' + id).val() == 4) {
+            if (value > 2) {
+                alert("Ein Gewicht größer als 2kg ist für Internationale Briefe nicht möglich");
+                $(this).val('0');
+                $('#Tb_Pr_' + id).val('');
+            }
+
+            if (value <= 0.500 && value > 0.0) {
+                $('#Tb_Pr_' + id).val(parseFloat($('#briefIntKlein').val().replace(",", ".")).toFixed(2).toString().replace(".",","));
+            }
+            if (value <= 1 && value > 0.5) {
+                $('#Tb_Pr_' + id).val(parseFloat($('#briefIntMittel').val().replace(",", ".")).toFixed(2).toString().replace(".", ","));
+            }
+            if (value <= 2 && value > 1) {
+                $('#Tb_Pr_' + id).val(parseFloat($('#briefIntGros').val().replace(",", ".")).toFixed(2).toString().replace(".", ","));
+            }
+        }
+    });
+
+    $('#Pakete').on('keyup', ".Tb_Pr", function () {
+        var value = parseFloat($(this).val().replace(',', '.'));
+        if (value < 0.1) {
+            alert("Preisangaben von weniger als 0,1€ sind nicht möglich");
+            $(this).val("0");
+        }
+        if (value > 999) {
+            alert("Preisangaben von mehr als 999€ sind nicht möglich");
+            $(this).val("0");
+        }
+    });
+
+    $('#Pakete').on('change', ".BKMRechnung", function () {
+        //alert($('#abwReAd').val());
+        if ($(this).prop('checked') && $('#abwReAd').val() == "True") {
+            $('#WarningAbwReAd').dialog('open');
+            //$('#WarningAbwReAd').hide();
+        }
+    });
+
+    $('#WarningAbwReAd').dialog({
+        autoOpen: false,
+        width: 400,
+        height: 400,
+        title: "Hinweis",
+        modal: true,
+        buttons: {
+            'Ok': function () {
+                $(this).dialog('close');
+            }
+        }
+    });
+
+    $('#Pakete').on('change', ".Dd_Pa", function () {
+        var BTid = $(this).attr("id");
+        var startindex = BTid.lastIndexOf("_") + 1;
+        var id = BTid.substr(startindex, BTid.length);
+        $('#Hd_Va_' + id).val($(this).find("option:selected").text());
+        $('#Tb_Pr_' + id).val('');
+        $('#Tb_Pn_' + id).val('');
+        $('#Tb_Ge_' + id).val('');
+        if ($(this).val() != 0) {
+            $('option:first', this).prop("disabled", "disabled");
+            $('#Btn_Ett_' + id).removeAttr('disabled');
+        }
+        if ($(this).val() == 1 || $(this).val() == 4) {
+            $('#Tb_Pn_' + id).attr('readonly', 'readonly');
+            $('#Tb_Pn_' + id).val('Eingabe nicht möglich');
+            $('#Tb_Pr_' + id).attr('readonly', 'readonly');
+        }
+        if ($(this).val() == 8) {
+            $('#Tb_Pn_' + id).attr('readonly', 'readonly');
+            $('#Tb_Pn_' + id).val('Eingabe nicht möglich');
+        }
+        if ($(this).val() == 9 || $(this).val() == 7) {
+            $('#Tb_Pn_' + id).attr('readonly', 'readonly');
+            $('#Tb_Pn_' + id).val('Eingabe nicht möglich');
+            $('#Tb_Pr_' + id).attr('readonly', 'readonly');
+            $('#Tb_Pr_' + id).val('0');
+        }
+        if ($(this).val() == 2 || $(this).val() == 5) {
+            $('#Tb_Pr_' + id).attr('readonly', 'readonly');
+            $('#Tb_Pr_' + id).val('Auto');
+            $('#Tb_Pn_' + id).attr('readonly', 'readonly');
+            $('#Tb_Pn_' + id).val('Auto');
+        }
+        if ($(this).val() == 2) {
+            $('#Tb_Pr_' + id).removeAttr('readonly', 'readonly');
+            $('#Tb_Pn_' + id).removeAttr('readonly', 'readonly');
+        }
+        if ($(this).val() == 3 || $(this).val() == 6) {
+            $('#Btn_Ett_' + id).attr('disabled', 'disabled');
+        }
+        if (!($(this).val() == 3 || $(this).val() == 6)) {
+            $('#Btn_Ett_' + id).removeAttr('disabled');
+        }
+    });
+
+    function CheckAllesVerpackt(id) {
+        var allesVerpakt = true;
+        //var newid = parseInt(id) + 1;
+
+        @for (int i = 0; i < Model.Auftragsmengen.Count(); i++)
+            {
+                int j = i + 1;
+                int AID = auftragsmengen.ElementAt(i).AuftragsmengeID;
+                @:if ($('#CBMenge_PID' + id + '_AID\\(@AID\\)').prop('checked')) {
+                                                    @:$('#Tmenge_PID' + id + '_AID\\(@AID\\)').val('');
+                                                    @:$('#CBMenge_PID' + id + '_AID\\(@AID\\)').attr('readonly', 'readonly');
+                                                    @:$('#BtnMenge_PID' + id + '_AID\\(@AID\\)').attr('disabled', 'disabled');
+                                                    @: var Menge = parseInt(@auftragsmengen.ElementAt(i).menge) - parseInt(@auftragsmengen.ElementAt(i).gelieferteMenge) - parseInt($('#eingetrageneMenge_@AID').val());
+                                                    @:$('#eingetrageneMenge_@AID').val((Menge + parseInt($('#eingetrageneMenge_@AID').val())));
+                                                    @:} else {
+                                                    @: if ($('#CBMenge_PID' + id + '_AID\\(@AID\\)').length != 0) { allesVerpakt = false; }
+                                                    @:}
+                                        @:if ($('#Tmenge_PID' + id + '_AID\\(@AID\\)').length && $('#Tmenge_PID' + id + '_AID\\(@AID\\)').val().length > 0) {
+                                                    @:if (parseInt($('#Tmenge_PID' + id + '_AID\\(@AID\\)').val()) > 0) {
+                                                                @:$('#Tmenge_PID' + id + '_AID\\(@AID\\)').attr('readonly', 'readonly');
+                                                                @: var Menge = parseInt($('#Tmenge_PID' + id + '_AID\\(@AID\\)').val()) + parseInt($('#eingetrageneMenge_@AID').val());
+                                                                @:$('#eingetrageneMenge_@AID').val(Menge);
+                                                                @:}
+                                                    @:var restMenge = @auftragsmengen.ElementAt(i).menge - @auftragsmengen.ElementAt(i).gelieferteMenge -Menge;
+                                                    @:if (restMenge > 0) {
+                                                                @: allesVerpakt = false;
+                                                                @:} else { allesVerpakt = true };
+                                                         @:}
+    }
+
+        return allesVerpakt;
+    }
+
+    function PaketAbschliessen(ids) {
+        $('#Tb_Pn_' + ids).attr('readonly', 'readonly');
+        $('#Tb_Pr_' + ids).attr('readonly', 'readonly');
+        $('#Dd_Pa_' + ids).attr('disabled', 'disabled');
+        $('#Tb_Ge_' + ids).attr('readonly', 'readonly');
+        $('#Btn_De_' + ids).attr('disabled', 'disabled');
+
+        $('.CBMenge').each(function () {
+            var BTid = $(this).attr("id");
+            var startindex = BTid.indexOf("_PID") + 4;
+            var endindex = BTid.lastIndexOf("_");
+            var id = BTid.substr(startindex, endindex - startindex);
+            if (id == ids) {
+                $(this).prop('disabled', 'disabled');
+            }
+        });
+        $('.BtnMenge').each(function () {
+            var BTid = $(this).attr("id");
+            var startindex = BTid.indexOf("_PID") + 4;
+            var endindex = BTid.lastIndexOf("_");
+            var id = BTid.substr(startindex, endindex - startindex);
+            if (id == ids) {
+                $(this).prop('disabled', 'disabled');
+            };
+        });
+        $('.Tmenge').each(function () {
+            var BTid = $(this).attr("id");
+            var startindex = BTid.indexOf("_PID") + 4;
+            var endindex = BTid.lastIndexOf("_");
+            var id = BTid.substr(startindex, endindex - startindex);
+            if (id == ids) {
+                $(this).prop('readonly', 'readonly');
+            }
+        });
+
+        //$('.BKMRechnung').each(function () {
+        //    var BTid = $(this).attr("id");
+        //    var startindex = BTid.indexOf("_PID") + 4;
+        //    var endindex = BTid.lastIndexOf("_");
+        //    var id = BTid.substr(startindex, endindex - startindex);
+        //    if (id == ids) {
+        //        $(this).prop('disabled', 'disabled');
+        //    }
+        //});
+    }
+
+    function checkPaketdaten(id) {
+        var newid = parseInt(id) + 1;
+        var Message = "";
+        var VaID = $('#Dd_Pa_' + id).val();
+        if ($('#Dd_Pa_' + id).val() == "0") {
+            Message += "Versandart nicht gewählt! \n\n";
+        }
+        if (!parseFloat($('#Tb_Ge_' + id).val().replace(',', '.')) > 0.02) {
+            Message += "Gewichtsangabe zu gering oder keines eingetragen! \n\n";
+        }
+
+
+
+        if (!(VaID == "7" || VaID == "9" || VaID == "5" || VaID == "2")) {
+            if (!parseFloat($('#Tb_Pr_' + id).val().replace(',', '.')) > 0.7) {
+                Message += "Preisangabe zu gering oder kein Preis eingetragen! \n\n";
+            }
+        }
+        if ((VaID == "3" || VaID == "6") && $('#Tb_Pn_' + id).val().length < 8) {
+            Message += "Paketnummer nicht eingetragen oder Angabe nicht korrekt! \n\n";
+        }
+
+        var Artikel = 0;
+        //var BKMIndi = false;
+        //var C = false;
+        
+
+        @for (int i = 0; i < Model.Auftragsmengen.Count(); i++)
+        {
+            int AID = auftragsmengen.ElementAt(i).AuftragsmengeID;
+            int ArtikelID = auftragsmengen.ElementAt(i).artikel.artikelart.ArtikelartID;
+                @:if ($('#CBMenge_PID' + id + '_AID\\(@AID\\)').prop('checked') || ($('#Tmenge_PID' + id + '_AID\\(@AID\\)').length && $('#Tmenge_PID' + id + '_AID\\(@AID\\)').val().length > 0)) {
+                    @:Artikel++;
+                    @*@:if ($('#BKMRechnung_PID' + id + '_AID\\(@AID\\)').length) {
+                        @:BKMIndi = true;
+                        @:if (!$('#BKMRechnung_PID' + id + '_AID\\(@AID\\)').prop('checked')) {
+                            @:Message += "Rechnung für individualisierte Briefklebemarken wurde nicht beigelegt!!!\n\n";
+                        @:}
+                        @:if ($('#Dd_Pa_' + id).val() == "1") {
+                            @:Message += "Briefklebemarken können nicht als Brief versendet werden!!!\n\n";
+                        @:}
+                    @:} else {
+                        @:if (@ArtikelID != 43) {
+                            @:Artikel++;
+                        @:}
+                    @:}
+                    @:if (@ArtikelID == 43) {
+                        @:BKMIndi = true;
+                        @:if ($('#Dd_Pa_' + id).val() == "1") {
+                            @:Message += "Briefklebemarken können nicht als Brief versendet werden!!!\n\n";
+                        @:} 
+                    @:}*@
+                @:}
+        }
+        //if (Artikel > 0 && BKMIndi) {
+        //    Message += "Individualisierte Briefklebemarken können nur gesondert in einem Extrapaket versendet werden!!!\n\n";
+        //}
+        //if (Artikel == 0 && !BKMIndi) {
+        //    Message += "Keine(n) Artikel eingetragen! \n\n";
+        //}
+        if (Artikel == 0) {
+            Message += "Keine(n) Artikel eingetragen! \n\n";
+        }
+
+        if (Message.length > 0) {
+            alert(Message);
+            $('.disalbeLayer').hide();
+            return false;
+        } else {
+            //if (parseFloat($('#Tb_Ge_' + id).val().replace(',', '.')) < sollGewicht * 0.8 || parseFloat($('#Tb_Ge_' + id).val().replace(',', '.')) > sollGewicht * 1.2) {
+            //    alert("Das Paketgewicht weicht mehr als 20% vom Sollgewicht ab!");
+            //}
+            return true;
+        }
+        return Message;
+
+    }
+
+    $('#Pakete').on('click', ".Btn_Ab", function () {
+        var BTid = $(this).attr("id");
+        var startindex = BTid.lastIndexOf("_") + 1;
+        var id = BTid.substr(startindex, BTid.length);
+        if (!$.isNumeric($('#Tb_Pr_' + id).val().replace(',', '.'))) {
+            alert("Preisangabe stimmt nicht!");
+            return false;
+        }
+        var check = checkPaketdaten(id);
+        var newid = parseInt(id) + 1;
+        var newidtext = newid.toString();
+        if (check) {
+            PaketAbschliessen(id);
+            $('#Btn_Ab_' + id).attr('disabled', 'disabled');
+
+            var newid = id + 1;
+            sollGewicht = 0;
+            var allesVerpakt = CheckAllesVerpackt(id);
+            if (allesVerpakt) {
+                var name = '#Btn_addPaket_' + newidtext;
+                $('#Btn_addPaket_' + newidtext).replaceWith("Alle Artikel sind verpackt!");
+            } else {
+                $('#Btn_addPaket_' + newidtext).removeAttr('disabled');
+            }
+        }
+        
+    });
+
+
+    $('#Pakete').on('click', ".Btn_Ett", function () {
+        $('.disalbeLayer').show();
+        var BTid = $(this).attr("id");
+        var startindex = BTid.lastIndexOf("_") + 1;
+        var id = BTid.substr(startindex, BTid.length);
+        //var newid = parseInt(id) + 1;
+        var check = checkPaketdaten(id);
+        if (check) {
+            if ($('#Dd_Pa_' + id).val() == "2" || $('#Dd_Pa_' + id).val() == "5") {
+                var WMAID = "@Model.WerbemittelauftragID";
+                var Gewicht = $('#Tb_Ge_' + id).val();
+                if (parseFloat($('#Tb_Ge_' + id).val().replace(',', '.')) >= 0.1) {
+                    $.ajax({
+                        url: '@Url.Action("PollingDatei", "Werbemittelverwaltung")',
+                        type: 'POST',
+                        dataType: 'json',
+                        cache: false,
+                        data: { WMAid: WMAID, Gewicht: Gewicht },
+                        success: function (result) {
+                            setPaketPriceAndPketnummer(id);
+                            $('#Tb_Ge_' + id).attr('readonly', 'readonly');
+                            $('#Dd_Pa_' + id).attr('readonly', 'readonly');
+                        },
+                        statusCode: {
+                            404: function (content) { alert('cannot find resource'); },
+                            505: function (content) { alert('internal server error'); }
+                        },
+                        error: function (req, status, errorObj) {
+                        }
+                    });
+                } else {
+                    alert("Zu geringes Gewicht eingetragen");
+                    $('.disalbeLayer').hide();
+                    return false;
+                }
+            }
+            if (!($('#Dd_Pa_' + id).val() == "2" || !$('#Dd_Pa_' + id).val() == "5")) {
+                $('#labelMesseArtikel').html("");
+                if ($('#Dd_Pa_' + id).val() == "7" || $('#Dd_Pa_' + id).val() == "8" || $('#Dd_Pa_' + id).val() == "9") {
+                    var AuftragsmengenIDs = [];
+                    @for (int i = 0; i < Model.Auftragsmengen.Count(); i++)
+                    {
+                        @:AuftragsmengenIDs.push(@auftragsmengen.ElementAt(i).AuftragsmengeID);
+                    }
+                    var Liste = "";
+                    jQuery.each(AuftragsmengenIDs, function (index, AID) {
+                        if ($('#CBMenge_PID'+id+'_AID\\(' + AID + '\\)').prop('checked')) {
+                            index++;
+                            var austehendeMenge = parseInt($('#auftragsMenge_' + AID).val()) - parseInt($('#gelieferteMenge_' + AID).val());
+                            var Mengen = parseInt($('#auftragsMenge_' + AID).val()) - parseInt($('#eingetrageneMenge_' + AID).val()) - parseInt($('#gelieferteMenge_' + AID).val());
+                            if($('#Btn_Ab_'+id).prop('disabled')){
+                                var inVorherigenPaketenVerpackt = 0;
+                                var IDaktuellesPaket = parseInt(id);
+                                $('.Btn_Ett').each(
+                                    function(){
+                                        if(parseInt($('#Tmenge_PID' + IDaktuellesPaket + '_AID\\(' + AID + '\\)').val()) > 0){
+                                            inVorherigenPaketenVerpackt += parseInt($('#Tmenge_PID' + IDaktuellesPaket + '_AID\\(' + AID + '\\)').val());
+                                        }
+                                        IDaktuellesPaket--;
+                                });
+                                Mengen = parseInt($('#auftragsMenge_' + AID).val()) - inVorherigenPaketenVerpackt - parseInt($('#gelieferteMenge_' + AID).val());
+                            }
+                            if (Mengen != austehendeMenge) {
+                                austehendeMenge = " (von " + austehendeMenge.toString() + ") ";
+                            } else {
+                                austehendeMenge = "";
+                            }
+                            Liste += '<tr><td>' + Mengen + austehendeMenge + ' ' + $('#artikelname_' + index).val() + ' ' + $('#artikelArt_' + index).val() + ' </td></tr>';
+                        }
+
+                        if (parseInt($('#Tmenge_PID' + id + '_AID\\(' + AID + '\\)').val()) > 0) {
+                            index++;
+                            var austehendeMenge = parseInt($('#auftragsMenge_' + AID).val()) - parseInt($('#gelieferteMenge_' + AID).val());
+                            if (austehendeMenge != parseInt($('#Tmenge_PID' + id + '_AID\\(' + AID + '\\)').val())) {
+                                austehendeMenge = " (von " + austehendeMenge.toString() + ") ";
+                            } else {
+                                austehendeMenge = "";
+                            }
+                            Liste += '<tr><td>' + parseInt($('#Tmenge_PID' + id + '_AID\\(' + AID + '\\)').val()) + austehendeMenge + ' ' + $('#artikelname_' + index).val() + ' ' + $('#artikelArt_' + index).val() + ' </td></tr>';
+                        }
+                    });
+                    $('#labelMesseArtikel').html(
+                       '<tr><th>@Model.messe.Name</th></tr>' + '<tr><th></th></tr>' + Liste
+                   );
+                }
+                $('#PacketLabelScreen').data('ids', id).dialog("open");
+            }
+        }
+    });
+
+
+
+    $('#PacketLabelScreen').dialog({
+        autoOpen: false,
+        width: 900,
+        height: 500,
+        resizable: true,
+        title: "Label",
+        buttons: {
+            'Drucken': function () {
+                PaketAbschliessen($(this).data('ids'));
+                $('#KundeLabelPrint').html("");
+                $('#KundeLabelPrint').html($('#KundeLabelScreen').html());
+                $('#labelMesseArtikelPrint').html("");
+
+                $('#labelMesseArtikelPrint').html($('#labelMesseArtikel').html());
+                @*$('#labelMesseArtikelPrint').html(
+                    '<tr><th>@Model.messe.Name</th></tr>'
+                        @foreach(var artikel in Model.Auftragsmengen){
+                    <tr><td>- @artikel.menge @artikel.artikel.artikelart.Art  @artikel.artikel.Name </td></tr>
+                    }
+                );*@
+                $(this).dialog('close');
+                $('.packliste').attr('class', 'hidden');
+                window.print();
+                //$('.hidden').attr('class', 'packliste');
+                //$('.disalbeLayer').hide();
+            },
+            'Schließen': function () {
+                $(this).dialog('close');
+                $('.disalbeLayer').hide();
+            }
+        }
+    });
+
+    $('#waitForData').dialog({
+        autoOpen: false,
+        width: 400,
+        height: 400,
+        modal: true,
+        resizable: false,
+        title: "Paketpreis und Paketnummer werden ermittelt",
+        buttons: {
+            'Ok': function () {
+                $(this).dialog('close');
+            }
+        }
+    });
+
+    function setPaketPriceAndPketnummer(id) {
+        var counter = 0;
+        $('#waitForData').html("");
+        $('#waitForData').append(
+            '<img src="/images/ajax_loader_orange_256.gif" style="min-height:100PX;min-width:100PX">'
+        );
+        $('#waitForData').dialog('open');
+        $(".ui-dialog-buttonpane").hide();
+        $(".ui-button-text").hide();
+        var tid = setInterval(function () {
+            counter++;
+            if (counter == 9) {
+                clearInterval(tid);
+                $('#waitForData').html("");
+                $('#waitForData').append(
+                    '<h3>Paketpreis und Paketnummer müssen manuell aus Easylog ausgelesen werden</h3>'
+                );
+                $(".ui-button-text").show();
+                $(".ui-dialog-buttonpane").show();
+                PaketAbschliessen(id);
+                $('#Tb_Pn_' + id).val('');
+                $('#Tb_Pr_' + id).val('');
+                $('#Tb_Pn_' + id).removeAttr('readonly');
+                $('#Tb_Pr_' + id).removeAttr('readonly');
+                $('.disalbeLayer').hide();
+            }
+
+            $.ajax({
+                url: '@Url.Action("PreisUndPaketnummerAuslesen", "Werbemittelverwaltung")',
+                type: 'POST',
+                dataType: 'json',
+                cache: false,
+                success: function (PreisUndPaketnummer) {
+                    if (PreisUndPaketnummer != 'false') {
+                        var endindex = PreisUndPaketnummer.indexOf("&");
+                        var Preis = PreisUndPaketnummer.substring(0, endindex);
+                        var Paketnummer = PreisUndPaketnummer.substring(endindex + 1, PreisUndPaketnummer.length);
+                        $('#Tb_Pr_' + id).val(Preis);
+                        $('#Tb_Pn_' + id).val(Paketnummer);
+                        clearInterval(tid);
+                        $('#waitForData').dialog('close');
+                        PaketAbschliessen(id);
+                        $(".ui-button-text").show();
+                        $(".ui-dialog-buttonpane").show();
+                        $('.disalbeLayer').hide();
+                    } else {
+                        $('.disalbeLayer').hide();
+                    }
+                },
+                statusCode: {
+                    404: function (content) { alert('cannot find resource'); },
+                    505: function (content) { alert('internal server error'); }
+                },
+                error: function (req, status, errorObj) {
+                    $('.disalbeLayer').hide();
+                }
+            });
+        }
+        , 2200
+        );
+    }
+
+    function checkRefresh() {
+        if ($('#refresh').val() == "") {
+            $('#refresh').val('1');
+        } else {
+            $('.CBMenge').prop('checked', false);
+            $('.CBMenge').removeAttr('disabled');
+            $('.BKMRechnung').removeAttr('disabled');
+            $('.BKMRechnung').prop('checked', false);
+            $('.TBMenge').val('0');
+            $('.BtnMenge').removeAttr('disabled');
+            $('.Btn_addPaket').attr('disabled', 'disabled');
+            $('.Btn_De').removeAttr('disabled');
+            $('.Tb_Ge').val('0');
+            $('.Tb_Ge').removeProp('readonly');
+            $('.Tb_Pr').val('0');
+            $('.Tb_Pr').removeProp('readonly');
+            $('.Tb_Pn').val('0');
+            $('.Tb_Pn').removeProp('readonly');
+            $('.Dd_Pa').removeAttr('disabled');
+            $('.Dd_Pa').removeAttr('readonly');
+            $('.Dd_Pa').val('0');
+            $('.Btn_Ett').prop('disabled', 'disabled');
+            $(".Btn_Ab").removeAttr('disabled');
+            sollGewicht = 0;
+        }
+    }
+
+    $('.navlink').on('click', function (e) {
+        e.preventDefault();
+        var url = $(this).prop('href');
+        $('<div></div>').appendTo('body').html('<div><h3 style="margin-top:20PX;text-align:center">Sind Sie Sicher, dass Sie die Seite verlassen möchten!</h3></div>')
+                       .dialog({
+                           autoOpen: true,
+                           width: 700,
+                           height: 250,
+                           resizable: true,
+                           title: 'Sicherheitsabfrage',
+                           buttons: {
+                               'Ja': function (e) {
+                                   window.location.href = url;
+                                   $(this).dialog('close');
+                               },
+                               'Nein': function (e) {
+                                   $(this).dialog('close');
+                                   Fertig = false;
+
+                               }
+                           }
+                       });
+
+    });
+
+</script> 

@@ -1,0 +1,131 @@
+﻿@model ICollection<WPMAsignmentHandling.Models.Messe>
+
+@{
+    ViewBag.Title = "Messeverwaltung"; string suchtext = "";
+    if (Session["SuchtextMesse"] != null)
+    {
+        suchtext = Session["SuchtextMesse"].ToString();
+    }
+}
+
+@section Ueberschrift{
+   Messeverwaltung
+}
+<div class="appMainArea">
+    <div class="mainFunctions">
+        <table>
+            @using (Ajax.BeginForm("Suchen", "Messeverwaltung", new AjaxOptions
+            {
+                OnBegin = "showLoading",
+                OnSuccess = "hideLoading",
+                InsertionMode = InsertionMode.Replace,
+                UpdateTargetId = "Messeliste"
+            }))
+            {
+                <tr>
+                    <td>
+                        <input type="text" id="FilterEins" name="FilterEins" class="extralarge" value="@suchtext" />
+                    </td>
+                    <td>
+                        <input type="submit" value="Suchen" id="BtnMessesuche" />
+                    </td>
+                </tr>
+            }
+        </table>
+        <div id="Messeliste" class="Auflistung">
+            @Html.Partial("Messeliste")
+        </div>
+    </div>
+</div>
+<div class="Buttons">
+    @using (Html.BeginForm("MesseBearbeiten", "Messeverwaltung", FormMethod.Post))
+    {
+             <table >
+                 <tr>
+                     <td>
+                         <input type="hidden" id="MesseID" name="MesseID" value="0" />
+                       <input type="submit" value="Messe Anlegen" name="Anlegen" id="MesseAnlegen" class="activ" disabled="disabled"/>
+                     </td>
+                     <td>
+                       <input type="submit" value="Messedaten Ändern" name="DatenAendern" id="DatenAendern" class="activ" disabled="disabled"/>
+                     </td>
+                     <td>
+                       <input type="submit" value="Details Anzeigen" name="MesseDetails" id="MesseDetails" class="activ" disabled="disabled"/>
+                     </td>
+                     <td>
+                         @Html.ActionLink("Rückläufer abrechnen", "Ruecklaeufer", "Messeverwaltung")
+                     </td>
+                     @*<td>
+                         <input type="button" value="Messe Löschen" name="MesseLoeschen" id="MesseLoeschen" class="activ" disabled="disabled" />
+                     </td>*@
+                 </tr>
+             </table>
+    }
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Messeliste").on('change','input#MesseAuswahl',function () {
+            var MesseID = parseInt($(this).val());
+            $('#MesseID').val(MesseID);
+            $('#DatenAendern').removeAttr('disabled', 'disabled');
+            $('#MesseDetails').removeAttr('disabled', 'disabled');
+            $('#MesseLoeschen').removeAttr('disabled', 'disabled');
+            var count = 0;
+            $('#MesselisteTablle tr').each(function () {
+                count++;
+                if (count % 2 == 0) {
+                    $(this).attr('class', 'grey');
+                } else {
+                    $(this).attr('class', 'white');
+                }
+            });
+            $('#MesseRadio_' + MesseID).attr('class', 'green');
+        });
+
+        $('#BtnMessesuche').click(function () {
+            $('#MesseAnlegen').removeAttr('disabled', 'disabled');
+            $('#DatenAendern').attr('disabled', 'disabled');
+            $('#MesseDetails').attr('disabled', 'disabled');
+        });
+
+        $('#MesseLoeschen').click(function () {
+            alert($('#MesseID').val());
+            $('<div></div>').appendTo('body').html('<div><h3 style="margin-top:50PX;text-align:center">Soll die Messe wirklich gelöscht werden?</h2></div>')
+            .dialog({
+                autoOpen: true,
+                width: 700,
+                height: 250,
+                resizable: true,
+                title: 'Sicherheitsabfrage',
+                buttons: {
+                    'Ja': function (e) {
+                        $(this).dialog('close');
+                        window.location.href = "/Messeverwaltung/MesseLoeschen?MesseID="+$('#MesseID').val();
+                    },
+                    'Nein': function (e) {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+        });
+
+        $("#FilterEins").keypress(function () {
+
+            $(this).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Messeverwaltung/AutocompleteMesse",
+                        dataType: "Json",
+                        data: {
+                            term: request.term,
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                }, delay: 200
+            });
+        });
+    });
+</script>

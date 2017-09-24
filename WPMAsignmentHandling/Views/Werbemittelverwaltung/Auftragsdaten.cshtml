@@ -1,0 +1,106 @@
+﻿@model WPMAsignmentHandling.Models.Werbemittelauftrag
+
+
+@{int WMAid = 0; string Kennzeichen = ""; string Bemerkung = ""; string MailText = "";
+    WPMAsignmentHandling.Models.Messe messe = null;
+    ICollection<WPMAsignmentHandling.Models.Artikel> Artikel = ViewBag.ArtikelAllgemein;
+    ViewContext.Controller.ViewBag.ArtikelAllgemein = ViewBag.ArtikelAllgemein;
+    DateTime erstellungsdatum = DateTime.Now; DateTime bestelldatum = DateTime.Now; string AktivierungDateneingabe = "";
+    string isLandesmesseauftrag = "false";
+}
+
+@if (Model != null)
+{
+    WMAid = Model.WerbemittelauftragID;
+    Kennzeichen = Model.Kennzeichnung;
+    Bemerkung = Model.Bemerkung;
+    MailText = Model.Auftragsmailtext;
+    messe = Model.messe;
+    erstellungsdatum = Model.Erstellungsdatum;
+    bestelldatum = Model.Bestelldatum;
+    AktivierungDateneingabe = "display:none";
+    isLandesmesseauftrag = Model.isLandesmesseauftrag.ToString();
+    if (Model.isLandesmesseauftrag)
+    {
+        ViewData["isLandesmesse"] = "true";
+    }
+}
+
+
+    @Html.HiddenFor(model => Model.WerbemittelauftragID)
+    <input type="hidden" id="Kennzeichnung" name="Kennzeichnung" value="@Kennzeichen" />
+        <input type="hidden" id="isLandesmesseauftrag" name="isLandesmesseauftrag" value="@isLandesmesseauftrag" />
+        <input type="hidden" value="" name="XMLAuftragDateinamen" id="XMLAuftragDateinamen" />
+        <input type="hidden" value="@DateTime.Now.ToString()" name="startAnlegen" id="startAnlegen" />
+        <table>
+            <tr>
+                <th>
+                    Bestelldatum
+                </th>
+                <td>
+                    <input data-val="true" data-val-required="Kein Bestelldatum eingetragen" id="Bestelldatum" name="Bestelldatum" type="text" value="@bestelldatum.ToString("dd.MM.yyyy")" class="medium" />
+                    <span class="field-validation-valid" data-valmsg-for="Bestelldatum" data-valmsg-replace="true"></span>
+                </td>
+                <td style="width:30PX"></td>
+                <th>Erstellungsdatum: </th>
+                <td>@erstellungsdatum.ToString("dd.MM.yyyy")</td>
+            </tr>
+        </table>
+        <hr />
+
+
+        <table>
+            <tr>
+                <th>
+                    @Html.DisplayName("Messe Suchen")
+                </th>
+                <th>
+                    <input type="text" id="SBMesse" name="SBMesse" data-autocomplete="@Url.Action("AutoSearchMesseKunde", "Werbemittelverwaltung")" class="extralarge" />
+                </th>
+                <th>
+                    <input type="button" name="MesseSuchen" id="MesseSuchen" value="Wählen" />
+                </th>
+            </tr>
+        </table>
+        <div class="Standarddaten" id="Messedetails">
+            @Html.Partial("Messedetails", messe)
+        </div>
+        <hr style="clear:both" />
+        <table>
+            <tr>
+                <th>
+                    @Html.DisplayName("Kunde Suchen")
+                </th>
+
+                <th>
+                    <input type="text" id="SBKunde" name="SBKunde" data-autocomplete="@Url.Action("AutoSearchKunde", "Werbemittelverwaltung")" class="extralarge" />
+                </th>
+                <th>
+                    <input type="button" name="KundeSuchen" id="KundeSuchen" value="Wählen" />
+                </th>
+                @if (Model == null)
+                {
+                    <th>
+                        <input type="button" name="KundeAnlegen" id="KundeAnlegen" value="Kunde Anlegen" />
+                    </th>
+                }
+            </tr>
+        </table>
+        @Html.Partial("Adressangaben", Model)
+        <hr />
+        <table>
+            <tr>
+                <th>
+                    Bemerkung
+                </th>
+                <td>
+                    <textarea id="BemerkungArea" style="width:600px; height:60px">@Bemerkung</textarea>
+                    <input type="hidden" id="Bemerkung" name="Bemerkung" />
+                    <input type="hidden" id="Auftragsmailtext" name="Auftragsmailtext" value="@MailText" />
+                </td>
+            </tr>
+        </table>
+        <hr />
+        @Html.Partial("Auftragsartikel", Model)
+        <hr />
+        

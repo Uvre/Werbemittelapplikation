@@ -1,0 +1,290 @@
+﻿@model ICollection<WPMAsignmentHandling.Models.Messe>
+@{WPMAsignmentHandling.Models.Messe messe = (WPMAsignmentHandling.Models.Messe)ViewData["Marketingmesse"];}
+    <table style="margin:30PX 0 30PX 0" >
+    <thead>
+        <tr>
+            <th colspan="3">
+                "Marketingartikel" Lieferungen zur Landesmesse
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+            
+            </td>
+            <td>
+                
+                <input type="radio" name="MesseAuswahl" id="MesseAuswahl" value="@messe.MesseID" />
+            </td>
+            <td>
+                @messe.Name
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+    <table id="MesselisteTablle" class="AuflistungTabelle">
+    <thead>
+        <tr>
+            <th>
+
+            </th>
+            <th>
+            </th>
+            <th>
+                @Html.DisplayName("Status")
+            </th>
+            <th>
+                @Html.DisplayName("Dringlichkeit")
+            </th>
+            <th>
+                @Html.DisplayName("Name")
+            </th>
+            <th>
+                @Html.DisplayName("Startdatum")
+            </th>
+            <th>
+                @Html.DisplayName("Enddatum")
+            </th>
+            <th>
+                @Html.DisplayName("Aktiv/Inaktiv")
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{int count = 0;}
+        @foreach (var item in Model)
+        {
+            if (!item.isLandesmesse) { 
+                count++;
+                string color = "white";
+                string backgroundActiv = "lightgreen"; string strAktiv = "Aktiv"; if (!item.Active) { backgroundActiv = "lightsalmon"; strAktiv = "Inaktiv"; }
+                if (count % 2 == 0)
+                {
+                    color = "grey";
+                }
+                <tr id="MesseRadio_@item.MesseID" class="@color">
+                    <td>
+                        @count
+                    </td>
+                    <td>
+                        <input type="radio" name="MesseAuswahl" id="MesseAuswahl" value="@item.MesseID.ToString()" />
+                    </td>
+                    @{ string status = ""; string dringlichkeit = ""; double days = 0;}
+
+
+                    @{days = Math.Ceiling((item.Startdatum - DateTime.Now).TotalDays);}
+
+                    @if (DateTime.Now <= item.Startdatum)
+                    {
+
+                        if (days <= 5)
+                        {
+                            if (item.RestmengenlisteVerschickt)
+                            {
+                                status = "Abbrechnung";
+                                dringlichkeit = "backgreen";
+                            }
+                            else
+                            {
+                                status = "Restmengeliste";
+                                dringlichkeit = "backred";
+                            }
+
+                        }
+                        else
+                        {
+                            status = "Bestellzeitraum";
+                            dringlichkeit = "backgreen";
+                        }
+                    }
+                    @if (DateTime.Now <= item.Enddatum && DateTime.Now > item.Startdatum)
+                    {
+                        if (item.RestmengenlisteVerschickt)
+                        {
+                            status = "Messeverlauf";
+                            dringlichkeit = "backgreen";
+                        }
+                        else
+                        {
+                            status = "Restmengeliste";
+                            dringlichkeit = "backred";
+                        }
+                    }
+                    @if (DateTime.Now > item.Enddatum)
+                    {
+
+
+                        if (days >= 2)
+                        {
+                            dringlichkeit = "backred";
+                            if (item.RestmengenlisteVerschickt)
+                            {
+                                status = "Abrechnung";
+                            }
+                            else
+                            {
+                                status = "Restmengenliste u. Abrechnung";
+                            }
+                        }
+                        if (days < 2)
+                        {
+                            dringlichkeit = "backgreen";
+                            if (item.RestmengenlisteVerschickt)
+                            {
+                                status = "Abrechnung";
+                            }
+                            else
+                            {
+                                dringlichkeit = "backred";
+                                status = "Restmengenliste";
+                            }
+                        }
+                        if (item.RestmengenlisteVerschickt && item.abgegrechnet)
+                        {
+                            status = "";
+                            dringlichkeit = "backgray";
+                        }
+                    }
+
+
+                    <td>
+                        @status
+                    </td>
+                    <td class="@dringlichkeit">
+                        @if (DateTime.Now < item.Startdatum)
+                        {
+                            double dayst = Math.Ceiling((item.Startdatum - DateTime.Now).TotalDays);
+                            @Html.DisplayName(dayst + " Tage")
+                        }
+                        else
+                        {
+                            if (DateTime.Now <= item.Enddatum)
+                            {
+                                <span>Messezeitraum</span>
+                            }
+                            else
+                            {
+                                <span>Messe beendet</span>
+                            }
+                        }
+
+                    </td>
+                    <td style="text-align:left">
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Startdatum)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Enddatum)
+                    </td>
+                    <td>
+                        <span id="MesseAktivSpan_@item.MesseID" style="padding:1px 10px 1px 1px; background-color:@backgroundActiv"><input type="checkbox" id="MesseActive_@item.MesseID" class="MesseActive" checked="@item.Active" style="margin:10PX 0PX 10PX 10PX" /> <label id="strAktiv_@item.MesseID">@strAktiv</label></span>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>    
+
+<script>
+    $.tablesorter.addParser({
+        // set a unique id 
+        id: 'DateSorter',
+        is: function (s) {
+            // return false so this parser is not auto detected 
+            return false;
+        },
+        format: function (s) {
+            s = s.replace(/\D/g, "");
+            var d = s.substring(0, 2);
+            var m = s.substring(2, 4);
+            var y = s.substring(4, 8);
+            var bla = parseInt(y + m + d);
+            return bla;
+        },
+        // set type, either numeric or text 
+        type: 'numeric'
+    });
+
+    $.tablesorter.addParser({
+        // set a unique id 
+        id: 'TageBeginnSorter',
+        is: function (s) {
+            // return false so this parser is not auto detected 
+            return false;
+        },
+        format: function (s) {
+            s = s.replace(/\D/g, "");
+            if (s == "") {
+                s = 5000;
+            }
+            return s;
+        },
+        // set type, either numeric or text 
+        type: 'numeric'
+    });
+
+    $(".AuflistungTabelle").tablesorter(
+        {
+        headers: {
+            3: {
+                sorter: 'TageBeginnSorter'
+            }
+            ,
+            5: {
+                sorter: 'DateSorter'
+            }
+            ,
+            6:{
+                sorter: 'DateSorter'
+            }
+        }
+    });
+
+    
+    $(".AuflistungTabelle").bind("sortEnd", function () {
+        var i = 0;
+        $(".AuflistungTabelle tr").each(function (i) {
+            $(this).find('td').eq(0).text(i);
+        });
+    });
+    setTableHeaderSize();
+
+    $('.MesseActive').click(function () {
+        var active = false;
+        var BTid = $(this).attr("id");
+        var startindex = BTid.lastIndexOf("_") + 1;
+        var id = BTid.substr(startindex, BTid.length);
+        if ($(this).is(':checked')) {
+            var active = true;
+        }
+        var MesseID = id;
+
+        $.ajax({
+            url: "/Messeverwaltung/setMesseActivity",
+            type: 'Post',
+            async: false,
+            cache: false,
+            timeout: 30000,
+            data: { MesseID: MesseID, active: active },
+            error: function () {
+            },
+            success: function (msg) {
+                if (msg) {
+                    if (active) {
+                        $('#MesseAktivSpan_' + id).css("background-color", "lightgreen");
+                        $('#strAktiv_' + id).text("Aktiv");
+                    } else {
+                        $('#MesseAktivSpan_' + id).css("background-color", "lightsalmon");
+                        $('#strAktiv_' + id).text("Inaktiv");
+                    }
+                } else {
+
+                }
+            }
+        });
+    });
+</script>

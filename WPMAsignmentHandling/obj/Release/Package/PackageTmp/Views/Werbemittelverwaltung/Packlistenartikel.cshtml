@@ -1,0 +1,122 @@
+﻿@model ICollection<WPMAsignmentHandling.Models.Werbemittelauftrag>
+
+@{var Artikel = new List<WPMAsignmentHandling.Models.Artikel>();}
+@if(Model != null && Model.Count() >0)
+{
+    foreach(var auftrag in Model){
+        foreach(var artikel in auftrag.Auftragsmengen){
+                if(Artikel.Count == 0){
+                    Artikel.Add(artikel.artikel);
+                }else{
+                    if(Artikel.SingleOrDefault(r => r.ArtikelID == artikel.artikel.ArtikelID) == null){
+                        Artikel.Add(artikel.artikel);
+                    }
+                }
+        }
+    }
+}
+
+
+
+<div id="shit"> 
+    <h3>Packliste</h3>
+    <table>
+        <tr>
+            <th>
+                Artikelnummer
+            </th>
+            <th>
+                Messertttttt
+            </th>
+            <th>
+                Artikelart
+            </th>
+            <th>
+                Artikelname
+            </th>
+            <th>
+                Sprache
+            </th>
+            <th>
+                Format
+            </th>
+            <th>
+                Lagerplatz
+            </th> 
+            <th>
+                Bestand
+            </th>           
+            <th>
+                Menge
+            </th>
+        </tr>                                
+            @if (Model != null)
+            {
+                foreach (var item in Artikel)
+                {
+                    int menge = 0;
+                    foreach (var auftrag in Model)
+                    {
+                            foreach (var artikel in auftrag.Auftragsmengen)
+                            {
+                                if (artikel.artikel.ArtikelID == item.ArtikelID)
+                                {
+                                    menge += artikel.menge - artikel.gelieferteMenge;
+                                }
+                            }
+                    }
+                        if(menge>0){
+                            <tr>
+                                <td>
+                                    @item.Artikelnummer
+                                </td>
+                                @if(item.MesseartikelAllgemein){
+                                    <td>
+                                        Allgemein
+                                    </td>
+                                }else{
+                                    <td>
+                                        @item.Messe.Name
+                                    </td>
+                                }
+                                    <td style="text-align:left">
+                                        @item.artikelart.Art
+                                    </td>
+                                    <td>
+                                        @item.Name
+                                    </td>
+                                    <td>
+                                        @item.Sprache.Sprache
+                                    </td>
+                                    <td>
+                                        @item.Format
+                                    </td>
+                                    <td>
+                                        @item.Lagerplatz
+                                    </td>
+                                    <td>
+                                        @item.Bestand
+                                    </td>
+                                    <td>
+                                        @menge
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" />
+                               </td>
+                            </tr>        
+                        }
+                }
+            }else{
+                <tr>
+                    <td>
+                        Keine Auftäge ausgewählt!
+                    </td>
+                </tr>
+            }
+    </table>
+</div>
+
+    
+    
+
+

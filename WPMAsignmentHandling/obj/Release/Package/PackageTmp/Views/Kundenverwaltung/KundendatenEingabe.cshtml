@@ -1,0 +1,178 @@
+﻿@model WPMAsignmentHandling.Models.Kunde
+
+
+@{
+    ViewBag.Title = "Kundenverwaltung";
+}
+
+@{string ButtonValue = "Anlegen"; string heading = "Kunde Anlegen"; string action = HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString();
+  DateTime Erstellungsdatum = DateTime.Now; WPMAsignmentHandling.Models.Kontakdaten Hauptadresse = null;
+  string Land = ""; string Name = "";}
+    @if (action == "KundeSpeichern" || action == "Aendern")
+    {
+        ButtonValue = "Speichern";
+        heading = "Kundendaten Ändern";
+        Erstellungsdatum = Model.Erstellungsdatum;
+        Hauptadresse = Model.Hauptadresse;
+        Name = Model.Name;
+        if (Model.Hauptadresse.Land != null)
+        {
+            Land = Model.Hauptadresse.Land.land;
+        }
+        
+    }
+    else
+    {
+        Hauptadresse = new WPMAsignmentHandling.Models.Kontakdaten { Name="",Name2="",Name3="",Strasse="", PLZ="",Ort="", Telefon="", EMail=""};
+    }
+
+
+@section Ueberschrift{
+   @heading
+}
+@using (Html.BeginForm("KundeSpeichern", "Kundenverwaltung", FormMethod.Post, new { id = "KundenDateneingabe" }))
+{
+    <div class="appMainArea">
+        @if (Model != null && Model.KundeID != null)
+        {
+            @Html.HiddenFor(model => model.KundeID)
+        }
+        @Html.HiddenFor(model => Hauptadresse.KontakdatenID)
+        <table>
+            <tr>
+                <th>
+
+                    @Html.DisplayNameFor(model => Hauptadresse.Name)
+                    @Html.HiddenFor(model => Model.Name)
+                </th>
+                <td>
+                    <input data-val="true" data-val-length="nur 32 möglich" data-val-length-max="32" data-val-required="Kein Name eingetragen!" id="Hauptadresse_Name" name="Hauptadresse.Name" type="text" value="@Hauptadresse.Name" class="large" />
+                    <span class="field-validation-valid" data-valmsg-for="Hauptadresse.Name" data-valmsg-replace="true"></span>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => Hauptadresse.Name2)
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Hauptadresse.Name2, new {@class = "large" })
+                    @Html.ValidationMessageFor(model => Hauptadresse.Name2)
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => Hauptadresse.Name3)
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Hauptadresse.Name3, new { @class = "large" })
+                    @Html.ValidationMessageFor(model => Hauptadresse.Name3)
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => Hauptadresse.Strasse)
+                </th>
+                <td>
+                    <input data-val="true" data-val-length="nur 32 möglich" data-val-length-max="32" data-val-required="Keine Straße eingetragen!" id="Hauptadresse_Strasse" name="Hauptadresse.Strasse" type="text" value="@Hauptadresse.Strasse" class="large" />
+                    <span class="field-validation-valid" data-valmsg-for="Hauptadresse.Strasse" data-valmsg-replace="true"></span>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => Hauptadresse.PLZ)
+                </th>
+                <td>
+                    <input data-val="true" data-val-length="nur 32 möglich" data-val-length-max="32" data-val-required="Keine PLZ eingetragen" id="Hauptadresse_PLZ" name="Hauptadresse.PLZ" type="text" value="@Hauptadresse.PLZ" class="small" />
+                    <span class="field-validation-valid" data-valmsg-for="Hauptadresse.PLZ" data-valmsg-replace="true"></span>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => Hauptadresse.Ort)
+                </th>
+                <td>
+                    <input data-val="true" data-val-length="nur 32 möglich" data-val-length-max="32" data-val-required="Kein Ort eingetragen!" id="Hauptadresse_Ort" name="Hauptadresse.Ort" type="text" value="@Hauptadresse.Ort" class="large" />
+                    <span class="field-validation-valid" data-valmsg-for="Hauptadresse.Ort" data-valmsg-replace="true"></span>
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => Hauptadresse.Land)
+                </th>
+                <td>
+                    <input data-val="true" data-val-length="nur 32 möglich" data-val-length-max="32" data-val-required="Kein Land eingetragen!" type="text" value="@Land" id="Land" name="Land" />
+                    <span class="field-validation-valid" data-valmsg-for="Land" data-valmsg-replace="true"></span>
+                </td>
+                @if (ViewBag.ErrLand != null)
+                {
+                    <td class="redbig">
+                        Land konnte nicht gefunden werden!
+                    </td>
+                }
+            </tr>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => Hauptadresse.Telefon)
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Hauptadresse.Telefon, new { @class = "large" })
+                    @Html.ValidationMessageFor(model => Hauptadresse.Telefon)
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => Hauptadresse.EMail)
+                </th>
+                <td>
+                    @Html.TextBoxFor(model => Hauptadresse.EMail, new { @class = "large" })
+                    @Html.ValidationMessageFor(model => Hauptadresse.EMail)
+                    <input data-val="true" id="Erstellungsdatum" name="Erstellungsdatum" type="hidden" value="@Erstellungsdatum" />
+                </td>
+            </tr>
+        </table>
+    </div>
+        <div class="Buttons">
+            <table >
+                <tr>
+                    <td>
+                        <input type="submit" value="@ButtonValue" />
+                    </td>
+                    <td>
+                        @Html.ActionLink("Abbrechen", "Index", "Kundenverwaltung")
+                    </td>
+                </tr>
+            </table>
+        </div>
+        }
+
+<script type="text/javascript">
+    //$('#KundenDateneingabe').on('submit', function (e) {
+        
+    //    //e.preventDefault();
+        
+    //    //alert($('#Hauptadresse_Name').valid());
+    //    //alert($('#KundenDateneingabe').valid());
+    //});
+    $('#Hauptadresse_Name').keyup(function () {
+         $('#Name').val($(this).val());
+    });
+
+    $(document).ready(function () {
+        $("#Land").keypress(function () {
+            $(this).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Kundenverwaltung/AutocompleteLand',
+                        dataType: "Json",
+                        data: {
+                            term: request.term,
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>

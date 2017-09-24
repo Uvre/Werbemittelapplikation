@@ -1,0 +1,120 @@
+﻿@model WPMAsignmentHandling.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Registerung";
+}
+
+@section Ueberschrift{
+    Registrieren
+}
+
+
+<div class="appMainArea">
+    @using (Html.BeginForm())
+    {
+        //@Html.AntiForgeryToken()
+        
+        @Html.ValidationSummary()
+        <fieldset style="background-color:white">
+            <legend>Registrieren</legend>
+            @if (!User.Identity.IsAuthenticated)
+            {
+                if (ViewBag.Registered != null)
+                {
+                    <br />
+                    <span class="successMessage">Sie wurden erfolgreich als Benutzer registriert. Um ihre Ihre Emailadresse zu bestätigen und zum Abschluss der Registrierung wurde ein Email an an die Adresse (@ViewBag.Email) versandt. Überprüfen Sie bitte ihren Posteingang ggf. Spamordner.</span>
+                    <br />
+                    <br /><a href="/Home">Zurück zum Login</a>
+                }
+                else
+                {
+                    <table>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Vorname)
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.Vorname, new { @class = "large" })
+                            </td>
+                            <td>
+                                @Html.ValidationMessageFor(m => m.Vorname)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Nachname)
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.Nachname, new { @class = "large" })
+                            </td>
+                            <td>
+                                @Html.ValidationMessageFor(m => m.Nachname)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Email)
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.Email, new { @class = "large" })
+                            </td>
+                            @if (ViewBag.EmailErr != null && ViewBag.EmailErr)
+                            {
+                                <td>
+                                    <span class="field-validation-error">Nicht erlaubte Mailadresse</span>
+                                </td>
+                            }
+                            <td>
+                                @Html.ValidationMessageFor(m => m.Email)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Telefonnummer)
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.Telefonnummer, new { @class = "large" })
+                            </td>
+                            <td>
+                                @Html.ValidationMessageFor(m => m.Telefonnummer)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.Password)
+                            </td>
+                            <td>
+                                @Html.PasswordFor(m => m.Password, new { @class = "large" })
+                            </td>
+                            <td>
+                                @Html.ValidationMessageFor(m => m.Password)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                @Html.LabelFor(m => m.ConfirmPassword)
+                            </td>
+                            <td>
+                                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "large" })
+                            </td>
+                            <td>
+                                @Html.ValidationMessageFor(m => m.ConfirmPassword)
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="ButtonsAnmeldung">
+                        <input type="submit" id="MesseRegister" name="MesseRegister" value="Jetzt Registrieren" />
+                        <a href="/Home">Zurück zum Login</a>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Sie sind bereits eingelogt!</p>
+            }
+        </fieldset>
+    
+    }
+</div>
+    @section Scripts {
+        @Scripts.Render("~/bundles/jqueryval")
+    }

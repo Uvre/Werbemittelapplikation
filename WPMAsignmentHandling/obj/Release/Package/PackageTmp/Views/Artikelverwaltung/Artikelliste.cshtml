@@ -1,0 +1,176 @@
+﻿@model ICollection<WPMAsignmentHandling.Models.Artikel>
+
+
+    <table id="ArtikelTabelle" class="AuflistungTabelle">
+        <thead>
+            <tr>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+                <th>
+
+                </th>
+                <th>
+                    @Html.DisplayName("Artikelnummer")
+                </th>
+                <th>
+                    @Html.DisplayName("Messe")
+                </th>
+                <th>
+                    @Html.DisplayName("Artikelart")
+                </th>
+                <th>
+                    @Html.DisplayName("Name")
+                </th>
+                <th>
+                    @Html.DisplayName("Sprache")
+                </th>
+                <th>
+                    @Html.DisplayName("Format")
+                </th>
+                <th>
+                    @Html.DisplayName("Gewicht")
+                </th>
+                <th>
+                    @Html.DisplayName("Lagerplatz")
+                </th>
+                <th>
+                    @Html.DisplayName("Bestand")
+                </th>
+                <th>
+                    @Html.DisplayName("Aktiv/Inaktiv")
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @{int count = 0;}
+            @foreach (var item in Model)
+            {
+                count++;
+                string color = "white";
+                if (count % 2 == 0)
+                {
+                    color = "grey";
+                }
+                string backgroundActiv = "lightgreen"; string strAktiv = "Aktiv"; if (!item.Active) { backgroundActiv = "lightsalmon"; strAktiv = "Inaktiv"; }
+
+                <tr id="ArtikelLine_@item.ArtikelID" class="@color">
+                    <td>
+                        @count
+                        <input type="hidden" id="ArtikelIDLine" value="@item.ArtikelID" />
+                    </td>
+                    <td>
+                        <input type="radio" name="ArtikelAuswahl" id="ArtikelAuswahl" value="@item.ArtikelID.ToString()" />
+                    </td>
+                    <td>
+                        @if (item != null && !String.IsNullOrEmpty(item.Bildpfad) && @System.IO.File.Exists(Server.MapPath("~/images/Artikelbilder/" + item.Bildpfad)))
+                        {
+                            <img id="Artikelbild" onmouseover="showDivImageDisplay(this);" onmouseout="hideDivImageDisplay();" src="~/images/Artikelbilder/@item.Bildpfad" style="max-height:25PX; height:25PX;">
+                        }
+                        else
+                        {
+                            <img id="Artikelbild" class="NoPicture" onmouseover="showDivImageDisplay(this);" onmouseout="hideDivImageDisplay();" src="~/images/NoPicture.png" style="max-height:25PX; height:25PX;">
+                        }
+                    </td>
+                    <td>
+                        @item.Artikelnummer
+                    </td>
+                    @if (item.Messe != null)
+                    {
+                        <td>
+                            <b> @Html.DisplayFor(modelItem => item.Messe.Name) </b>
+                        </td>
+                    }
+                    @if (item.MesseartikelAllgemein)
+                    {
+                        <td>
+                            <b>Allgemein</b>
+                        </td>
+                    }
+                    <td>
+                        @Html.DisplayFor(modelItem => item.artikelart.Art)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @item.Sprache.Sprache
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Format)
+                    </td>
+                    <td>
+                        @item.Gewicht g
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Lagerplatz)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Bestand)
+                    </td>
+                    <td>
+                        <span id="ArtikelAktivSpan_@item.ArtikelID" style="padding:1px 10px 1px 1px; background-color:@backgroundActiv"><input type="checkbox" id="ArtikelActive_@item.ArtikelID" class="ArtikelActive" checked="@item.Active" style="margin:10PX 0PX 10PX 10PX" /> <label id="strAktiv_@item.ArtikelID">@strAktiv</label></span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+
+<script>
+    $(".AuflistungTabelle").tablesorter();
+    $(".AuflistungTabelle").bind("sortEnd", function () {
+        var i = 0;
+        $(".AuflistungTabelle tr").each(function (i) {
+            $(this).find('td').eq(0).text(i);
+        });
+    });
+
+    setTableHeaderSize();
+    $(window).resize(function () {
+        setTableHeaderSize();
+    })
+
+    $('#ArtikelTabelle').find('tr').click(function () {
+        var row = $(this).find('td:first');
+    });
+    
+    $('.ArtikelActive').click(function () {
+        var active = false;
+        var BTid = $(this).attr("id");
+        var startindex = BTid.lastIndexOf("_") + 1;
+        var id = BTid.substr(startindex, BTid.length);
+        if ($(this).is(':checked')) {
+            var active = true;
+        }
+        var ArtikelID = id;
+
+        $.ajax({
+            url: "/Artikelverwaltung/setArtikelActivity",
+            type: 'Post',
+            async: false,
+            cache: false,
+            timeout: 30000,
+            data: { artikelID: ArtikelID, active: active },
+            error: function () {
+            },
+            success: function (msg) {
+                if (msg) {
+                    if (active) {
+                        $('#ArtikelAktivSpan_'+id).css("background-color", "lightgreen");
+                        $('#strAktiv_'+id).text("Aktiv");
+                    } else {
+                        $('#ArtikelAktivSpan_'+id).css("background-color", "lightsalmon");
+                        $('#strAktiv_'+id).text("Inaktiv");
+                    }
+                } else {
+
+                }
+            }
+        });
+    });
+</script>

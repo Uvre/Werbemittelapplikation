@@ -1,0 +1,94 @@
+﻿@model ICollection<WPMAsignmentHandling.Models.Kunde>
+
+
+    <table id="KundenlisteTablle" class="AuflistungTabelle">
+        <thead>
+        <tr>
+            <th>
+
+            </th>
+            <th>
+
+            </th>
+            <th>
+                @Html.DisplayName("Name")
+            </th>
+            <th>
+                @Html.DisplayName("Name2")
+            </th>
+            <th>
+                @Html.DisplayName("Name3")
+            </th>
+             <th>
+                @Html.DisplayName("Straße")
+            </th>
+            <th>
+                @Html.DisplayName("Ort")
+            </th>
+            <th>
+                @Html.DisplayName("Land")
+            </th>
+            <th>
+                @Html.DisplayName("Telefon")
+            </th>
+             <th>
+                @Html.DisplayName("E-Mail")
+            </th>
+        </tr>
+        </thead>
+        <tbody style="overflow-y:auto">
+    @{int count = 0;}
+        @foreach(var item in Model)
+        {
+        count++;
+        string color = "white";
+        if (count % 2 == 0)
+        {
+            color = "grey";
+        }
+        <tr id="KundeRadio_@item.KundeID" class="@color">
+            <td>
+                @count
+            </td>
+            <td>
+                <input type="radio" name="KundeAuswahl" id="KundeAuswahl" value ="@item.KundeID.ToString()" />
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hauptadresse.Name2)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hauptadresse.Name3)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hauptadresse.Strasse)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hauptadresse.Ort)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hauptadresse.Land.land)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hauptadresse.Telefon)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Hauptadresse.EMail)
+            </td>
+        </tr>
+    }
+            </tbody>
+    </table>    
+
+<script>
+    $(".AuflistungTabelle").tablesorter();
+    $(".AuflistungTabelle").bind("sortEnd", function () {
+        var i = 0;
+        $(".AuflistungTabelle tr").each(function (i) {
+            $(this).find('td').eq(0).text(i);
+        });
+    });
+    setTableHeaderSize();
+</script>

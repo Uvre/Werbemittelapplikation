@@ -1,0 +1,885 @@
+﻿@model WPMAsignmentHandling.Models.Werbemittelauftrag
+
+
+@{
+    ViewBag.Title = "Werbemittelauftragsdaten";
+}
+
+
+
+@{int WMAid = 0; string Kennzeichen = ""; string Bemerkung = ""; string MailText = "";
+    WPMAsignmentHandling.Models.Messe messe = null;
+    ICollection<WPMAsignmentHandling.Models.Artikel> Artikel = ViewBag.ArtikelAllgemein;
+    ViewContext.Controller.ViewBag.ArtikelAllgemein = ViewBag.ArtikelAllgemein;
+    DateTime erstellungsdatum = DateTime.Now; DateTime bestelldatum = DateTime.Now; string AktivierungDateneingabe = "";
+    string isLandesmesseauftrag = "false";
+}
+
+@if (Model != null)
+{
+    WMAid = Model.WerbemittelauftragID;
+    Kennzeichen = " - " + Model.Kennzeichnung;
+    Bemerkung = Model.Bemerkung;
+    MailText = Model.Auftragsmailtext;
+    messe = Model.messe;
+    erstellungsdatum = Model.Erstellungsdatum;
+    bestelldatum = Model.Bestelldatum;
+    AktivierungDateneingabe = "display:none";
+    isLandesmesseauftrag = Model.isLandesmesseauftrag.ToString();
+    if (Model.isLandesmesseauftrag)
+    {
+        ViewData["isLandesmesse"] = "true";
+    }
+}
+
+
+
+@section Ueberschrift{
+    Eingabe/Änderung Auftragsdaten <label id="label_kennzeichen">@Kennzeichen</label>
+}
+
+<div id="DialogEinlesenXMLFiles">
+    <h3>XML-Auftragsdateien</h3>
+    <table id="XmlFilenameList" class="XmlFileList">
+        <thead>
+            @*<tr>
+                <th>XML-Auftragsdateien</th>
+            </tr>*@
+        </thead>
+        <tbody></tbody>
+    </table>
+    <h3>Dateiinhalt</h3>
+    <textarea id="XMLDateiInhalt"></textarea>
+    <h3>Einleseprotokoll</h3>
+    <textarea id="XMLEinleseProtokoll"></textarea>
+</div>
+
+
+<div class="appMainArea">
+    <div class="ButtonToplayer" style="@AktivierungDateneingabe">
+        <table>
+            <tr>
+                <td>
+                    <input type="button" id="OpenDialog" value="Auftragmail Einlesen" />
+                </td>
+                <td width="10PX"></td>
+                <td>
+                    <input type="button" id="OpenDialogDataMatrixBtn" value="Datamatrix Einlesen" />
+                </td>
+                <td width="10PX"></td>
+                <td>
+                    <input type="button" id="EinlesenXMLFilesBtn" value="Xml Auftrag Einlesen" />
+                </td>
+                <td width="10PX"></td>
+                <td>
+                    <input type="button" id="BtnManuellAnlegen" value="Manuel Anlegen" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="DisableLayer" style="@AktivierungDateneingabe"></div>
+    @using (Html.BeginForm("AuftragsdatenSpeichern", "Werbemittelverwaltung", FormMethod.Post, new { id = "AuftragAendern" }))
+        {
+        @Html.HiddenFor(model => Model.WerbemittelauftragID)
+        <input type="hidden" id="Kennzeichnung" name="Kennzeichnung" value="@Kennzeichen" />
+        <input type="hidden" id="isLandesmesseauftrag" name="isLandesmesseauftrag" value="@isLandesmesseauftrag" />
+        <input type="hidden" value="@DateTime.Now.ToString()" name="startAnlegen" id="startAnlegen" />
+        <table>
+            <tr>
+                <th>
+                    Bestelldatum
+                </th>
+                <td>
+                    <input data-val="true" data-val-required="Kein Bestelldatum eingetragen" id="Bestelldatum" name="Bestelldatum" type="text" value="@bestelldatum.ToString("dd.MM.yyyy")" class="medium" />
+                    <span class="field-validation-valid" data-valmsg-for="Bestelldatum" data-valmsg-replace="true"></span>
+                </td>
+                <td style="width:30PX"></td>
+                <th>Erstellungsdatum: </th>
+                <td>@erstellungsdatum.ToString("dd.MM.yyyy")</td>
+            </tr>
+        </table>
+        <hr />
+
+
+        <table>
+            <tr>
+                <th>
+                    @Html.DisplayName("Messe Suchen")
+                </th>
+                <th>
+                    <input type="text" id="SBMesse" name="SBMesse" data-autocomplete="@Url.Action("AutoSearchMesseKunde", "Werbemittelverwaltung")" class="extralarge" />
+                </th>
+                <th>
+                    <input type="button" name="MesseSuchen" id="MesseSuchen" value="Wählen" />
+                </th>
+            </tr>
+        </table>
+        <div class="Standarddaten" id="Messedetails">
+            @Html.Partial("Messedetails", messe)
+        </div>
+        <hr style="clear:both" />
+        <table>
+            <tr>
+                <th>
+                    @Html.DisplayName("Kunde Suchen")
+                </th>
+
+                <th>
+                    <input type="text" id="SBKunde" name="SBKunde" data-autocomplete="@Url.Action("AutoSearchKunde", "Werbemittelverwaltung")" class="extralarge" />
+                </th>
+                <th>
+                    <input type="button" name="KundeSuchen" id="KundeSuchen" value="Wählen" />
+                </th>
+                @if (Model == null)
+                {
+                    <th>
+                        <input type="button" name="KundeAnlegen" id="KundeAnlegen" value="Kunde Anlegen" />
+                    </th>
+                    }
+            </tr>
+        </table>
+        @Html.Partial("Adressangaben", Model)
+        <hr />
+        <table>
+            <tr>
+                <th>
+                    Bemerkung
+                </th>
+                <td>
+                    <textarea id="BemerkungArea" style="width:600px; height:60px" >@Bemerkung</textarea>
+                    <input type="hidden" id="Bemerkung" name="Bemerkung"/>
+                    <input type="hidden" id="Auftragsmailtext" name="Auftragsmailtext" value="@MailText" />
+                </td>
+            </tr>
+        </table>
+        <hr/>
+        @Html.Partial("Auftragsartikel", Model)
+        <hr />
+        
+        }
+</div>
+<div class="Buttons">
+    <table>
+        <tr>
+            <td>
+                <input type="button" id="submitbtn" value="Speichern" />
+            </td>
+            <td>
+                @Html.ActionLink("Abbrechen", "Index", "Werbemittelverwaltung")
+            </td>
+            <td style="min-width:30px"></td>
+            <td>
+                <input type="Button" id="BtnAuftragsmail" value="Mail/Datamatrix Anzeigen" />
+            </td>
+            <td style="min-width:30px"></td>
+            <td>
+                <input type="button" id="BtnAuftragsdaten" value="Auftrag Drucken" />
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id="DialogEinlesen">
+    <textarea id="Einlesedialog" class="Einlesedialog">@MailText </textarea>
+</div>
+
+<div id="DialogEinlesenDataMatrix">
+    <textarea id="EinlesedialogDataMatrix" class="Einlesedialog"></textarea>
+</div>
+
+
+
+<div id="AuftragsdatenDialog">
+    <h2>Kunde</h2>
+    <table id="KundeTableScreen" style="text-align:left"></table>
+    <h2>Artikel</h2>
+    <table id="DatenTableScreen">
+        <thead>
+            <tr>
+                <td></td>
+                <td>Messe</td>
+                <td>Art</td>
+                <td>Name</td>
+                <td>Sprache</td>
+                <td>Format</td>
+                <td>Gewicht</td>
+                <td>Lagerplatz</td>
+                <td>Bestand</td>
+                <td>Menge</td>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<div id="AuftragsdatenPrint">
+    <h1 id="KennzeichenPrint">@Kennzeichen</h1>
+    <h2>Kunde</h2>
+    <table id="KundeTablePrint" style="text-align:left"></table>
+    <h2>Artikel</h2>
+    <table id="DatenTablePrint"></table>
+</div>
+
+<div id="AuftragsmailDruckenText">
+    <pre style="width:19cm">@MailText</pre>
+</div>
+
+
+<script type="text/javascript">
+
+    $(function () {
+        $("#Bestelldatum").datepicker({ dateFormat: 'dd.mm.yy' });
+    });
+
+    $('#submitbtn').click(function () {
+        $('#AuftragAendern').submit();
+    });
+
+    $('#BtnAuftragsdaten').click(function () {
+        $('#KennzeichenPrint').text($('#Kennzeichnung').val() + ' - ' + $('#CellMessename').text() + ' - @erstellungsdatum.ToString()');
+        $('#KundeTableScreen').html("");
+        if ($('#Lieferadresse_Name').val().length > 0) {
+
+            $('#KundeTableScreen').append(
+                '<tr><th>' + $('#Lieferadresse_Name').val() + '</th></tr>' +
+                '<tr><th>' + $('#Lieferadresse_Strasse').val() + '</th></tr>' +
+                '<tr><th>' + $('#Lieferadresse_PLZ').val() + ' ' +
+                $('#Lieferadresse_Ort').val() + '</th></tr>' +
+                '<tr><th>' + $('#LieferadLand').val() + '</th></tr><tr ><th style="min-height:20PX"> <label></label></th> </tr>'
+            );
+        } else {
+            $('#KundeTableScreen').append(
+                '<tr><th>' + $('#Auftraggeberadresse_Name').val() + '</th></tr>' +
+                '<tr><th>' + $('#Auftraggeberadresse_Strasse').val() + '</th></tr>' +
+                '<tr><th>' + $('#Auftraggeberadresse_PLZ').val() + ' ' +
+                $('#Auftraggeberadresse_Ort').val() + '</th></tr>' +
+                '<tr><th>' + $('#AuftraggeberLand').val() + '</th></tr><tr><th style="min-height:20PX"><label></label> </th> </tr>'
+            );
+        }
+        $('#KundeTableScreen').append('<tr><th style="margin-top:10PX"> ' + $('#HalleUStand').val() + '</th></tr>');
+
+        $('#DatenTableScreen tbody').html("");
+        $('#DatenTableScreen thead').html("<td>Messe</td><td>Art</td><td>Name</td><td>Sprache</td><td>Format</td><td>Gewicht</td><td>Lagerplatz</td><td>Bestand</td><td>Menge (A4 Bögen)</td><td>Zusatz</td><td>Bemerkung</td>");
+        for (var j = 1; $('#AA_' + j).length; j++) {
+            if (parseInt($('#AA_' + j).val()) > 0) {
+                var row = $('#auftragsmenge_' + j).html();
+                $('#DatenTableScreen tbody').append('<tr>' + $('#auftragsmenge_' + j).html() + '</tr>');
+            }
+        }
+        $('#KundeTablePrint').html("");
+        $('#KundeTablePrint').append($('#KundeTableScreen').html());
+        var rows = $('#DatenTableScreen').find("tr");
+        rows.find("td:first").remove();
+        $('#DatenTablePrint').html("");
+        $('#DatenTablePrint').append($('#DatenTableScreen').html());
+        $('#AuftragsdatenDialog').dialog('open');
+    });
+
+    $('#AuftragsdatenDialog').dialog({
+        autoOpen: false,
+        width: 900,
+        height: 700,
+        resizable: true,
+        title: $('#Kennzeichnung').val() + ' - ' + $('#CellMessename').text(),
+        buttons: {
+            'Drucken': function () {
+                $("#AuftragsdatenPrint").show();
+                $("#AuftragsmailDruckenText").hide();
+                $(this).dialog('close');
+                window.print();
+            },
+            'Schließen': function () {
+                $(this).dialog('close');
+            }
+        }
+    });
+
+    $('#KundeAnlegen').click(function () {
+        $('#SBKunde').val('');
+        $('#message').hide();
+        $('#LiButtons').show();
+        $('#ReButtons').show();
+        $('#AuButtons').show();
+        $('#Kunde_Erstellungsdatum').val('@DateTime.Now');
+        $('#Kunde_KundeID').val('0');
+        $('#Kunde_Name').val('');
+        $('#Auftraggeberadresse_Name').val('');
+        $('#Auftraggeberadresse_Name2').val('');
+        $('#Auftraggeberadresse_Name3').val('');
+        $('#Auftraggeberadresse_Strasse').val('');
+        $('#Auftraggeberadresse_PLZ').val('');
+        $('#Auftraggeberadresse_Ort').val('');
+        $('#AuftraggeberLand').val('');
+        $('#Auftraggeberadresse_Telefon').val('');
+        $('#Auftraggeberadresse_EMail').val('');
+        $('#Auftraggeberadresse_Name').show();
+        $('#Auftraggeberadresse_Name2').show();
+        $('#Auftraggeberadresse_Name3').show();
+        $('#Auftraggeberadresse_Strasse').show();
+        $('#Auftraggeberadresse_PLZ').show();
+        $('#Auftraggeberadresse_Ort').show();
+        $('#AuftraggeberLand').show();
+        $('#Auftraggeberadresse_Telefon').show();
+        $('#Auftraggeberadresse_EMail').show();
+        if ($("#isLandesmessauftrag").val() == "true") {
+            $("#Halle").attr('disabled', 'disabled');
+            $("#Stand").attr('disabled', 'disabled');
+            $("#Halle").val('');
+            $("#Stand").val('');
+        }
+        if ($("#isLandesmessauftrag").val() != "true") {
+            $("#Halle").removeAttr('disabled');
+            $("#Stand").removeAttr('disabled');
+        }
+
+    });
+
+    $('#BtnManuellAnlegen').click(function () {
+        $('.DisableLayer').hide();
+        $('.ButtonToplayer').hide();
+    });
+
+    $('#BtnAuftragsmail').click(function () {
+        $('#DialogEinlesen').dialog('open');
+    });
+
+    $('#OpenDialogDataMatrixBtn').click(function () {
+        $('.DisableLayer').hide();
+        $('.ButtonToplayer').hide();
+        $('#DialogEinlesenDataMatrix').dialog('open');
+    });
+
+    $('#EinlesenXMLFilesBtn').click(function () {
+        $('.DisableLayer').hide();
+        $('.ButtonToplayer').hide();
+        var Filenames;
+        $.ajax({
+            url: '/Werbemittelverwaltung/getXMLAuftragsDateinamen',
+            async: false,
+            timeout: 30000,
+            type: 'Post',
+            error: function () {
+                alert("Dateinamen konnten nicht ausgelesen werden!");
+            },
+            success: function (data) {
+                Filenames = data;
+            }
+        });
+
+        for (filename in Filenames) {
+            $('#XmlFilenameList > tbody:last-child').append('<tr><td>' + Filenames[filename] + '</td></tr></tbody></table>');
+        }
+        $('#DialogEinlesenXMLFiles').dialog('open');
+    });
+
+    $('#DialogEinlesenXMLFiles').dialog({
+        autoOpen: false,
+        width: 600,
+        height: 800,
+        resizable: true,
+        title: 'XML-Datei Einlesen',
+        buttons:
+            [
+                {
+                    text: 'Fertig',
+                    click: function () {
+                        $(this).dialog('close');
+                    }
+                }
+            ]
+    });
+
+    $('#XmlFilenameList').on('click', 'td', function () {
+        var Dateiinhalt;
+        var FileName = $(this).text();
+        $('#XmlFilenameList tr td').removeClass("XmlFilenameList_Selected");
+        $('#XmlFilenameList tr td').css("background-color", "white");
+        $(this).addClass("XmlFilenameList_Selected");
+        $(this).css("background-color","lightblue");
+        $.ajax({
+            url: '/Werbemittelverwaltung/getXMLDateiInhalt',
+
+            async: false,
+            timeout: 30000,
+            type: 'Post',
+            data: { Filename: FileName },
+            error: function () {
+                alert("Dateinamen konnten nicht ausgelesen werden!");
+            },
+            success: function (data) {
+                Dateiinhalt = data;
+                var Filename = $('.XmlFilenameList_Selected').text();
+                if (Filename.length != 0) {
+                    $.ajax({
+                        url: '/Werbemittelverwaltung/AuslesenDerXMLAuftragsinformationen',
+                        type: 'post',
+                        async: false,
+                        cache: false,
+                        timeout: 30000,
+                        data: { Filename: Filename },
+                        error: function (xhr, status, error) {
+                            alert("Fehler: " + error);
+                        },
+                        success: function (result) {
+                            if (result.Status == 'False') {
+                                $('#XMLEinleseProtokoll').val("Fehler beim Einlesen: \n\n" + result.Log);
+                                CleanForm();
+                            } else {
+                                $('#XMLEinleseProtokoll').val("Auftragsdaten wurde ohne Fehler eingelesen \n\n");
+                                $('#AuftragAendern').html(result);
+                                $("#XMLAuftragDateinamen").attr('value', Filename);
+                            }
+                        }
+                    });
+                } else {
+                    alert("Es wurde keine Datei ausgewählt")
+                }
+            }
+        });
+        $('#XMLDateiInhalt').val(Dateiinhalt)
+    })
+
+    function CleanForm() {
+        $.ajax({
+            url: '/Werbemittelverwaltung/CleanForm',
+            type: 'post',
+            async: false,
+            cache: false,
+            timeout: 30000,
+            error: function (xhr, status, error) {
+                alert("Fehler: " + error);
+            },
+            success: function (result) {
+                $('.appMainArea').html(result);
+            }
+        });
+    }
+    
+
+    $('#OpenDialog').click(function () {
+        $('.DisableLayer').hide();
+        $('.ButtonToplayer').hide();
+        $('#DialogEinlesen').dialog('open');
+    });
+
+    $('#DialogEinlesen').dialog({
+        autoOpen: false,
+        width: 900,
+        height: 650,
+        resizable: true,
+        title: 'Email-Text Einfügen',
+        buttons: {
+            'Einlesen': function (e) {
+                var errorMessage = "Fehler beim Einlesen:\n\n";
+                var Einlesefehler = false;
+                var Bestelldatum = BestelldatumEinlesen($('#Einlesedialog').val())
+                if (!Bestelldatum.length) {
+                    errorMessage += "- Das Bestelldatum konnte nicht ausgelesen werden und wurde deshalb auf das jetzige Datum gesetzt\n\n";
+                    Einlesefehler = true;
+                } else {
+                    $('#Bestelldatum').val(Bestelldatum);
+                }
+
+
+                var Kennzeichnung = KennzeichnungEinlesen($('#Einlesedialog').val())
+                if (Kennzeichnung == "false") {
+                    alert("Einlesen der Auftragsdaten  wurde abgebrochen!\n\n- Auftragskennzeichen konnte nicht eingelesen werden -");
+                    $('.disalbeLayer').hide();
+                    $('.ButtonToplayer').hide();
+                    return false;
+                }
+                if (Kennzeichnung == "exists") {
+                    alert("Auftragsdaten Einlesen wurde Abgebrochen!\n\n- Ein Auftrag mit demselben Auftragskennzeichen existiert bereits -");
+                    $('.disalbeLayer').hide();
+                    $('.ButtonToplayer').hide();
+                    return false;
+                }
+                $("#Kennzeichnung").val(Kennzeichnung);
+                $("#label_kennzeichen").text(" - " + Kennzeichnung);
+                $("#KennzeichenPrint").text(Kennzeichnung)
+                $("#Kennzeichen").remove();
+                var Messename = MesseEinlesen($('#Einlesedialog').val());
+                var Kundename = KundeEinlesen($('#Einlesedialog').val());
+
+                if (!Messename) {
+                    errorMessage += "- Es konnte keine Messe gefunden werden\n\n";
+                    Einlesefehler = true;
+                }
+
+                if (Einlesefehler) {
+                    alert(errorMessage);
+                } else {
+                    $("#Kennzeichnung").val(Kennzeichnung);
+                    $("#Messedetails").load('@Url.Action("MesseWaehlen", "Werbemittelverwaltung")' + '?Messename=' + encodeURIComponent(Messename));
+                    $("#Auftragsartikel").load('@Url.Action("Auftragsartikel", "Werbemittelverwaltung")' + '?Messename=' + encodeURIComponent(Messename));
+                }
+                $('#Auftragsmailtext').val($('#Einlesedialog').val());
+                $('.disalbeLayer').hide();
+                $('.ButtonToplayer').hide();
+                $(this).dialog('close');
+            },
+            'Drucken': function () {
+                $(this).dialog('close');
+                $("#AuftragsdatenPrint").hide();
+                $("#AuftragsmailDruckenText").show();
+                window.print();
+            },
+            'Abbrechen': function () {
+                $(this).dialog('close');
+            }
+        }
+    });
+
+
+
+    $('#DialogEinlesenDataMatrix').dialog({
+        autoOpen: false,
+        width: 900,
+        height: 650,
+        resizable: true,
+        title: 'DataMatrix-Code Einlesen',
+        buttons: {
+            'Einlesen': function (e) {
+                var Kennzeichnung = "";
+                $.ajax({
+                    url: '/Werbemittelverwaltung/GetDataMatrixKennzeichen',
+                    type: 'Post',
+                    async: false,
+                    cache: false,
+                    timeout: 30000,
+                    data: { Kennzeichen: Kennzeichnung },
+                    error: function () {
+                        alert("ERR");
+                    },
+                    success: function (data) {
+                        Kennzeichnung = data;
+                    }
+                });
+                $("#Kennzeichnung").val(Kennzeichnung);
+                $("#label_kennzeichen").text(" - " + Kennzeichnung);
+                $("#KennzeichenPrint").text(Kennzeichnung)
+                $("#Kennzeichen").remove();
+                var DataText = $('#EinlesedialogDataMatrix').val();
+                var errorMessage = "Fehler beim Einlesen:\n\n";
+                var Einlesefehler = false;
+                var endindex = DataText.indexOf(";");
+                var Messe = DataText.substring(0, endindex);
+                DataText = DataText.substring(endindex + 1, DataText.length);
+                Messe = "MESSE: " + Messe + "\n";
+                var Messename = MesseEinlesen(Messe);
+                if (!Messename) {
+                    errorMessage += "- Es konnte keine Messe gefunden werden\n\n";
+                    Einlesefehler = true;
+                }
+                endindex = DataText.indexOf(";");
+                $('#Bemerkung').val(DataText.substring(0, endindex));
+                DataText = DataText.substring(endindex + 1, DataText.length);
+                DataMatrixKundeEinlesen(DataText);
+
+                if (Einlesefehler) {
+                    alert(errorMessage);
+                } else {
+                    $("#Messedetails").load('@Url.Action("MesseWaehlen", "Werbemittelverwaltung")' + '?Messename=' + encodeURIComponent(Messename));
+                    $("#Auftragsartikel").load('@Url.Action("Auftragsartikel", "Werbemittelverwaltung")' + '?Messename=' + encodeURIComponent(Messename));
+                }
+                $('#Auftragsmailtext').val($('#EinlesedialogDataMatrix').val());
+
+                $('.disalbeLayer').hide();
+                $('.ButtonToplayer').hide();
+                $(this).dialog('close');
+            },
+
+            'Abbrechen': function () {
+                $(this).dialog('close');
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        $("#SBMesse").keypress(function () {
+            $(this).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Werbemittelverwaltung/AutoSearchMesse',
+                        dataType: "Json",
+                        data: {
+                            term: request.term,
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                }
+            });
+        });
+
+        $("#SBKunde").keypress(function () {
+            $(this).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Werbemittelverwaltung/AutoSearchKunde",
+                        dataType: "Json",
+                        data: {
+                            term: request.term,
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                }
+            });
+        });
+
+        
+    });
+
+    $("#AuftragAendern").submit(function () {
+        $('#Bemerkung').val($('#BemerkungArea').val())
+        $('input[type=text]').each(function () {
+            $(this).val($(this).val().replace(/\s*$/, ""));
+        });
+        var laender = true;
+        if ($('#LiWie').is(":visible")) {
+            $('#Lieferadresse_Name').val('');
+            $('#Lieferadresse_Name2').val('');
+            $('#Lieferadresse_Name3').val('');
+            $('#Lieferadresse_Strasse').val('');
+            $('#Lieferadresse_PLZ').val('');
+            $('#Lieferadresse_Ort').val('');
+            $('#LieferLand').val('');
+            $('#Lieferadresse_Telefon').val('');
+            $('#Lieferadresse_EMail').val('');
+        }
+        if ($('#LieferadresseAendern').is(":visible")) {
+            var land = '';
+            $.ajax({
+                url: "/Werbemittelverwaltung/LandLookUPName",
+                type: 'Post',
+                async: false,
+                cache: false,
+                timeout: 30000,
+                data: { Name: $('#LieferLand').val() },
+                error: function () {
+                },
+                success: function (Land) {
+                    land = Land;
+                    if (land.length < 1) {
+                        laender = false;
+                        $('#LiLandErr').show();
+                    }
+                    return 'land';
+                }
+            });
+        }
+        if ($('#ReWie').is(":visible")) {
+            $('#Rechnungsadresse_Name').val('');
+            $('#Rechnungsadresse_Name2').val('');
+            $('#Rechnungsadresse_Name3').val('');
+            $('#Rechnungsadresse_Strasse').val('');
+            $('#Rechnungsadresse_PLZ').val('');
+            $('#Rechnungsadresse_Ort').val('');
+            $('#RechnungLand').val('');
+            $('#Rechnungsadresse_Telefon').val('');
+            $('#Rechnungsadresse_EMail').val('');
+        }
+        if ($('#RechnungsadresseAendern').is(":visible")) {
+            var land = '';
+            $.ajax({
+                url: "/Werbemittelverwaltung/LandLookUPName",
+                type: 'Post',
+                async: false,
+                cache: false,
+                timeout: 30000,
+                data: { Name: $('#RechnungLand').val() },
+                error: function () {
+                },
+                success: function (Land) {
+                    land = Land;
+                    if (land.length < 1) {
+                        laender = false;
+                        $('#ReLandErr').show();
+                    }
+                    return 'land';
+                }
+            });
+        }
+        if ($('#AuWie').is(":visible")) {
+            $('#Austelleradresse_Name').val('');
+            $('#Austelleradresse_Name2').val('');
+            $('#Austelleradresse_Name3').val('');
+            $('#Austelleradresse_Strasse').val('');
+            $('#Austelleradresse_PLZ').val('');
+            $('#Austelleradresse_Ort').val('');
+            $('#AustellerLand').val('');
+            $('#Austelleradresse_Telefon').val('');
+            $('#Austelleradresse_EMail').val('');
+        }
+        if ($('#AustelleradresseAendern').is(":visible")) {
+            var land = '';
+            $.ajax({
+                url: "/Werbemittelverwaltung/LandLookUPName",
+                type: 'Post',
+                async: false,
+                cache: false,
+                timeout: 30000,
+                data: { Name: $('#AustellerLand').val() },
+                error: function () {
+                },
+                success: function (Land) {
+                    land = Land;
+                    if (land.length < 1) {
+                        laender = false;
+                        $('#AuLandErr').show();
+                    }
+                    return 'land';
+                }
+            });
+        }
+
+        $.ajax({
+            url: "/Werbemittelverwaltung/LandLookUPName",
+            type: 'Post',
+            async: false,
+            cache: false,
+            timeout: 30000,
+            data: { Name: $('#AuftraggeberLand').val() },
+            error: function () {
+            },
+            success: function (Land) {
+                land = Land;
+                if (land.length < 1) {
+                    laender = false;
+                    $('#AgLandErr').show();
+                }
+                return 'land';
+            }
+        });
+
+        var Messe = true;
+        var Artikel = false;
+        var Kunde = true;
+        var alertmessage = "";
+        if (!$("#MesseID").length) {
+            alertmessage += "Keine Messe ausgewählt! \n\n";
+            Messe = false;
+        }
+        $("#Kunde_Name").val($('#Auftraggeberadresse_Name').val());
+
+        if ($("#Kunde_Name").val().length <= 0) {
+            alertmessage += "Kein Kunde ausgewählt! \n\n";
+            Kunde = false;
+        }
+
+
+
+        var Adressen = true;
+        if ($('#LiButtons').is(":visible")) {
+            Adressen = false;
+            alertmessage += "Lieferadresse nicht angegeben! \n\n";
+        }
+        if ($('#ReButtons').is(":visible")) {
+            Adressen = false;
+            alertmessage += "Rechnungsadresse nicht angegeben! \n\n";
+        }
+        if ($('#AuButtons').is(":visible")) {
+            Adressen = false;
+            alertmessage += "Austelleradresse nicht angegeben! \n\n";
+        }
+        if ($('#Kunde_KundeID').val() == 0)
+            $.ajax({
+                url: "/Werbemittelverwaltung/KundeLookUP",
+                type: 'Post',
+                async: false,
+                cache: false,
+                timeout: 30000,
+                data: { kundenname: $('#Auftraggeberadresse_Name').val(), Name2: $('#Auftraggeberadresse_Name2').val(), Name3: $('#Auftraggeberadresse_Name3').val() },
+                error: function () {
+                },
+                success: function (msg) {
+                    if (msg == 0) {
+                    } else {
+                        $('#Kunde_KundeID').val(msg);
+                    }
+                }
+            });
+
+
+        for (var i = 1; i < 50; i++) {
+            if (parseInt($('#AA_' + i.toString()).val()) > 0) {
+                Artikel = true;
+                break;
+            }
+        }
+        if (!Artikel) {
+            alertmessage += "Kein Artikel ausgewählt! \n\n";
+        }
+
+        if (!laender) {
+            return false;
+        }
+
+        if (Artikel && Kunde && Messe && Adressen) {
+            return true;
+        } else {
+            alert(alertmessage);
+            return false;
+        }
+    });
+
+    $('#MesseSuchen').click(function () {
+        var Messename = $("#SBMesse").val();
+        $("#Messedetails").load('@Url.Action("MesseWaehlen", "Werbemittelverwaltung")' + '?Messename=' + encodeURIComponent(Messename), function () {
+            if ($("#isLandesmessauftrag").val() == "true") {
+                $("#Halle").attr('disabled', 'disabled');
+                $("#Stand").attr('disabled', 'disabled');
+                $("#Halle").val('');
+                $("#Stand").val('');
+                $("#isLandesmesseauftrag").val("true");
+            }
+            if ($("#isLandesmessauftrag").val() != "true") {
+                $("#Halle").removeAttr('disabled');
+                $("#Stand").removeAttr('disabled');
+                $("#isLandesmesseauftrag").val("false");
+            }
+        });
+    });
+
+    $('#KundeSuchen').click(function () {
+        var Kundennamen = $("#SBKunde").val();
+        var kundenname = "ka";
+        var kundenname2 = "ka";
+        var kundenname3 = "ka";
+
+
+        if (Kundennamen.indexOf("--") != -1) {
+            kundenname = Kundennamen.substring(0, Kundennamen.indexOf(" --"));
+            Kundennamen = Kundennamen.substring(Kundennamen.indexOf(" --") + 4, Kundennamen.length);
+            if (Kundennamen.indexOf("--") != -1) {
+                kundenname2 = Kundennamen.substring(0, Kundennamen.indexOf(" --"));
+                kundenname3 = Kundennamen.substring(Kundennamen.indexOf("-- ") + 3, Kundennamen.lenght)
+            } else {
+                kundenname2 = Kundennamen;
+            }
+        } else {
+            kundenname = Kudennamen;
+        }
+        $("#Kundendetails").load('@Url.Action("KundeWaehlen", "Werbemittelverwaltung")' + '?kundenname=' + encodeURIComponent(kundenname) + '&Name2=' + encodeURIComponent(kundenname2) + '&Name3=' + encodeURIComponent(kundenname3), function () {
+            if ($("#isLandesmessauftrag").val() == "true") {
+                $("#Halle").attr('disabled', 'disabled');
+                $("#Stand").attr('disabled', 'disabled');
+                $("#Halle").val('');
+                $("#Stand").val('');
+            }
+            if ($("#isLandesmessauftrag").val() != "true") {
+                $("#Halle").removeAttr('disabled');
+                $("#Stand").removeAttr('disabled');
+            }
+        });
+    });
+
+    $('#MesseSuchen').click(function () {
+        var Messename = $("#SBMesse").val();
+        $("#Auftragsartikel").load('@Url.Action("Auftragsartikel", "Werbemittelverwaltung")' + '?WerbemittelauftragID=' + encodeURIComponent(@WMAid) + '&Messename=' + encodeURIComponent(Messename));
+    });
+
+</script>

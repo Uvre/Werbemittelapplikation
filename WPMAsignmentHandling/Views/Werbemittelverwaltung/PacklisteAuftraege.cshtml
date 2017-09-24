@@ -1,0 +1,113 @@
+﻿@model IEnumerable<WPMAsignmentHandling.Models.Werbemittelauftrag>
+
+@if(Model != null && Model.Count() > 0){
+<div id="Auftraege">
+    <div class="AuflistungNotFixed">
+            <table>
+                <tr>
+                    <th>
+                        
+                    </th>
+                    <th>
+                        @Html.DisplayName("Status")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Kennzeichnung")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Messename")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Kundename")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Artikelbestand")
+                    </th>
+                </tr>
+            @{int countRow = 0;}
+            @foreach (var item in Model)
+            {
+                countRow++;
+                string color = "white";
+                if (countRow % 2 == 0)
+                {
+                    color = "grey";
+                }
+                <tr class="@color">
+                    
+                @if (item.Stat.wert == "bearbeitet")
+                {                        
+                    <td>
+
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <input type="checkbox" name="Auftrag_@item.WerbemittelauftragID" id="AuftragsID_@item.WerbemittelauftragID" class="AuftragCheck"/>
+                    </td>
+                }        
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Stat.wert)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Kennzeichnung)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.messe.Name)
+                    </td>
+                    <td style="text-align:left">
+                        @Html.DisplayFor(modelItem => item.Auftraggeberadresse.Name)
+                    </td>
+                    @{int count = 0;}
+                    @foreach (var artikel in item.Auftragsmengen)
+                    {
+                        if (artikel.menge > artikel.artikel.Bestand)
+                        {
+                            count++;
+                        }
+                    }
+                    @if (count == item.Auftragsmengen.Count && count != 0)
+                    {
+                         <td class="backred">
+                                n. ausreichend
+                         </td>
+                    }
+                    @if (count < item.Auftragsmengen.Count && count != 0)
+                    {
+                         <td class="backorange">
+                                tw. ausreichend
+                            </td>
+                    }
+                    @if (count == 0)
+                    {
+                        if (item.Auftragsmengen.Count == 0)
+                        {
+                            <td>
+                                keine Artikel
+                            </td>
+                        }
+                        else
+                        {
+                         <td class="backgreen">
+                                ausreichend
+                            </td>
+                        }
+                    }
+                </tr>
+            }
+        </table>
+        </div>
+</div>
+} else{
+    <h3>Aufträge auswählen</h3> 
+    <div class="AuflistungNotFixed">
+            <table>
+                <tr>
+                    <th class="redbig">
+                        Keine Aufträge vorhanden die gepackt werden müssen!
+                    </th>
+                </tr>
+            </table>
+    </div>
+}   

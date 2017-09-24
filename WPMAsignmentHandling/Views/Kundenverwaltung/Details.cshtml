@@ -1,0 +1,153 @@
+﻿@model WPMAsignmentHandling.Models.Kunde
+
+@{
+    ViewBag.Title = "Kundendetails";
+}
+@section Ueberschrift{
+   Kundendetails
+}
+ <div class="appMainArea">
+    <div class="Messedaten">
+        <h3>Kontaktdaten</h3>
+        <table>
+            <tr>
+                <th>
+                    Firma
+                </th>
+                <td>
+                    @Model.Name
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Name
+                </th>
+                <td>
+                    @Model.Hauptadresse.Name2
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Adresszusatz
+                </th>
+                <td>
+                    @Model.Hauptadresse.Name3
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Strasse
+                </th>
+                <td>
+                    @Model.Hauptadresse.Strasse
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Plz/Ort
+                </th>
+                <td>
+                    @Model.Hauptadresse.PLZ @Model.Hauptadresse.Ort
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Land
+                </th>
+                <td>
+                    @Model.Hauptadresse.Land.land
+                </td>
+            </tr>
+        </table>
+    </div>
+    <hr />
+
+    <div class="AuflistungNotFixed">
+        <table>
+            <tr>
+                <th>
+                    @Html.DisplayName("Kennzeichen")
+                </th>
+                <th>
+                    @Html.DisplayName("Status")
+                </th>
+                <th>
+                    @Html.DisplayName("Messename")
+                </th>
+                <th>
+                    @Html.DisplayName("Bemerkung")
+                </th>
+            </tr>
+            @{int countRow = 0;}
+            @foreach (var item in Model.auftraege)
+            {
+                countRow++;
+                string color = "white";
+                if (countRow % 2 == 0)
+                {
+                    color = "grey";
+                }
+                <tr class="@color">
+                    <td>
+                        <a href="/Werbemittelverwaltung/Werbemittelauftragdetails?AuftragID=@item.WerbemittelauftragID"> @item.Kennzeichnung</a>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Stat.wert)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.messe.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.HalleUStand)
+                    </td>
+                    <td>@item.Bemerkung</td>
+                </tr>
+            }
+
+        </table>
+    </div>
+
+</div>
+<div class="Buttons">
+     <table>
+                <tr>
+                    <td>
+                        @Html.ActionLink("Fertig", "Index", "Kundenverwaltung")
+                    </td>
+                    <td style="min-width:30px">
+
+                    </td>
+                    @if(Model.auftraege.Count() == 0){
+                        <td>
+                            <input type="button" value="Kunde Löschen" id="KundeLoeschen"/>
+                        </td>
+                    }else{
+                        <td class="redbig">
+                            Kunde kann nicht gelöscht werden
+                        </td>
+                    }
+                </tr>
+     </table>
+</div>
+
+<script type="text/javascript">
+    $('#KundeLoeschen').click(function () {
+        $('<div></div>').appendTo('body').html('<div><h3 style="margin-top:50PX;text-align:center">Soll der Kunde wirklich gelöscht werden?</h2></div>')
+           .dialog({
+               autoOpen: true,
+               width: 700,
+               height: 250,
+               resizable: true,
+               title: 'Sicherheitsabfrage',
+               buttons: {
+                   'Ja': function (e) {
+                       $(this).dialog('close');
+                       window.location.href = "/Kundenverwaltung/KundeLoeschen?KundeID=@Model.KundeID";
+                    },
+                    'Nein': function (e) {
+                        $(this).dialog('close');
+                    }
+                }
+            });
+    });
+</script>

@@ -1,0 +1,828 @@
+﻿@model WPMAsignmentHandling.Models.Werbemittelauftrag
+    
+
+@{string Halle = ""; string StandHidden = ""; string HalleHidden = ""; string Stand = ""; string HalleUStand = ""; string Kundenadresse = ""; string Wiehidden = "display:none";
+  string EingabeHidden = "display:normal"; string EingabeButtons = "display:none"; string deactHuS = "";
+  WPMAsignmentHandling.Models.Kontakdaten Auftraggeberadresse; string AuftraggeberLand = "";
+  WPMAsignmentHandling.Models.Kontakdaten Lieferadresse; string LieferLand = "";
+  WPMAsignmentHandling.Models.Kontakdaten Rechnungsadresse; string RechnungLand = "";
+  WPMAsignmentHandling.Models.Kontakdaten Austelleradresse; string AustellerLand = "";
+  WPMAsignmentHandling.Models.Kunde Kunde = null;
+  
+}
+@if (Model != null)
+{
+    if (Model.isLandesmesseauftrag)
+    {
+        deactHuS = "disabled=\"disabled\"";
+    }
+    Auftraggeberadresse = Model.Auftraggeberadresse;
+    if (Model.Auftraggeberadresse.Land != null)
+    {
+        AuftraggeberLand = Model.Auftraggeberadresse.Land.land;
+    }
+    if (Model.Lieferadresse != null)
+    {
+        Lieferadresse = Model.Lieferadresse;
+        if (Model.Lieferadresse.Land != null)
+        {
+            LieferLand = Model.Lieferadresse.Land.land;
+        }
+    }
+    else
+    {
+        Lieferadresse = new WPMAsignmentHandling.Models.Kontakdaten { Name = "", Name2 = "", Name3 = "", Strasse = "", PLZ = "", Ort = "", EMail = "", Telefon = "" };
+    }
+    if (Model.Rechnungsadresse != null)
+    {
+        Rechnungsadresse = Model.Rechnungsadresse;
+        if (Model.Rechnungsadresse.Land != null)
+        {
+            RechnungLand = Model.Rechnungsadresse.Land.land;
+        }
+    }
+    else
+    {
+        Rechnungsadresse = new WPMAsignmentHandling.Models.Kontakdaten { Name = "", Name2 = "", Name3 = "", Strasse = "", PLZ = "", Ort = "", EMail = "", Telefon = "" };
+    }
+    if (Model.Austelleradresse != null)
+    {
+        Austelleradresse = Model.Austelleradresse;
+        if (Model.Austelleradresse.Land != null)
+        {
+            AustellerLand = Model.Austelleradresse.Land.land;
+        }
+    }
+    else
+    {
+        Austelleradresse = new WPMAsignmentHandling.Models.Kontakdaten { Name = "", Name2 = "", Name3 = "", Strasse = "", PLZ = "", Ort = "", EMail = "", Telefon = "" };
+    }
+    Kunde = Model.kunde;
+    @Html.HiddenFor(model => Model.Erstellungsdatum)
+    HalleUStand = Model.HalleUStand;
+}
+else
+{
+    Auftraggeberadresse = new WPMAsignmentHandling.Models.Kontakdaten { Name = "", Name2 = "", Name3 = "", Strasse = "", PLZ = "", Ort = "", EMail = "", Telefon = "" };
+    Lieferadresse = new WPMAsignmentHandling.Models.Kontakdaten { Name = "", Name2 = "", Name3 = "", Strasse = "", PLZ = "", Ort = "", EMail = "", Telefon = "" };
+    Rechnungsadresse = new WPMAsignmentHandling.Models.Kontakdaten { Name = "", Name2 = "", Name3 = "", Strasse = "", PLZ = "", Ort = "", EMail = "", Telefon = "" };
+    Austelleradresse = new WPMAsignmentHandling.Models.Kontakdaten { Name = "", Name2 = "", Name3 = "", Strasse = "", PLZ = "", Ort = "", EMail = "", Telefon = "" };
+    if (ViewBag.Kunde != null)
+    {
+
+        Kunde = ViewBag.Kunde;
+        Auftraggeberadresse = Kunde.Hauptadresse;
+        EingabeButtons = "display:normal";
+        AuftraggeberLand = Kunde.Hauptadresse.Land.land;
+    }
+    else
+    {
+        Kunde = new WPMAsignmentHandling.Models.Kunde { Name = "", Erstellungsdatum = DateTime.Now };
+    }
+    EingabeHidden = "display:none";
+    Wiehidden = "display:none";
+}
+    
+   <div id="Kundendetails" class ="Kundendetails" > 
+        @if (Kunde != null && !String.IsNullOrEmpty(Kunde.Name))
+        {
+            Kundenadresse = "display:normal";
+        }
+        else
+        {
+
+            Kundenadresse = "display:none";
+        }
+            @Html.HiddenFor(model => Kunde.KundeID)
+            @Html.HiddenFor(model => Kunde.Erstellungsdatum)
+            <div class="Standarddaten">
+                <h3>Auftraggeber</h3>
+                <table>
+                    @if (Kunde != null && String.IsNullOrEmpty(Kunde.Name))
+                    { 
+                        <tr id="message">
+                            <td class="redbig">
+                                Kein Auftraggeber ausgewählt!
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        <th>
+                            Name 
+                        </th>
+                        <td>
+                            @if (Auftraggeberadresse.Name == "Landesmesse Stuttgart GmbH")
+                            {
+                                @Html.TextBoxFor(model => Auftraggeberadresse.Name, new { @style = Kundenadresse, @class = "large", @Readonly="Readonly" })
+                                @Html.ValidationMessageFor(model => Auftraggeberadresse.Name)
+                                @Html.HiddenFor(model => Kunde.Name)
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(model => Auftraggeberadresse.Name, new { @style = Kundenadresse, @class = "large" })
+                                @Html.ValidationMessageFor(model => Auftraggeberadresse.Name)
+                                @Html.HiddenFor(model => Kunde.Name)
+                            }
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Name 2
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Auftraggeberadresse.Name2, new { @style = Kundenadresse, @class = "large" })
+                            @Html.ValidationMessageFor(model => Auftraggeberadresse.Name2)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Name 3
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Auftraggeberadresse.Name3, new { @style = Kundenadresse, @class = "large" })
+                            @Html.ValidationMessageFor(model => Auftraggeberadresse.Name3)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => Auftraggeberadresse.Strasse)
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Auftraggeberadresse.Strasse, new { @style = Kundenadresse, @class = "large" })
+                            @Html.ValidationMessageFor(model => Auftraggeberadresse.Strasse)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => Auftraggeberadresse.PLZ)
+                            @Html.TextBoxFor(model => Auftraggeberadresse.PLZ, null, new { @class = "small", @style = Kundenadresse })
+                            @Html.DisplayNameFor(model => Auftraggeberadresse.Ort)
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Auftraggeberadresse.Ort, new { @style = Kundenadresse, @class = "large" })
+                            @Html.ValidationMessageFor(model => Auftraggeberadresse.PLZ) 
+                            @Html.ValidationMessageFor(model => Auftraggeberadresse.Ort)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => Auftraggeberadresse.Land) 
+                        </th>
+                        <td>
+                            <input type="text" value="@AuftraggeberLand" id="AuftraggeberLand" name="AuftraggeberLand" class="TB_Land" style="@Kundenadresse" />
+                            <span id="AgLandErr" style="display:none; font-weight:bold; color:red; font-size: 12Px;"> Land konnte nicht gefunden werden! </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => Auftraggeberadresse.Telefon)
+                        </th>
+                        <td>
+                           @Html.TextBoxFor(model => Auftraggeberadresse.Telefon, new { @style = Kundenadresse, @class = "large" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => Auftraggeberadresse.EMail)
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Auftraggeberadresse.EMail, new { @style = Kundenadresse, @class = "large" })
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        
+
+
+        <div class="Standarddaten">
+           <h3>Lieferadresse</h3>
+           @if (Model != null)
+           {
+               if (String.IsNullOrEmpty(Lieferadresse.Name))
+               {
+                   Wiehidden = "display:normal";
+                   EingabeHidden = "display:none";
+               }
+               else
+               {
+                   EingabeHidden = "display:normal";
+                   Wiehidden = "display:none";
+               }
+           }
+           <table id="LieferadresseAendern" style="@EingabeHidden">               
+                    <tr>
+                        <th>
+                            Name
+                            @Html.HiddenFor(model => Lieferadresse.KontakdatenID)
+                        </th>
+                        <td>
+                            @if (Lieferadresse.Name == "Landesmesse Stuttgart GmbH")
+                            {
+                                @Html.TextBoxFor(model => Lieferadresse.Name, new { @class = "large", @Readonly="Readonly" })
+                                @Html.ValidationMessageFor(model => Lieferadresse.Name)
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(model => Lieferadresse.Name, new { @class = "large" })
+                                @Html.ValidationMessageFor(model => Lieferadresse.Name)
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Name 2
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Lieferadresse.Name2, new { @class = "large" })
+                            @Html.ValidationMessageFor(model => Lieferadresse.Name2)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                           Name 3
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Lieferadresse.Name3, new { @class = "large" })
+                            @Html.ValidationMessageFor(model => Lieferadresse.Name3) 
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Strasse
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Lieferadresse.Strasse, new { @class = "large" })
+                            @Html.ValidationMessageFor(model => Lieferadresse.Strasse)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                           PLZ  @Html.TextBoxFor(model => Lieferadresse.PLZ, new { @class = "small" }) Ort
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Lieferadresse.Ort, new { @class = "large" })
+                            @Html.ValidationMessageFor(model => Lieferadresse.PLZ)
+                            @Html.ValidationMessageFor(model => Lieferadresse.Ort)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => Lieferadresse.Land) 
+                        </th>
+                        <td>
+                            <input type="text" value="@LieferLand" id="LieferLand" name="LieferLand" class="TB_Land" />
+                            <span id="LiLandErr" style="display:none; font-weight:bold; color:red; font-size: 12Px;">Land konnte nicht gefunden werden!</span>
+                        </td>
+                        
+                    </tr>
+                    <tr>
+                        <th>
+                          Telefon
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Lieferadresse.Telefon)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                          Email
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Lieferadresse.EMail, new { @class = "large" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" id="BtnLiWie" name="BtnLiWie" value="Wie Auftraggeber"/>
+                        </td>
+                    </tr>
+                </table>
+           
+           <table id="LiWie" style="@Wiehidden">
+                    <tr>
+                        <td>
+                            Wie Auftraggeber
+                        </td>                       
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" id="liAendern" name="liAendern" value="Ändern" />
+                        </td>
+                    </tr>
+           </table>
+            <table id="LiButtons" style="@EingabeButtons">
+                    <tr>
+                        <td>
+                            <input type="button" id="liAuftrag" name="liAuftrag" value="Wie Auftraggeber" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" id="liAnlegen" name="liAnlegen" value="Adresse Anlegen" />
+                        </td>
+                    </tr>
+           </table>
+        </div>
+      
+        <div class="Standarddaten">
+           <h3>Rechnungsadresse</h3> 
+           @if (Model != null)
+           {
+               if (String.IsNullOrEmpty(Rechnungsadresse.Name))
+               {
+                   Wiehidden = "display:normal";
+                   EingabeHidden = "display:none";
+                   <input type="hidden" value="" id="ReStatus" name="ReStatus" />
+               }
+               else
+               {
+                   EingabeHidden = "display:normal";
+                   Wiehidden = "display:none";
+                   <input type="hidden" value="true" id="ReStatus" name="ReStatus" />
+               
+               }
+           }
+            <table id="RechnungsadresseAendern" style="@EingabeHidden" >               
+                    <tr>
+                        <th>
+                            Name 
+                            @Html.HiddenFor(model => Rechnungsadresse.KontakdatenID)
+                        </th>
+                        <td>
+                            @if (Rechnungsadresse.Name == "Landesmesse Stuttgart GmbH")
+                            {
+                                @Html.TextBoxFor(model => Rechnungsadresse.Name, new { @class = "large", @Readonly="Readonly" })
+                                @Html.ValidationMessageFor(model => Rechnungsadresse.Name)
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(model => Rechnungsadresse.Name, new {  @class = "large" })
+                                @Html.ValidationMessageFor(model => Rechnungsadresse.Name)
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Name 2
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Rechnungsadresse.Name2, new { @class = "large" })
+                            @Html.ValidationMessageFor(model => Rechnungsadresse.Name2)
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>
+                            Name 3
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Rechnungsadresse.Name3, new { @class = "large" })
+                            @Html.ValidationMessageFor(model => Rechnungsadresse.Name3)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Strasse
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Rechnungsadresse.Strasse, new { @class = "large" })
+                            @Html.ValidationMessageFor(model => Rechnungsadresse.Strasse)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                           PLZ @Html.TextBoxFor(model => Rechnungsadresse.PLZ, new { @class = "small" }) Ort
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Rechnungsadresse.Ort, new { @class = "large" })
+                            @Html.ValidationMessageFor(model => Rechnungsadresse.PLZ)
+                            @Html.ValidationMessageFor(model => Rechnungsadresse.Ort)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => Rechnungsadresse.Land) 
+                        </th>
+                        <td>
+                            <input type="text" value="@RechnungLand" id="RechnungLand" name="RechnungLand" class="TB_Land" />
+                            <span id="ReLandErr" style="display:none; font-weight:bold; color:red; font-size: 12Px;">Land konnte nicht gefunden werden!</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                          Telefon
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Rechnungsadresse.Telefon)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                          Email
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Rechnungsadresse.EMail, new { @class = "large" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" id="BtnReWie" name="BtnReWie" value="Wie Auftraggeber"/>
+                        </td>
+                    </tr>
+                </table>
+            <table id="ReWie" style="@Wiehidden">
+                    <tr>
+                        <td>
+                            <input type="hidden" id="ReWieH" name="ReWieH" value="true" />
+                            Wie Auftraggeber
+                        </td>                       
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" id="reAendern" name="reAendern" value="Ändern" />
+                        </td>
+                    </tr>
+           </table>
+            <table id="ReButtons" style="@EingabeButtons">
+                    <tr>
+                        <td>
+                            <input type="button" id="reAuftrag" name="ReAuftrag" value="Wie Auftraggeber" />
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" id="reAnlegen" name="ReAnlegen" value="Adresse Anlegen" />
+                        </td>
+                    </tr>
+                </table>
+        </div>
+
+        <div class="Standarddaten">
+           <h3>Austelleradresse</h3>
+           @if (Model != null)
+           {
+               if (String.IsNullOrEmpty(Austelleradresse.Name))
+               {
+                   Wiehidden = "display:normal";
+                   EingabeHidden = "display:none";
+                   <input type="hidden" value="" id="AuStatus" name="AuStatus" />
+               }
+               else
+               {
+                   EingabeHidden = "display:normal";
+                   Wiehidden = "display:none";
+                   <input type="hidden" value="true" id="AuStatus" name="AuStatus" />
+               
+               }
+           }
+           else
+           {
+
+           }
+            
+           <table id="AustelleradresseAendern" style="@EingabeHidden">               
+                    <tr>
+                        <th>
+                            Name
+                            @Html.HiddenFor(model => Austelleradresse.KontakdatenID)
+                        </th>
+                        <td>
+                            @if (Austelleradresse.Name == "Landesmesse Stuttgart GmbH")
+                            {
+                                @Html.TextBoxFor(model => Austelleradresse.Name, new {  @class = "large", @Readonly="Readonly" })
+                                @Html.ValidationMessageFor(model => Austelleradresse.Name)
+                            }
+                            else
+                            {
+                                @Html.TextBoxFor(model => Austelleradresse.Name, new {  @class = "large" })
+                                @Html.ValidationMessageFor(model => Austelleradresse.Name)
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Name 2
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Austelleradresse.Name2, new { @class = "large" })
+                            @Html.ValidationMessageFor(model => Austelleradresse.Name2)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Name 3
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Austelleradresse.Name3, new { @class = "large" })
+                            @Html.ValidationMessageFor(model => Austelleradresse.Name3)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            Strasse
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Austelleradresse.Strasse, new { @class = "large" })
+                            @Html.ValidationMessageFor(model => Austelleradresse.Strasse)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                           PLZ @Html.TextBoxFor(model => Austelleradresse.PLZ, new { @class = "small" }) Ort
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Austelleradresse.Ort, new { @class = "large" })
+                            @Html.ValidationMessageFor(model => Austelleradresse.PLZ)
+                            @Html.ValidationMessageFor(model => Austelleradresse.Ort)
+                        </td>
+                    </tr>
+                     <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => Austelleradresse.Land) 
+                        </th>
+                        <td>
+                            <input type="text" value="@AustellerLand" id="AustellerLand" name="AustellerLand" class="TB_Land" />
+                            <span id="AuLandErr" style="display:none; font-weight:bold; color:red; font-size: 12Px;">Land konnte nicht gefunden werden!</span>
+                        </td>
+                        
+                    </tr>
+                    <tr>
+                        <th>
+                          Telefon
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Austelleradresse.Telefon)
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                          Email
+                        </th>
+                        <td>
+                            @Html.TextBoxFor(model => Austelleradresse.EMail, new { @class = "large" })
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" id="BtnAuWie" name="BtnAuWie" value="Wie Auftraggeber"/>
+                        </td>
+                    </tr>
+                </table>
+           <table id="AuWie" style="@Wiehidden">
+                    <tr>
+                        <td>
+                            <input type="hidden" id="AuWieH" name="AuWieH" value="true" />
+                            Wie Auftraggeber
+                        </td>                       
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" id="auAendern" name="auAendern" value="Ändern" />
+                        </td>
+                    </tr>
+          </table>
+           <table id="AuButtons" style="@EingabeButtons">
+                    <tr>
+                        <td>
+                            <input type="button" id="auAuftrag" name="AuAuftrag" value="Wie Auftraggeber" />
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="button" id="auAnlegen" name="AuAnlegen" value="Adresse Anlegen" />
+                        </td>
+                    </tr>
+          </table>    
+    </div>
+        <div style="clear:left">
+        @if (Model != null && Model.HalleUStand != null)
+        {
+            try
+            {
+                string HalleUStande = Model.HalleUStand.Replace(" ", "").Replace(")", "").Replace("(","");
+                int Start = HalleUStande.LastIndexOf("Halle") + 5;
+                int End = HalleUStande.IndexOf("Stand");
+                int length = End - Start;
+                Halle = HalleUStande.Substring(Start, length);
+                Start = HalleUStande.IndexOf("Stand") + 5;
+                length = HalleUStande.Length - Start;
+                Stand = HalleUStande.Substring(Start, length);
+                End = HalleUStand.IndexOf(" Stand");
+                HalleHidden = HalleUStand.Substring(0, End);
+                StandHidden = HalleUStand.Replace(HalleHidden, "");
+            }
+            catch
+            {
+
+            }
+        }
+        <table>
+            <tr>
+                <th>
+                    Halle: 
+                </th>
+                <td>
+                    @if (Model != null && Model.isLandesmesseauftrag)
+                    {
+                        <input data-val="true" data-val-required="Angabe Fehlt!" type="text" id="Halle" name="Halle" class="small" value="@Halle" disabled="disabled" />
+                    }
+                    else
+                    {
+                        <input data-val="true" data-val-required="Angabe Fehlt!" type="text" id="Halle" name="Halle" class="small" value="@Halle" />
+                    }
+                    <input type="hidden" id="Hallehidden" name="Hallehidden" value ="Halle @Halle "/>
+                    <span class="field-validation-valid" data-valmsg-for="Halle" data-valmsg-replace="true"></span>
+                </td>
+                <th>
+                    Stand:
+                </th>
+                <td>
+                    @if (Model != null && Model.isLandesmesseauftrag)
+                    {
+                        <input data-val="true" data-val-required="Angabe Fehlt!" type="text" id="Stand" name="Stand" class="small" value="@Stand" disabled="disabled" />
+                    }
+                    else
+                    {
+                        <input data-val="true" data-val-required="Angabe Fehlt!" type="text" id="Stand" name="Stand" class="small" value="@Stand" />
+                    }
+                    <input type="hidden" id="Standhidden" name="Standhidden" value="Stand @Stand" />
+                    <span class="field-validation-valid" data-valmsg-for="Stand" data-valmsg-replace="true"></span>
+                </td>
+                <td>
+                    Eindruck:
+                </td>
+                <th>
+                    <label id="Eindruck" >@HalleUStand</label>
+                    <input type="hidden" id="HalleUStand" name="HalleUStanden" value="@HalleUStand" />
+                </th>
+            </tr>
+        </table>
+    </div>  
+</div>
+    
+       
+   
+<script type="text/javascript">
+    var Halle = "@Halle";
+    var Stand = "@Stand";
+
+    $('#Halle').on("input", function (e) {
+        if ($(this).val() == '1') {
+            Halle = "1";
+            $('#Hallehidden').val('L-Bank Forum (Halle 1) ');
+            $('#Eindruck').text($('#Hallehidden').val() + $('#Standhidden').val());
+            $('#HalleUStand').val($('#Hallehidden').val() + $('#Standhidden').val());
+        }
+        if ($(this).val() == '6') {
+            Halle = "6";
+            $('#Hallehidden').val('Oskar Lapp Halle (Halle 6) ');
+            $('#Eindruck').text($('#Hallehidden').val() + $('#Standhidden').val());
+            $('#HalleUStand').val($('#Hallehidden').val() + $('#Standhidden').val());
+        }
+        if ($(this).val() == '9') {
+            Halle = "9";
+            
+            $('#Hallehidden').val('Alfred Kärcher Halle (Halle 9) ');
+            $('#Eindruck').text($('#Hallehidden').val() + $('#Standhidden').val());
+            $('#HalleUStand').val($('#Hallehidden').val() + $('#Standhidden').val());
+        }
+        if ($(this).val() != '1' && $(this).val() != '6' && $(this).val() != '9') {
+            Halle = $(this).val();
+            if (Halle.length == 0) {
+                $('#Hallehidden').val('');
+            } else {
+                $('#Hallehidden').val('Halle ' + Halle + ' ');
+            }
+            $('#Eindruck').text($('#Hallehidden').val() + $('#Standhidden').val());
+            $('#HalleUStand').val($('#Hallehidden').val() + $('#Standhidden').val());
+        }
+    });
+    $('#Stand').on("input", function (e) {
+        Stand = $(this).val();
+        if (Stand.length == 0) {
+            $('#Standhidden').val('');
+        } else {
+            $('#Standhidden').val('Stand '+ Stand);
+        }
+        $('#Eindruck').text($('#Hallehidden').val() + $('#Standhidden').val());
+        $('#HalleUStand').val($('#Hallehidden').val() + $('#Standhidden').val());
+    });
+
+    $('.AdressePLZ').on("keydown", function (e) {
+        checkInputNumber(e);
+        return;
+    });
+   
+    $('#BtnLiWie').on('click', function () {
+        $('#LiWie').show();
+        $('#LieferadresseAendern').hide();
+        $('#LiStatus').val( '');
+    });
+
+    //$('#Lieferadresse_Strasse').on('input', function () {
+    //    alert("Hello");
+    //});
+
+    $('#liAendern').on('click', function () {
+        
+        $('#LiWie').hide();
+        $('#LiStatus').val( 'true');
+        $('#LieferadresseAendern').show();
+    });
+    
+    $('#liAuftrag').on('click', function () {
+        $('#LiButtons').hide();
+        $('#LiWie').show();
+    });
+    $('#liAnlegen').on('click', function () {
+        $('#LiButtons').hide();
+        $('#LieferadresseAendern').show();
+    });
+
+    $('#BtnReWie').on('click', function () {
+        $('#ReWie').show();
+        $('#RechnungsadresseAendern').hide();
+        $('#ReStatus').val( '');
+    });
+    $('#reAendern').on('click', function () {
+        $('#ReWie').hide();
+        $('#ReStatus').val( 'true');
+        $('#RechnungsadresseAendern').show();
+    });
+    $('#reAuftrag').on('click', function () {
+        $('#ReButtons').hide();
+        $('#ReWie').show();
+    });
+    $('#reAnlegen').on('click', function () {
+        $('#ReButtons').hide();
+        $('#RechnungsadresseAendern').show();
+    });
+
+    $('#BtnAuWie').on('click', function () {
+        $('#AuWie').show();
+        $('#AustelleradresseAendern').hide();
+        $('#AuStatus').val( '');
+    });
+    $('#auAendern').on('click', function () {
+        $('#AuWie').hide();
+        $('#AuStatus').val( 'true');
+        $('#AustelleradresseAendern').show();
+    });
+    $('#auAuftrag').on('click', function () {
+        $('#AuButtons').hide();
+        $('#AuWie').show();
+        $('#AuStatus').val( 'Auftraggeber');
+    });
+    $('#auAnlegen').on('click', function () {
+        $('#AuButtons').hide();
+        $('#AustelleradresseAendern').show();
+        $('#AuStatus').val( 'Eingegeben');
+    });
+
+    $('#Auftraggeberadresse_Name').on('keyup', function () {
+        $('#Kunde_Name').val($(this).val());
+    });
+
+    $(".TB_Land").keypress(function () {
+        $(this).autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Werbemittelverwaltung/AutocompleteLand',
+                    dataType: "Json",
+                    data: {
+                        term: request.term,
+                    },
+                    success: function (data) {
+                        response(data);
+                    }
+                });
+            }
+        });
+    });
+
+    $('#AuftraggeberLand').on('keyup', function (e) {
+        if ($(this).val().length > 0) {
+            $('#AgLandErr').hide();
+        }
+    });
+
+    $('#LieferLand').on('keyup', function (e) {
+        if ($(this).val().length > 0) {
+            $('#LiLandErr').hide();
+        }
+    });
+
+    $('#RechnungLand').on('keyup', function (e) {
+        if ($(this).val().length > 0) {
+            $('#ReLandErr').hide();
+        }
+    });
+
+    $('#AustellerLand').on('keyup', function (e) {
+        if ($(this).val().length > 0) {
+            $('#AuLandErr').hide();
+        }
+    });
+</script>

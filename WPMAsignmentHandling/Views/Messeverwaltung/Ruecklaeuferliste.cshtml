@@ -1,0 +1,165 @@
+﻿@model ICollection<WPMAsignmentHandling.Models.Paket>
+
+
+
+@{string HostAndPort = "http://"+ HttpContext.Current.Request.Url.Host + ":"+ HttpContext.Current.Request.Url.Port.ToString();}
+
+<table id="RuecklaeuferTabelle" class="AuflistungTabelle">
+    <thead>
+        <tr>
+            <th>
+                @Model.Count()
+            </th>
+            <th>
+                @Html.DisplayName("Auftragskennzeichen")
+            </th>
+            <th>
+                @Html.DisplayName("Messename")
+            </th>
+            <th>
+                @Html.DisplayName("Paketnummer")
+            </th>
+            <th>
+                @Html.DisplayName("Kosten")
+            </th>
+            <th>
+                @Html.DisplayName("Zusatzkosten")
+            </th>
+            <th>
+                @Html.DisplayName("Gewicht")
+            </th>
+            <th>
+                @Html.DisplayName("Bemerkung")
+            </th>
+            <th>
+                @Html.DisplayName("Aktiv/Inaktiv")
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Count != 0) { 
+            int count = 0;
+            bool Abgerechnet = false;
+            foreach (var item in Model)
+            {
+                count++;
+                string color = "white";
+                if (count % 2 == 0)
+                {
+                    color = "grey";
+                }
+                string backgroundActiv = "lightgreen"; string strAktiv = "offen"; if (item.RuecklaeuferAbgerechnet) { backgroundActiv = "lightsalmon"; strAktiv = "abgerechnet"; }
+                <tr id="PaketLine_@item.PaketID" class="@color">
+                    
+                    <td>
+                        @count
+                        <input type="hidden" id="RuckIDLine" value="@item.PaketID" />
+                    </td>
+                    <td>
+                        <a href="@HostAndPort/Werbemittelverwaltung/Werbemittelauftragdetails?AuftragID=@item.auftrag.WerbemittelauftragID" target="_blank"> @item.auftrag.Kennzeichnung</a>
+                    </td>
+
+                    @if (item.auftrag.messe != null)
+                    {
+                        <td>
+                            <b> @Html.DisplayFor(modelItem => item.auftrag.messe.Name) </b>
+                        </td>
+                    }
+                    else
+                    {
+                        <td></td>
+                    }
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Paketnummer)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Preis) €
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Zusatzkosten) €
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Gewicht)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.auftrag.Bemerkung)
+                    </td>
+                    <td>
+                        @if(!item.RuecklaeuferAbgerechnet){
+                            Abgerechnet = true;
+                        }
+                        else
+                        {
+                            Abgerechnet = false;
+                        }
+                        <span id="RueckAktivSpan_@item.PaketID" style="padding:1px 10px 1px 1px; background-color:@backgroundActiv" class="RueckAktivSpan"><input type="checkbox" id="RueckActive_@item.PaketID" class="RueckActive" checked="@Abgerechnet" style="margin:10PX 0PX 10PX 10PX" /> <label class="strAktiv" id="strAktiv_@item.PaketID">@strAktiv</label></span>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<script>
+    $(".AuflistungTabelle").tablesorter();
+    $(".AuflistungTabelle").bind("sortEnd", function () {
+        var i = 0;
+        $(".AuflistungTabelle tr").each(function (i) {
+            $(this).find('td').eq(0).text(i);
+        });
+    });
+
+    setTableHeaderSize();
+
+     $('#OffeneAbrechnen').click(function () {
+         $.ajax({
+             url: "/Messeverwaltung/CloseAllOpenRuecklaeufer",
+             async: false,
+             cache: false,
+             timeout: 30000,
+             error: function () {
+             },
+             success: function (msg) {
+                 if (msg) {
+                     $('.RueckActive').attr('checked', false);
+                     $('.RueckAktivSpan').css("background-color", "lightsalmon");
+                     $('.strAktiv').text("abgerechnet");
+                 }
+             }
+         });
+     });
+
+    $('.RueckActive').click(function () {
+        var abgerechnet = true;
+        var BTid = $(this).attr("id");
+        var startindex = BTid.lastIndexOf("_") + 1;
+        var id = BTid.substr(startindex, BTid.length);
+        
+        if ($(this).is(':checked')) {
+            var abgerechnet = false;
+        }
+        var PaketID = id;
+        $.ajax({
+            url: "/Messeverwaltung/setRueckActivity",
+            type: 'Post',
+            async: false,
+            cache: false,
+            timeout: 30000,
+            data: { PaketID: PaketID, active: abgerechnet },
+            error: function () {
+            },
+            success: function (msg) {
+                if (msg) {
+                    if (!abgerechnet) {
+                        $('#RueckAktivSpan_' + id).css("background-color", "lightgreen");
+                        $('#strAktiv_'+id).text("offen");
+                    } else {
+                        $('#RueckAktivSpan_' + id).css("background-color", "lightsalmon");
+                        $('#strAktiv_'+id).text("abgerechnet");
+                    }
+                }
+                setTableHeaderSize();
+            }
+        });
+    });
+</script>

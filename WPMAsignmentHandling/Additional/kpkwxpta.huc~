@@ -1,0 +1,145 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mail;
+using System.Text;
+using System.Threading.Tasks;
+using WPMAsignmentHandling.Models;
+
+namespace WPMAsignmentHandling.Additional
+{
+
+    public static class Extensions
+    {
+        public static bool CaseInsensitiveContains(this string text, string value)
+        {
+            //string text = value;
+            bool returnValue = false;
+            if(text.IndexOf(value, StringComparison.CurrentCultureIgnoreCase) >= 0)
+            {
+                returnValue = true;
+            }
+            else
+            {
+                returnValue = false;
+            }
+            return returnValue;
+            
+        }
+
+        public static bool NotificationUndercutMeldebestand (Artikel artikel){
+
+
+            string subject = "Meldebestand unterschritten: " + artikel.Artikelnummer + " | " + artikel.Messe.Name + " | " + artikel.artikelart.Art + " | " + artikel.Name;
+            string mailbody ="Unterschreitung des Meldebestands für den Artikel,\n\n"
+                                    + artikel.Artikelnummer + " | " + artikel.Messe.Name + " | " + artikel.artikelart.Art + " | " + artikel.Name + "\n\n"
+                                    + "Bestand: \t" + artikel.Bestand +"\n"
+                                    + "Meldebstand: \t" + artikel.Meldebestand + "\n"
+                                    + "Sicherheitsbestand: \t" + artikel.Sicherheitsbestand + "\n";
+
+
+            var message = new MailMessage();
+            message.To.Add(new MailAddress("werbemittel@briefdruck.de")); //replace with valid value
+            message.Subject = subject;
+            message.Body = string.Format(mailbody, "Werbemittelapplikation");
+            message.IsBodyHtml = false;
+            using (var smtp = new SmtpClient())
+            {
+                smtp.Send(message);
+            }
+
+            return true;
+        }
+
+        public static bool NotificationUndercutSicherheitsbestand(Artikel artikel)
+        {
+
+            string subject = "Sicherheitsbestand unterschritten: " + artikel.Artikelnummer + " | " + artikel.Messe.Name + " | " + artikel.artikelart.Art + " | " + artikel.Name;
+            string mailbody ="Unterschreitung des Meldebestands,\n\n"
+                                    + artikel.Artikelnummer + " | " + artikel.Messe.Name + " | " + artikel.artikelart.Art + " | " + artikel.Name + "\n\n"
+                                    + "Bestand: \t" + artikel.Bestand +"\n"
+                                    + "Meldebstand: \t" + artikel.Meldebestand + "\n"
+                                    + "Sicherheitsbestand: \t" + artikel.Sicherheitsbestand + "\n";
+
+
+            var message = new MailMessage();
+            message.To.Add(new MailAddress("werbemittel@briefdruck.de")); //replace with valid value
+            message.Subject = subject;
+            message.Body = string.Format(mailbody, "Werbemittelapplikation");
+            message.IsBodyHtml = false;
+            using (var smtp = new SmtpClient())
+            {
+                smtp.Send(message);
+            }
+
+            return true;
+        }
+
+        public static bool SendOrderConfirmation(OrderConfirmationModel model)
+        {
+
+            Kontakdaten Kontakt = null; 
+              if (model.WMA.Lieferadresse != null)
+              {
+                  Kontakt = model.WMA.Lieferadresse;
+              }
+              else
+              {
+                  Kontakt = model.WMA.Auftraggeberadresse;
+              }
+
+
+              string mailbody = "Sehr geehrte(r) Frau/Herr " + model.UserName + ",\n\n"
+                  + "Ihre Bestellung ist bei uns eingegangen. Wir werden diese sorgfältig bearbeiten und mit der nächsten Lieferung versenden.\n\n"
+                  + "Voraussischtliches Lieferdatum: " + DateTime.Now.AddDays(1).ToString("dd.MM.yyy") + "\n\n"
+                  + "Auftragsnummer: \t" + model.WMA.Kennzeichnung + "\n"
+                  + "Bestelldatum: \t" + model.WMA.Bestelldatum.ToString("dd.MM.yyy") + "\n"
+                  + "Lieferanschrift: \t" + Kontakt.Name + "\n"
+                  + "\t\t" + Kontakt.Name2 + "\n"
+                  + "\t\t" + Kontakt.Name3 + "\n"
+                  + "\t\t" + Kontakt.Strasse + "\n"
+                  + "\t\t" + Kontakt.PLZ + " " + Kontakt.Ort + "\n"
+                  + "Wenn Sie weitere Fragen zu Ihrer Bestellung haben, helfen wir Ihnen gerne weiter. Sie erreichen uns unter der Rufnummer 0711-781988-30 oder werbemittel@briefdruck.de\n"
+                  + "Unser Serviceteam ist montags bis freitags von 09:00 Uhr bis 17:00 Uhr erreichbar.\n\n"
+                  + "Ihr Winkhardt-Team"
+                  ;
+            
+            
+            if (!String.IsNullOrEmpty(mailBody))
+            {
+                userManager.SendEmail(user.Id, "Bestellbestätigung", mailBody);
+                var message = new MailMessage();
+                message.To.Add(new MailAddress("werbemittel@briefdruck.de"));
+                message.Subject = "Test";
+                message.Body = string.Format(mailBody, "Werbemittelapplikation");
+                message.IsBodyHtml = true;
+                using (var smtp = new SmtpClient())
+                {
+                    smtp.Send(message);
+                }
+            }
+
+            string subject = "Auftragsbe " + artikel.Artikelnummer + " | " + artikel.Messe.Name + " | " + artikel.artikelart.Art + " | " + artikel.Name;
+            string mailbody = "Unterschreitung des Meldebestands,\n\n"
+                                    + artikel.Artikelnummer + " | " + artikel.Messe.Name + " | " + artikel.artikelart.Art + " | " + artikel.Name + "\n\n"
+                                    + "Bestand: \t" + artikel.Bestand + "\n"
+                                    + "Meldebstand: \t" + artikel.Meldebestand + "\n"
+                                    + "Sicherheitsbestand: \t" + artikel.Sicherheitsbestand + "\n";
+
+
+            var message = new MailMessage();
+            message.To.Add(new MailAddress("werbemittel@briefdruck.de"));
+            message.To.Add(new MailAddress(model.UserMail)); 
+            message.Subject = "Auftragsbestätigung";
+            message.Body = string.Format(mailbody, "Werbemittelapplikation");
+            message.IsBodyHtml = false;
+            using (var smtp = new SmtpClient())
+            {
+                smtp.Send(message);
+            }
+
+            return true;
+        }
+
+    }
+}

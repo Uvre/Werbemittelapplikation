@@ -1,0 +1,284 @@
+﻿@model WPMAsignmentHandling.Models.Messe
+
+
+@{
+    ViewBag.Title = "Messedetails";
+}
+
+@{ ICollection<WPMAsignmentHandling.Models.Artikel> Artikel = new List<WPMAsignmentHandling.Models.Artikel>();}
+
+@if (Model != null)
+{
+    foreach (var artikel in Model.artikel)
+    {
+        Artikel.Add(artikel);
+    }
+
+    foreach (var auftrag in Model.auftraege)
+    {
+        foreach (var artikel in auftrag.Auftragsmengen)
+        {
+            if (Artikel.Count == 0)
+            {
+                Artikel.Add(artikel.artikel);
+            }
+            else
+            {
+                if (Artikel.SingleOrDefault(r => r.ArtikelID == artikel.artikel.ArtikelID) == null)
+                {
+                    Artikel.Add(artikel.artikel);
+                }
+            }
+        }
+    }
+}
+
+@section Ueberschrift{
+   Messedetails
+}
+ 
+
+<div class="appMainArea">
+    @if (Model != null)
+    {
+        <table>
+            <tr>
+                <td>
+                    @Html.Partial("Messedetails")
+                </td>
+                @if (!Model.isLandesmesse){
+                    <td>
+                        <div class="Messeverlauf">
+                        <h3>Verlauf</h3>
+                        @{ string opacityBestellzeitraum = ""; string opacityMessezeitraum = ""; string opacityAbrechnungszeitraum = ""; string Artikelliste = ""; string Abrechnung = "";}
+                        @if (DateTime.Now < Model.Startdatum)
+                        {
+                            opacityBestellzeitraum = "1";
+                            opacityMessezeitraum = "0.2";
+                            opacityAbrechnungszeitraum = "0.2";
+                        }
+                        @if (DateTime.Now >= Model.Startdatum && DateTime.Now <= Model.Enddatum)
+                        {
+                            opacityBestellzeitraum = "0.2";
+                            opacityMessezeitraum = "1";
+                            opacityAbrechnungszeitraum = "0.2";
+                        }
+                        @if (DateTime.Now >= Model.Enddatum)
+                        {
+                            opacityBestellzeitraum = "0.2";
+                            opacityMessezeitraum = "0.2";
+                            opacityAbrechnungszeitraum = "1";
+                            if (Model.RestmengenlisteVerschickt && Model.abgegrechnet)
+                            {
+                                opacityAbrechnungszeitraum = "0.2";
+                            }
+                        }
+
+                        <table>
+                            <tr>
+                                <td>
+                                    <div class="Bestellzeitraum" style="opacity:@opacityBestellzeitraum"><span style="vertical-align:middle; display:inline-block">Bestellzeitraum</span></div>
+                                </td>
+                                <td>
+                                    <div class="Messezeitraum" style="opacity:@opacityMessezeitraum"><span style="vertical-align:middle; display:inline-block">Messezeitraum</span></div>
+                                </td>
+                                <td>
+                                    <div class="Abrechnungszeitraum" style="opacity:@opacityAbrechnungszeitraum"><span style="vertical-align:middle; display:inline-block">Abrechnung</span></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    @if (Model.RestmengenlisteVerschickt)
+                                    {
+                                        <input type="button" id="Artikelliste" value="Artikelliste&#10;Versendet" style="font-size:15PX; margin-top:10PX" disabled="disabled" />
+                                    }
+                                    else
+                                    {
+                                        <input type="button" id="Artikelliste" value="Artikelliste&#10;Versendet" style="font-size:15PX; margin-top:10PX" />
+                                    }
+                                </td>
+                                <td>
+                                    @if (Model.abgegrechnet)
+                                    {
+                                        <input type="button" id="Abrechnung" value="Abrechnung&#10;Erstellt" style="font-size:15PX; margin-top:10PX" disabled="disabled" />
+                                    }
+                                    else
+                                    {
+                                        <input type="button" id="Abrechnung" value="Abrechnung&#10;Erstellt" style="font-size:15PX; margin-top:10PX" />
+                                    }
+                                </td>
+
+                            </tr>
+                        </table>
+                    </div>
+                    </td>
+                }
+            </tr>
+        </table>                
+        <hr />
+
+        using (Html.BeginForm("Hello", "Messeverwaltung", FormMethod.Post, new { id = "Abrechnungszeitraum" }))
+        {
+            @Html.HiddenFor(model => model.MesseID)
+            if (Model.isLandesmesse)
+            {
+                <div id="AbrechnungsZeitraumEintragen">
+                    <h3>Abrechnungszeitraum</h3>
+                    <table style="list-style-type: none">
+                        <tr>
+                            <td>
+                                Begin
+                            </td>
+                            <td>
+                                <input data-val="true" data-val-date="Es muss ein korrektes Datum eingegeben werden" data-val-required="Kein Endatum eingetragen" id="Abrechnungsbegin" name="Abrechnungsbegin" type="datetime" value="" />
+                                <span class="field-validation-valid" data-valmsg-for="Abrechnungsbegin" data-valmsg-replace="true"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Ende</td>
+                            <td>
+                                <input data-val="true" data-val-date="Es muss ein korrektes Datum eingegeben werden" data-val-required="Kein Endatum eingetragen" id="AbrechnungsEnde" name="AbrechnungsEnde" type="datetime" value="" />
+                                <span class="field-validation-valid" data-valmsg-for="AbrechnungsEnde" data-valmsg-replace="true"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="padding-top:10PX">
+                                (Muss für die Restmengeliste nicht eingegeben werden)
+                            </td>
+                        </tr>
+                    </table>
+                    
+                </div>
+                <hr />
+                <div>
+                    <h3>
+                        Auswahl nach Artikelstatus
+                    </h3>
+                    <input type="radio" name="AuswahlStatusArtikel" value="1" /> <label style="margin-right:30PX">Nur aktive Artikel</label>
+                    <input type="radio" name="AuswahlStatusArtikel" value="2" /> <label style="margin-right:30PX">Nur inaktive Artikel</label>
+                    <input type="radio" name="AuswahlStatusArtikel" value="3" checked="checked"/> <label style="margin-right:30PX" >Alle Artikel</label>
+                    <table>
+                        <tr>
+                            <td>
+                                (Hat nur Einfluss auf die Artikel der Restemengenliste)
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+            }
+            else
+            {
+                <input data-val="true" data-val-date="The field Enddatum must be a date." data-val-required="Kein Endatum eingetragen" id="Abrechnungsbegin" name="Abrechnungsbegin" type="hidden" value="01.01.1000" />
+                <input data-val="true" data-val-date="Es muss ein korrektes Datum eingegeben werden" data-val-required="Kein Endatum eingetragen" id="AbrechnungsEnde" name="AbrechnungsEnde" type="hidden" value="@DateTime.Now.ToString("dd.MM.yyyy")" />
+            }
+        }
+
+    }
+
+</div>
+<div class="Buttons">
+    <table >
+        <tr>
+            <td>
+                @Html.ActionLink("Fertig", "Index", "Messeverwaltung")
+            </td>
+            <td style="min-width:30px"></td>
+            <td>
+                <input type="button" value="Werbemittel-Übersicht extern" id="ExcelBestaendeExtern" />
+            </td>
+
+            <td>
+                <input type="button" value="Werbemittel-Übersicht intern" id="ExcelBestaendeIntern" />
+            </td>
+            @*<td style="min-width:30px"></td>*@
+            <td>
+                <input type="button" value="Restmengenliste" id="RestmengenListe_Btn" />
+            </td>
+            @*<td style="min-width:30px"></td>*@
+            <td>
+                <input type="button" value="Artikelbewegungen" id="Artikelbewegungen_Btn" />
+            </td>
+            @if (!Model.isLandesmesse)
+            {
+                <td>
+                    <input type="button" value="Abrechnung" id="ExcelAbrechnung" />
+                </td>
+            }
+        </tr>
+    </table>
+</div>
+
+
+<script type="text/javascript">
+    $('#ExcelBestaendeExtern').click(function () {
+        $('#Abrechnungszeitraum').attr('action', '/Messeverwaltung/ExcelArtikelBestaendeExtern')
+        $('#Abrechnungszeitraum').submit();
+    });
+    $('#ExcelBestaendeIntern').click(function () {
+        $('#Abrechnungszeitraum').attr('action', '/Messeverwaltung/ExcelArtikelBestaendeIntern')
+        $('#Abrechnungszeitraum').submit();
+    });
+
+    $('#ExcelAbrechnung').click(function () {
+        window.location.href = "/Messeverwaltung/ExcelAbbrechnung?MesseID=@Model.MesseID";
+    });
+    $('#RestmengenListe_Btn').click(function () {
+        $('#Abrechnungszeitraum').attr('action', '/Messeverwaltung/RestmengenListe')
+        $('#Abrechnungsbegin').prop('disabled', true);
+        $('#AbrechnungsEnde').prop('disabled', true);
+        $('#Abrechnungszeitraum').submit();
+        $('#Abrechnungsbegin').prop('disabled', false);
+        $('#AbrechnungsEnde').prop('disabled', false);
+    });
+    $('#Artikelbewegungen_Btn').click(function () {
+        $('#Abrechnungszeitraum').attr('action', '/Messeverwaltung/Artikelbewegungen')
+        $('#Abrechnungszeitraum').submit();
+    });
+
+    $('#Artikelliste').click(function () {
+        $.ajax({
+            url: "/Messeverwaltung/ArtikellisteVerschickt",
+            type: 'Post',
+            async: false,
+            cache: false,
+            timeout: 30000,
+            data: { MesseID: "@Model.MesseID" },
+            error: function () {
+                alert("error");
+            },
+            success: function (msg) {
+                $('#Artikelliste').attr('Disabled', 'Disabled');
+            }
+        });
+    });
+
+    $('#Abrechnung').click(function () {
+        $.ajax({
+            url: "/Messeverwaltung/AbrechnungErstellt",
+            type: 'Post',
+            async: false,
+            cache: false,
+            timeout: 30000,
+            data: { MesseID: "@Model.MesseID" },
+            error: function () {
+                alert("error");
+            },
+            success: function (msg) {
+                $('#Abrechnung').attr('Disabled', 'Disabled');
+            }
+        });
+    });
+
+    $(function () {
+        $("#Abrechnungsbegin").datepicker({ dateFormat: 'dd.mm.yy' });
+    });
+
+    $(function () {
+        $("#AbrechnungsEnde").datepicker({ dateFormat: 'dd.mm.yy' });
+    });
+</script>
+
+
+

@@ -1,0 +1,485 @@
+﻿@model WPMAsignmentHandling.Models.Artikel
+
+@{
+    ViewBag.Title = "Artikeldaten";
+}
+
+@{ string ButtonValue = "Anlegen"; string ConAction = "ArtikelAnlegen"; string heading = "Artikel Anlegen"; 
+   string action = HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString();
+   string textAADD = "Bitte Wählen..."; DateTime Erstellungsdatum = DateTime.Now; string active = "true"; string AktierungDateneingabe = ""; string showMesseRow = "";
+   string headingAddiText = ""; string landesmesseAllgemein = "false"; string landesmesseartikel = "false"; string Bildpfad = ""; int SicherOld = 0; int MeldeOld = 0;
+
+}
+
+@if (action == "ArtikelAendern" || action == "AenderungSpeichern")
+{
+    
+    ButtonValue = "Speichern";
+    ConAction = "AenderungSpeichern";
+    heading = "Artikeldaten Ändern";
+    textAADD = "";
+    Erstellungsdatum = Model.Erstellungsdatum;
+    active = Model.Active.ToString();
+    AktierungDateneingabe = "display:none";
+    headingAddiText = "____Werbemittelartikel";
+    if (Model.MesseartikelAllgemein)
+    {
+        headingAddiText = "____allgemeiner Werbemittelartikel";
+        landesmesseAllgemein = "true";
+    }
+    if (Model.Landesmesseartikel)
+    {
+        headingAddiText = "____Marketingartikel";
+        landesmesseartikel = "true";
+    }
+    if (Model.Bildpfad != null)
+    {
+        Bildpfad = Model.Bildpfad;
+    }
+}
+
+@if (Model != null)
+{
+    SicherOld = Model.Sicherheitsbestand;
+    MeldeOld = Model.Meldebestand;
+    AktierungDateneingabe = "display:none";
+    if (Model.Landesmesseartikel || Model.MesseartikelAllgemein)
+    {
+        showMesseRow = "display:none";
+    }
+}
+
+@section Ueberschrift{
+    @heading @headingAddiText 
+} 
+
+
+<div class="appMainArea">
+    <div class="ButtonToplayer" style="@AktierungDateneingabe">
+        <table>
+            <tr>
+                <td>
+                   <input type="button" id="Btn_Werbemittel" value="Werbemittelartikel" />
+                </td>
+                <td width="10PX"></td>
+                <td>
+                    <input type="button" id="Btn_Werbemittelallgemein" value="allgemeiner Werbemittelartikel" />
+                </td>
+                <td width="10PX"></td>
+                <td>
+                    <input type="button" id="Btn_Landesmesseartikel" value="Marketingartikel" />
+                </td>
+            </tr>
+        </table>
+    </div> 
+    <div class="DisableLayer" style="@AktierungDateneingabe"></div>
+    @using (Html.BeginForm(ConAction, "Artikelverwaltung", FormMethod.Post, new { id = "ArtikeldatenForm", enctype = "multipart/form-data" }))
+    {
+        <input id="Active" name="Active" type="hidden" value="@active" />
+        <input id="AllgemeinerMesserartikel" name="AllgemeinerMesserartikel" type="hidden" value="@landesmesseAllgemein" />
+        <input id="Landesmesseartikel" name="Landesmesseartikel" type="hidden" value="@landesmesseartikel" />
+        if (Model != null)
+        {
+            @Html.HiddenFor(model => Model.ArtikelID)
+        }
+    <table>
+        <tr id="messeRow" style="@showMesseRow">
+            <th>
+                @Html.DisplayName("Messe")
+            </th>
+            <td id="MesseCell" class="Messename">
+                @{string name = "";}
+                @if (Model != null && Model.Messe != null)
+                {
+                    name = Model.Messe.Name;
+                }
+                <input type="text" id="SB" value="@name" name="Messename" data-autocomplete="@Url.Action("AutoSearchMesseKunde", "Artikelverwaltung")" class="extralarge" } />
+            </td>
+
+            @if (ViewData["KMerr"] != null)
+            {
+                <td id="MessageMesse" class="redbig">
+                    Keine Messe ausgewählt!
+                </td>
+            }
+        </tr>
+        @*<tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ArtikelHerstellungsart)
+            </th>
+            <td>
+                @Html.DropDownList("Artikel_HerstellungsartID", (SelectList) ViewBag.Artikel_Herstellungsarten, textAADD)
+            </td>
+        </tr>*@
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Artikelnummer) 
+            </th>
+            <td>
+                @if (Model == null)
+                {
+                    @Html.TextBoxFor(model => Model.Artikelnummer, new { @class = "large", @Value=ViewBag.NewWMA })
+                }
+                else
+                {
+                    @Html.TextBoxFor(model => Model.Artikelnummer, new { @class = "large" })
+                }
+                @Html.ValidationMessageFor(model => Model.Artikelnummer)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.artikelart.Art)
+            </th>
+            <td>
+                @Html.DropDownList("ArtikelartID", (SelectList)ViewBag.artikelarten, textAADD)
+            </td>
+            @if (ViewData["Arterr"] != null)
+            {
+                <td class="redbig">
+                    Keine Artikelart ausgewählt!
+                </td>
+            }
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <td>
+                @Html.TextBoxFor(model => Model.Name, new { @class = "extralarge" })
+                @Html.ValidationMessageFor(model => Model.Name)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Sprache.Sprache)
+            </th>
+            <td>
+                @Html.DropDownList("ArtikelspracheID", (SelectList)ViewBag.artikelsprachen, textAADD)
+            </td>
+            @if (ViewData["Spracheerr"] != null)
+            {
+                <td class="redbig">
+                    Keine Sprache ausgewählt!
+                </td>
+            }
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => Model.AuflageCharge)
+            </th>
+            <td>
+                @Html.TextBoxFor(model => Model.AuflageCharge)
+                @Html.ValidationMessageFor(model => Model.AuflageCharge)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Format)
+            </th>
+            <td>
+                @Html.TextBoxFor(model => Model.Format, new { @class = "medium" })
+                @Html.ValidationMessageFor(model => Model.Format)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Breite)
+            </th>
+            <td>
+                @{float breite = 0; if (Model != null) { breite = Model.Breite; }}
+                <input class="small" data-val="true" data-val-number="The field Breite must be a number." data-val-range="Breite kann nicht kleiner als 0,1mm und größer als 10000mm sein!" data-val-range-max="10000" data-val-range-min="0.1" data-val-regex="Es können nur Zahlen eingetragen werden" data-val-regex-pattern="^[,0-9]*$" data-val-required="Keine Breite eingetragen!" id="Breite" name="Breite" type="text" value="@breite" /> mm
+                @Html.ValidationMessageFor(model => Model.Breite)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Hoehe)
+            </th>
+            <td>
+                @{float hoehe = 0; if (Model != null) { hoehe = Model.Hoehe; }}
+                <input class="small" data-val="true" data-val-number="The field Höhe must be a number." data-val-range="Hoehe kann nicht kleiner als 0,1mm und größer als 10000mm sein!" data-val-range-max="10000" data-val-range-min="0.1" data-val-regex="Es können nur Zahlen eingetragen werden" data-val-regex-pattern="^[,0-9]*$" data-val-required="Keine Höhe eingetragen!" id="Hoehe" name="Hoehe" type="text" value="@hoehe" /> mm
+                @Html.ValidationMessageFor(model => Model.Hoehe)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Laenge)
+            </th>
+            <td>
+                @{float laenge = 0; if (Model != null) { laenge = Model.Laenge; }}
+                <input class="small" data-val="true" data-val-number="The field Tiefe must be a number." data-val-range="Tiefe kann nicht kleiner als 0,1mm und größer als 10000mm sein!" data-val-range-max="10000" data-val-range-min="0.1" data-val-regex="Es können nur Zahlen eingetragen werden" data-val-regex-pattern="^[,0-9]*$" data-val-required="Keine Tiefe eingetragen!" id="Laenge" name="Laenge" type="text" value="@laenge" /> mm
+                @Html.ValidationMessageFor(model => Model.Laenge)
+            </td>
+        </tr>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Gewicht)
+            </th>
+            @if (Model != null)
+            {
+                <td>
+                    @Html.TextBoxFor(model => Model.Gewicht, new { @class = "small" }) Gramm
+                    @Html.ValidationMessageFor(model => Model.Gewicht)
+                    <input type="hidden" name="Bestand" id="Bestand" value="@Model.Bestand" />
+                </td>
+            }
+            else
+            {
+                <td>
+                    @Html.TextBoxFor(model => Model.Gewicht, new { @class = "small" }) Gramm
+                    @Html.ValidationMessageFor(model => Model.Gewicht)
+                    <input type="hidden" name="Bestand" id="Bestand" value="0" />
+                </td>
+            }
+        </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.PreisProVE)
+        </th>
+        <td>
+            @Html.EditorFor(model => Model.PreisProVE, new { htmlAttributes = new { @class = "small" } }) €
+            @Html.ValidationMessageFor(model => Model.PreisProVE)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Verpackungseinheit)
+        </th>
+        <td>
+            @Html.TextBoxFor(model => Model.Verpackungseinheit, new { @class = "small" }) Stück
+            @Html.ValidationMessageFor(model => Model.Verpackungseinheit)
+
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Kartoninhalt)
+        </th>
+        <td>
+            @*@{int Kartoninhalt = 0; if (Model != null) { Kartoninhalt = Model.Kartoninhalt; }}*@
+            @Html.TextBoxFor(model => Model.Kartoninhalt)
+            @Html.ValidationMessageFor(model => Model.Kartoninhalt)
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Meldebestand)
+        </th>
+        <td>
+            @*@{int Meldebestand = 0; if (Model != null) { Meldebestand = Model.Meldebestand; }}*@
+            @Html.TextBoxFor(model => Model.Meldebestand)
+            @Html.ValidationMessageFor(model => Model.Meldebestand)
+            <input type="hidden" name="MeldeOld" value="@MeldeOld" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Sicherheitsbestand)
+        </th>
+        <td>
+            @{int Sicherheitsbestand = 0; if (Model != null) { Sicherheitsbestand = Model.Sicherheitsbestand; }}
+            @Html.TextBoxFor(model => Model.Sicherheitsbestand)
+            @Html.ValidationMessageFor(model => Model.Sicherheitsbestand)
+            <input type="hidden" name="SicherOld" value="@SicherOld" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Lagerplatz)
+        </th>
+        <td>
+            @Html.TextBoxFor(model => Model.Lagerplatz)
+            @Html.ValidationMessageFor(model => Model.Lagerplatz)
+            <input id="Erstellungsdatum" name="Erstellungsdatum" type="hidden" value="@Erstellungsdatum" />
+        </td>
+    </tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Bemerkung)
+        </th>
+        <td>
+            @Html.TextBoxFor(model => Model.Bemerkung, new { @class = "extralarge" })
+        </td>
+    </tr>
+    </table>
+    <h3 style="margin:10PX 0 0 50PX">Artikelbild</h3>
+    <div style="max-width:50%; margin:0 0 0 1.5cm; vertical-align:middle">
+        
+        @if (Model != null && !String.IsNullOrEmpty(Model.Bildpfad) && @System.IO.File.Exists(Server.MapPath("~/images/Artikelbilder/" + Model.Bildpfad)))
+        {
+            <img id="Artikelbild" onmouseover="showDivImageDisplay(this);" onmouseout="hideDivImageDisplay();" src="~/images/Artikelbilder/@Model.Bildpfad" float="right" style="max-height:4cm; height:4cm;"><br />
+            <span id="keinBild" style="color:red; margin:0 0 20PX 20PX; display:none">...Kein Bild hinterlegt!</span><br />
+            <input type="button" id="Btn_RemovePicture" value="Bild entfernen" style="margin-top:20PX; " />
+            <input style="margin-top:20PX" data-buttontext="@Bildpfad" type="file" name="file" id="file" accept="image/*" />
+        }
+        else
+        {
+
+            <img id="Artikelbild" onmouseover="showDivImageDisplay(this);" onmouseout="hideDivImageDisplay();" src="~/Images/NoPicture.png" float="right" style="max-height:4cm; height:4cm;border:1PX solid;"> <br />
+            <span id="keinBild" style="color:red; margin:0 0 20PX 20PX">...Kein Bild hinterlegt!</span><br />
+            <input type="button" id="Btn_RemovePicture" value="Bild entfernen" style="margin-top:20PX; display:none" />
+            <input style="margin-top:20PX" data-buttontext="@Bildpfad" type="file" name="file" id="file" accept="image/*" />
+        }
+            @*<input type="button" id="Btn_RemovePicture" value="Bild entfernen" style="margin-top:20PX" />
+            <input style="margin-top:20PX" data-buttontext="@Bildpfad" type="file" name="file" id="file" accept="image/*" />*@ 
+        <input type="hidden" value="@Bildpfad" id="Bildpfad" name="Bildpfad">
+    </div>
+    }
+</div>
+
+<div class="Buttons">
+        <table>
+            <tr>
+                <td>
+                    <input type="button" id="submitBtn" value="@ButtonValue" />
+                </td>
+                <td>
+                    @Html.ActionLink("Abbrechen", "Index", "Artikelverwaltung")
+                </td>
+            </tr>
+        </table>
+</div>
+
+<script type="text/javascript">
+
+    jQuery.validator.unobtrusive
+          .adapters.addSingleVal("mandatoryIf", "mailingSelected");
+
+    $('#Artikel_HerstellungsartID').change(function () {
+        alert("Value: " + $(this).val())
+    });
+
+    jQuery.validator.unobtrusive
+          .adapters.addSingleVal("greaterthan", "other");
+
+    jQuery.validator.addMethod("greaterthan",
+        function (val, element, other) {
+            var modelPrefix = element.name.substr(
+                                0, element.name.lastIndexOf(".") + 1)
+            var otherVal = $("[name=" + modelPrefix + other + "]").val();
+            if (val && otherVal) {
+                if (parseInt(val) < parseInt(otherVal)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    );
+
+    //jQuery.validator.addMethod("PriceValeCorrect",
+    //    function (val) {
+    //        alert(val);
+    //        return false;
+    //        return true;
+    //    }
+    //);
+
+
+    $('#submitBtn').click(function () {
+        if (($('#Sicherheitsbestand').val() == 0 || $('#Meldebestand').val() == 0) && !$('#ArtikelID').length) {
+            var message = ""
+            
+            if ($('#Sicherheitsbestand').val() == 0) {
+                message = "den Sicherheitsbestand";
+            }
+            if ($('#Meldebestand').val() == 0) {
+                message = "den Meldebestand";
+            }
+            if ($('#Sicherheitsbestand').val() == 0 && $('#Meldebestand').val() == 0) {
+                message = "den Melde- und Sicherheitsbestand";
+            }
+
+            $('<div></div>').appendTo('body').html('<div><h3 style="margin-top:20PX;text-align:center">Sind Sie Sicher, dass Sie ' + message + ' mit 0 eintragen möchten?</h3></div>')
+                       .dialog({
+                           autoOpen: true,
+                           width: 800,
+                           height: 250,
+                           resizable: true,
+                           title: 'Warnhinweis',
+                           buttons: {
+                               'Artikel Anlegen': function (e) {
+                                   $(this).dialog('close');
+                                   $('#ArtikeldatenForm').submit();
+                               },
+                               'Abbrechen': function (e) {
+                                   $(this).dialog('close');
+                               }
+                           }
+                       });
+        }else{
+            $('#ArtikeldatenForm').submit();
+        }
+            
+    });
+
+    $(document).ready(function () {
+        $('#Btn_Werbemittel').click(function () {
+            $('.DisableLayer').hide();
+            $('.ButtonToplayer').hide();
+            $('#topheading').text("Artikel Anlegen ___Werbemittelartikel");
+        });
+        $('#Btn_Werbemittelallgemein').click(function () {
+            $('.DisableLayer').hide();
+            $('.ButtonToplayer').hide();
+            $('#topheading').text("Artikel Anlegen ___Werbemittelartikel Allgemein");
+            $('#AllgemeinerMesserartikel').val("true");
+            $('#messeRow').hide();
+        });
+        $('#Btn_Landesmesseartikel').click(function () {
+            $('.DisableLayer').hide();
+            $('.ButtonToplayer').hide();
+            $('#topheading').text("Artikel Anlegen ___Landesmesseartikel");
+            $('.ButtonToplayer').hide();
+            $('#Landesmesseartikel').val("true");
+            $('#messeRow').hide();
+        });
+
+        $('#Btn_RemovePicture').click(function () {
+            $('#Artikelbild').attr('src', '/Images/NoPicture.png');
+            $('#keinBild').show();
+            $('#Bildpfad').val('');
+            $('#Btn_RemovePicture').hide();
+        });
+
+
+        $(":input[data-autocomplete]").each(function () {
+            $(this).autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/Artikelverwaltung/AutoSearchMesseKunde",
+                        dataType: "Json",
+                        data: {
+                            term: request.term,
+                            bla: $("#MK").val()
+                        },
+                        success: function (data) {
+                            response(data);
+                            
+                        }
+                    });
+                }, delay: 300
+            });
+        });
+
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#Artikelbild').attr('src', e.target.result);
+                    $('#Bildpfad').val(input.files[0].name);
+                }
+                reader.readAsDataURL(input.files[0]);
+                $('#keinBild').hide();
+                $('#Btn_RemovePicture').show();
+                
+            }
+        }
+        $("#file").change(function () {
+            readURL(this);
+        });
+    });
+
+
+</script>
+

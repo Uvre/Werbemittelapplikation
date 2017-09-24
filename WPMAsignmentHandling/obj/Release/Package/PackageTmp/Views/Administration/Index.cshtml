@@ -1,0 +1,594 @@
+﻿@{
+    ViewBag.Title = "Administration";
+}
+
+
+@{  var Arten = (ICollection<WPMAsignmentHandling.Models.Artikelart>)ViewData["Artikelarten"];}
+@section Ueberschrift{
+   Administration
+}
+
+<div class="appMainArea">
+    <h3>Pfade XML Verarbeitung</h3>
+    <table id="Pfade">
+        <tr>
+            <th>
+                Auftragsdateien 
+            </th>
+            <td>
+                <input type="text" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                Eingelesene Dateien
+            </th>
+        </tr>
+    </table>
+
+    <h3>Artikelarten</h3>
+    <table id="Artikelarten" class="input">
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Bemerkung
+            </th>
+        </tr>
+        @{int i = 0;}
+        @foreach (var art in Arten)
+        {
+            i++;
+            <tr>
+                <td>
+                    @i.
+                </td>
+                @if ((art.ArtikelartID == 2) || (art.ArtikelartID == 3) || (art.ArtikelartID == 4) || (art.ArtikelartID == 5) || (art.ArtikelartID == 6) || (art.ArtikelartID == 7) || (art.ArtikelartID == 43))
+                {
+                    <td>
+                        <input type="text" id="Artikelart_@art.ArtikelartID" value="@art.Art " readonly="readonly" class="extralarge" />
+                    </td>
+                    <td>
+                        @art.Bemerkung (Kann nicht geändert werden!)
+                        @*<input type="text" id="Bemerkung_@art.ArtikelartID" value="" readonly="readonly" class="extralarge"/>*@
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <input type="text" id="Artikelart_@art.ArtikelartID" value="@art.Art" class="extralarge" />
+                    </td>
+                    <td>
+                        <input type="text" id="Bemerkung_@art.ArtikelartID" value="@art.Bemerkung" class="extralarge" />
+                    </td>
+                    <td>
+                        <input type="button" id="BtnArtikelart_@art.ArtikelartID" class="BtnArtikelart" value="Änderung Speichern" style="display:none" />
+                    </td>
+                }
+            </tr>
+        }
+        <tr>
+            <td colspan="2">
+                <input type="button" id="addArt" value="hinzufügen"/>
+            </td>
+        </tr>
+    </table>
+    <h3>Artikelprachen</h3>
+    <table id="Artikelsprachen" class="input">
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                Sprache
+            </th>
+        </tr>
+        @{int j = 0;}
+        @foreach (var sprache in (ICollection<WPMAsignmentHandling.Models.Artikelsprache>)ViewData["Artikelsprachen"])
+        {
+            j++;
+            <tr>
+                <td>
+                    @j.
+                </td>
+                <td>
+                   <input type="text" id="Sprache_@sprache.ArtikelspracheID" value="@sprache.Sprache" class="extralarge"/>
+                </td>
+                <td>
+                    <input type="button"  id="BtnSprache_@sprache.ArtikelspracheID" class="BtnSprache" value="Änderung Speichern" style="display:none"/>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="2">
+                <input type="button" id="addSprache" value="hinzufügen"/>
+            </td>
+        </tr>
+    </table>
+
+    <h3>Bestandänderungsarten</h3>
+    <table id="BAE" class="input">
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                Grund
+            </th>
+            <th>
+                Zugang/Abgang
+            </th>
+        </tr>
+        @{int o = 0;}
+        @foreach (var Bae in (ICollection<WPMAsignmentHandling.Models.Bestandsaenderungsart>)ViewData["BestandsArten"])
+        {
+            o++;
+            <tr>
+                <td>
+                    @o.
+                </td>
+                <td>
+                    <input type="text" id="BaeGrund_@Bae.BestandsaenderungsartID" value="@Bae.Grund" class="extralarge"/>
+                </td>
+                @if (Bae.Art)
+                {
+                    <td>
+                        <select id="BaeArt_@Bae.BestandsaenderungsartID" class="BaeArt">
+                          <option value="true" selected>Zugang</option>
+                          <option value="false">Abgang</option>
+                        </select> 
+                    </td>
+                }else{
+                    <td>
+                        <select id="BaeArt_@Bae.BestandsaenderungsartID" class="BaeArt">
+                          <option value="true" >Zugang</option>
+                          <option value="false" selected>Abgang</option>
+                        </select> 
+                    </td>
+                }
+                <td>
+                    <input type="button"  id="BtnBae_@Bae.BestandsaenderungsartID" class="BtnBae" value="Änderung Speichern" style="display:none"/>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="2">
+                <input type="button" id="addBAEArt" value="hinzufügen"/>
+            </td>
+        </tr>
+    </table>
+
+    <h3>Paketpreise</h3>
+    <table id="Paketpreise" class="input">
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                Versandart
+            </th>
+            <th>
+                Preis (€)
+            </th>
+        </tr>
+        @{int l = 0;}
+        @foreach (var paketpreis in (ICollection<WPMAsignmentHandling.Models.Paketpreis>)ViewData["Paketdaten"])
+        {
+            l++;
+            <tr>
+                <td>
+                    @l.
+                </td>
+                <td>
+                    <input type="text" id="Versandart_@paketpreis.PaketpreisID" value="@paketpreis.Versandart" class="large" />
+                </td>
+                <td>
+                    <input type="text" id="Preis_@paketpreis.PaketpreisID" value="@paketpreis.Preis" class="small" />
+                </td>
+                <td>
+                    <input type="button" id="BtnPaketpreis_@paketpreis.PaketpreisID" class="BtnPaketpreis" value="Änderung Speichern" style="display:none" />
+                </td>
+            </tr>
+        }
+    </table>
+
+
+    <h3>Abrechnungspreise</h3>
+    <table id="AbrechnungsPreise" class="input">
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Preis (€)
+            </th>
+        </tr>
+        @{int m = 0;}
+        @foreach (var abrechnungspreis in (ICollection<WPMAsignmentHandling.Models.Abrechnungspreis>)ViewData["Abrechnungspreise"])
+        {
+            m++;
+            <tr>
+                <td>
+                    @m.
+                </td>
+                <td>
+                    <input type="text" id="NameAbrechnungsPreis_@abrechnungspreis.AbrechnungspreisID" value="@abrechnungspreis.Name" class="large" />
+                </td>
+                <td>
+                    <input type="text" id="AbrechnungsPreis_@abrechnungspreis.AbrechnungspreisID" value="@abrechnungspreis.Preis" class="small" />
+                </td>
+                <td>
+                    <input type="button" id="BtnAbrechnungsPreis_@abrechnungspreis.AbrechnungspreisID" class="BtnAbrechnungsPreis" value="Änderung Speichern" style="display:none" />
+                </td>
+            </tr>
+        }
+    </table>
+
+    <h3>Ländercodes</h3>
+    <table id="Laender" class="input">
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                Ländercode
+            </th>
+            <th>
+                Land
+            </th>
+        </tr>
+        @{int k = 0;}
+        @foreach (var land in (ICollection<WPMAsignmentHandling.Models.Land>)ViewData["Laender"])
+        {
+            k++;
+            <tr>
+                <td>
+                    @k.
+                </td>
+                <td>
+                    <input type="text" id="CC_@land.LandID" value="@land.CountryCode"/>
+                </td>
+                <td>
+                    <input type="text" id="Land_@land.LandID" value="@land.land" class="extralarge"/>
+                </td>
+                <td>
+                    <input type="button" id="BtnLand_@land.LandID" class="BtnLand"value="Änderung Speichern" style="display:none"/>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="2">
+                <input type="button" id="addLand" value="hinzufügen"/>
+            </td>
+        </tr>
+    </table>
+
+   
+</div>
+<div class="Buttons">
+    <table >
+        <tr>
+            <td>
+                @Html.ActionLink("Fertig", "Index", "Messeverwaltung")
+            </td>
+        </tr>
+    </table>
+ </div>
+
+<script type="text/javascript">
+
+    $('.input').on('keyup', 'input[type=text]', function () {
+        var Kennzeichnung = $(this).attr('id').substring(0, 2);
+        var start = $(this).attr('id').indexOf("_") + 1;
+        var end = $(this).attr('id').length;
+        var ID = $(this).attr('id').substring(start, end);
+        
+        if (Kennzeichnung == "Be" || Kennzeichnung == "Ar") {
+            $('#BtnArtikelart_' + ID).show();
+        }
+        if (Kennzeichnung == "Sp") {
+            $('#BtnSprache_' + ID).show();
+        }
+        if (Kennzeichnung == "CC" || Kennzeichnung == "La") {
+            $('#BtnLand_' + ID).show();
+        }
+        if (Kennzeichnung == "Ba") {
+            $('#BtnBae_' + ID).show();
+        }
+        if (Kennzeichnung == "Ve" || Kennzeichnung == "Pr") {
+            $('#BtnPaketpreis_' + ID).show();
+        }
+        if (Kennzeichnung == "Ab" || Kennzeichnung == "Na") {
+            $('#BtnAbrechnungsPreis_' + ID).show();
+        }
+    });
+    $('#BAE').on('change', '.BaeArt', function () {
+        var start = $(this).attr('id').indexOf("_") + 1;
+        var end = $(this).attr('id').length;
+        var ID = $(this).attr('id').substring(start, end);
+        $('#BtnBae_' + ID).show();
+    });
+
+
+    $('#Artikelarten').on('click', '.BtnArtikelart', function () {
+        var start = $(this).attr('id').indexOf("_") + 1;
+        var end = $(this).attr('id').length;
+        var ArtikelartID = $(this).attr('id').substring(start, end);
+        var Artikelart = $('#Artikelart_' + ArtikelartID).val();
+        var Bemerkung = $('#Bemerkung_' + ArtikelartID).val();
+        $.ajax({
+            url: "/Administration/ArtikelartAendern",
+            type: 'Post',
+            async: true,
+            cache: false,
+            datatype: 'Json',
+            timeout: 30000,
+            data: { ArtikelartID: ArtikelartID, Bemerkung: Bemerkung, Artikelart:Artikelart },
+            error: function (err) {
+                alert("Error");
+            },
+            success: function (e) {
+                alert("Änderung Gespeichert!");
+                $('#BtnArtikelart_' + ArtikelartID).hide();
+            }
+        });
+    });
+
+    $('#Artikelarten').on('click', '#addArt', function () {
+        @{i += 1;}
+        $('#Artikelarten tr:last').before('<tr> <td>@i. </td><td> <input type="text" id="Artikelart" value="" class="extralarge" /></td> <td> <input type="text" id="Bemerkung" value="" class="extralarge"/> </td><td> <input type="button" id="ArtikelartAnlegen"  value="Anlegen" /> </td></tr>');
+        $('#addArt').attr('disabled', 'disabled');
+    });
+
+    $('#Artikelarten').on('click', '#ArtikelartAnlegen', function () {
+        var Artikelart = $('#Artikelart').val();
+        var Bemerkung = $('#Bemerkung').val();
+        $.ajax({
+            url: "/Administration/ArtikelartAnlegen",
+            type: 'Post',
+            async: true,
+            cache: false,
+            datatype: 'Json',
+            timeout: 30000,
+            data: { Artikelart: Artikelart, Bemerkung: Bemerkung },
+            error: function (err) {
+                alert("Error");
+            },
+            success: function (ArtikelartID) {
+                $('#Artikelart').attr('id','Artikelart_' + ArtikelartID);
+                $('#Bemerkung').attr('id', 'Bemerkung_' + ArtikelartID);
+                $('#ArtikelartAnlegen').val('Änderung Speichern');
+                $('#ArtikelartAnlegen').hide();
+                $('#ArtikelartAnlegen').attr('class', 'BtnArtikelart');
+                $('#ArtikelartAnlegen').attr('id','BtnArtikelart_' + ArtikelartID);
+                $('#addArt').enabled('true');
+                alert("Artikelart angelegt!");
+            }
+        });
+    });
+
+    $('#Artikelsprachen').on('click','.BtnSprache', function () {
+        var start = $(this).attr('id').indexOf("_") + 1;
+        var end = $(this).attr('id').length;
+        var SpracheID = $(this).attr('id').substring(start, end);
+        var sprache = $('#Sprache_' + SpracheID).val();
+        $.ajax({
+            url: "/Administration/ArtikelspracheAendern",
+            type: 'Post',
+            async: true,
+            cache: false,
+            datatype: 'Json',
+            timeout: 30000,
+            data: { ArtikelspracheID: SpracheID, Sprache: sprache },
+            error: function (err) {
+                alert("Error");
+            },
+            success: function (e) {
+                alert("Änderung Gespeichert!");
+                $('#BtnSprache_' + SpracheID).hide();
+            }
+        });
+    });
+
+    $('#Artikelsprachen').on('click', '#addSprache', function () {
+        @{j += 1;}
+        $('#Artikelsprachen tr:last').before('<tr> <td>@j. </td> <td> <input type="text" id="Sprache" value="" class="extralarge"/> </td><td> <input type="button" id="SpracheAnlegen"  value="Anlegen" /> </td></tr>');
+        $('#addSprache').attr('disabled', 'disabled');
+    });
+    $('#Artikelsprachen').on('click', '#SpracheAnlegen', function () {
+        var Sprache = $('#Sprache').val();
+        $.ajax({
+            url: "/Administration/ArtikelspracheAnlegen",
+            type: 'Post',
+            async: true,
+            cache: false,
+            datatype: 'Json',
+            timeout: 30000,
+            data: { Sprache:Sprache },
+            error: function (err) {
+                alert("Error");
+            },
+            success: function (SpracheID) {
+                $('#Sprache').attr('id', 'Sprache_' + SpracheID);
+                $('#SpracheAnlegen').val('Änderung Speichern');
+                $('#SpracheAnlegen').hide();
+                $('#SpracheAnlegen').attr('class', 'BtnSprache');
+                $('#SpracheAnlegen').attr('id', 'BtnSprache_' + SpracheID);
+                $('#addSprache').enabled('true');
+                alert("Artikelsprache angelegt!");
+            }
+        });
+    });
+
+    $('#Laender').on('click','.BtnLand', function () {
+        var start = $(this).attr('id').indexOf("_") + 1;
+        var end = $(this).attr('id').length;
+        var LandID = $(this).attr('id').substring(start, end);
+        var cc = $('#CC_' + LandID).val();
+        var land = $('#Land_' + LandID).val();
+        $.ajax({
+            url: "/Administration/LandAendern",
+            type: 'Post',
+            async: true,
+            cache: false,
+            datatype: 'Json',
+            timeout: 30000,
+            data: { LandID: LandID, CC: cc, Land: land },
+            error: function (err) {
+                alert("Error");
+            },
+            success: function (e) {
+                alert("Änderung Gespeichert!");
+                $('#BtnLand_' + LandID).hide();
+            }
+        });
+    });
+
+    $('#Laender').on('click', '#addLand', function () {
+        @{k += 1;}
+        $('#Laender tr:last').before('<tr> <td>@k. </td><td> <input type="text" id="CC" value=""/></td> <td> <input type="text" id="Land" value="" class="extralarge"/> </td><td> <input type="button" id="LandAnlegen"  value="Anlegen" /> </td></tr>');
+        $('#addLand').attr('disabled', 'disabled');
+    });
+    $('#Laender').on('click', '#LandAnlegen', function () {
+        var cc = $('#CC').val();
+        var land = $('#Land').val();
+        $.ajax({
+            url: "/Administration/LandAnlegen",
+            type: 'Post',
+            async: true,
+            cache: false,
+            datatype: 'Json',
+            timeout: 30000,
+            data: { CC:cc, Land:land },
+            error: function (err) {
+                alert("Error");
+            },
+            success: function (LandID) {
+                $('#Land').attr('id', 'Land_' + LandID);
+                $('#CC').attr('id', 'CC_' + LandID);
+                $('#LandAnlegen').val('Änderung Speichern');
+                $('#LandAnlegen').hide();
+                $('#LandAnlegen').attr('class', 'BtnLand');
+                $('#LandAnlegen').attr('id', 'BtnLand_' + LandID);
+                $('#addLand').enabled('true');
+                alert("Land angelegt!");
+            }
+        });
+    });
+
+
+    $('#BAE').on('click', '.BtnBae', function () {
+        var start = $(this).attr('id').indexOf("_") + 1;
+        var end = $(this).attr('id').length;
+        var BaeID = $(this).attr('id').substring(start, end);
+        var Grund = $('#BaeGrund_' + BaeID).val();
+        var Art = $('#BaeArt_' + BaeID).val();
+        $.ajax({
+            url: "/Administration/BestandaenderungsartAender",
+            type: 'Post',
+            async: true,
+            cache: false,
+            datatype: 'Json',
+            timeout: 30000,
+            data: { BAEArtId: BaeID, Grund: Grund, Art: Art  },
+            error: function (err) {
+                alert("Error");
+            },
+            success: function (e) {
+                alert("Änderung Gespeichert!");
+                $('#BtnBae_' + BaeID).hide();
+            }
+        });
+    });
+
+    $('#BAE').on('click', '#addBAEArt', function () {
+        @{o += 1;}
+        $('#BAE tr:last').before('<tr> <td>@o. </td><td> <input class="extralarge" type="text" id="BaeGrund" value=""/></td> <td> <select id=BaeArt class="BaeArt"><option value="true" selected>Zugang</option><option value="false">Abgang</option></select>  </td><td> <input type="button" id="BaeAnlegen"  value="Anlegen" /> </td></tr>');
+        $('#addBAEArt').attr('disabled', 'disabled');
+    });
+
+    $('#BAE').on('click', '#BaeAnlegen', function () {
+        var Grund = $('#BaeGrund').val();
+        var Art = $('#BaeArt').val();
+        $.ajax({
+            url: "/Administration/BestandaenderungsartAnlegen",
+            type: 'Post',
+            async: true,
+            cache: false,
+            datatype: 'Json',
+            timeout: 30000,
+            data: { Grund: Grund, Art: Art },
+            error: function (err) {
+                alert("Error");
+            },
+            success: function (BaeID) {
+                $('#Grund').attr('id', 'BaeGrund_' + BaeID);
+                $('#BaeArt').attr('id', 'BaeArt_' + BaeID);
+                $('#BaeAnlegen').val('Änderung Speichern');
+                $('#BaeAnlegen').hide();
+                $('#BaeAnlegen').attr('class', 'BtnBae');
+                $('#BaeAnlegen').attr('id', 'BtnBae_' + BaeID);
+                $('#addBaeArt').enabled('true');
+                alert("Bestandänderungsart angelegt!");
+            }
+        });
+    });
+
+
+    $('#Paketpreise').on('click', '.BtnPaketpreis', function () {
+        var start = $(this).attr('id').indexOf("_") + 1;
+        var end = $(this).attr('id').length;
+        var paketpreisID = $(this).attr('id').substring(start, end);
+        var Versandart = $('#Versandart_' + paketpreisID).val();
+        var preis = $('#Preis_' + paketpreisID).val();
+        $.ajax({
+            url: "/Administration/Paketpreisaendern",
+            type: 'Post',
+            async: true,
+            cache: false,
+            datatype: 'Json',
+            timeout: 30000,
+            data: { PaketpreisID: paketpreisID, preis:preis, versandart: Versandart },
+            error: function (err) {
+                alert("Error");
+            },
+            success: function (e) {
+                alert("Änderung Gespeichert!");
+                $('#BtnPaketpreis_' + paketpreisID).hide();
+            }
+        });
+    });
+
+    $('#AbrechnungsPreise').on('click', '.BtnAbrechnungsPreis', function () {
+        var start = $(this).attr('id').indexOf("_") + 1;
+        var end = $(this).attr('id').length;
+        var AbrechnungsPreisID = $(this).attr('id').substring(start, end);
+        var Name = $('#NameAbrechnungsPreis_' + AbrechnungsPreisID).val();
+        var preis = $('#AbrechnungsPreis_' + AbrechnungsPreisID).val();
+        alert(Name + preis + AbrechnungsPreisID);
+        $.ajax({
+            url: "/Administration/AbrechnungsPreisAendern",
+            type: 'Post',
+            async: true,
+            cache: false,
+            datatype: 'Json',
+            timeout: 30000,
+            data: { AbrechnungsPreisID: AbrechnungsPreisID, Preis: preis, Name: Name },
+            error: function (err) {
+                alert("Error");
+            },
+            success: function (e) {
+                alert("Änderung Gespeichert!");
+                $('#BtnAbrechnungsPreis_' + AbrechnungsPreisID).hide();
+            }
+        });
+    });
+
+</script>

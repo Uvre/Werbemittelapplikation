@@ -1,0 +1,33 @@
+﻿@{
+    string controller = HttpContext.Current.Request.RequestContext.RouteData.Values["Controller"].ToString();
+    if (controller.CaseInsensitiveContains("WebShop"))
+    {
+        Layout = "~/Views/Shared/_LayoutWebshop.cshtml";
+    }
+    else
+    {
+        if (ViewContext.Controller.ViewBag.ReturnUrl != null){
+            string url = ViewContext.Controller.ViewBag.ReturnUrl;
+            if (url.IndexOf("WebShop", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                Layout = "~/Views/Shared/_LayoutWebshop.cshtml";
+            }
+            else
+            {
+                Layout = "~/Views/Shared/_Layout.cshtml";
+            }
+        }
+        else
+        {
+            if (ViewContext.Controller.ViewBag.WebShop != null)
+            {
+                Layout = "~/Views/Shared/_LayoutWebshop.cshtml";
+            }
+            else
+            {
+                Layout = "~/Views/Shared/_Layout.cshtml";
+            }
+        }
+    }
+}
+

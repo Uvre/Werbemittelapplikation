@@ -1,0 +1,1005 @@
+﻿
+body {
+    background-color: black;
+    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif,Verdana;
+    margin: 0;
+    padding:0px;
+    height: 100%;
+}
+
+html {
+    background-color: white;
+    margin: 0;
+    padding:0px;
+    height: 100%;
+}
+
+
+head {
+    background-color:  white;
+    margin: 0;
+    padding:0px;
+    height: 10%;
+}
+
+
+input[type="text"] {
+    /*border-radius: 1PX;*/
+    padding-left: 5PX;
+}
+
+input[type="password"], select {
+    padding-left: 5PX;
+}
+
+
+input[type="text"]:disabled {
+    background-color:gray;
+}
+
+header {
+    background-color: steelblue;
+    margin: 0;
+    padding: 0;
+    height: 6%;
+    width:100%;
+    vertical-align: central;
+    display:block;
+}
+
+@media print {
+
+
+    header {
+        display: none;
+    }
+
+    .Head{
+        display:none;
+    }
+
+    section.SiteHeader{
+        display:none;
+    }
+
+    hr.borderMin{
+        display:none;
+    }
+
+    hr.borderMax{
+        display:none;
+    }
+
+    .hidden {
+        display:none;
+    }
+    #PacklisteNachSuche{
+        display:none;
+    }
+
+    div.packliste {
+        display:block;
+        background-color:white;
+        opacity:1;
+        position:absolute;
+        left:10px;
+        top:10px;
+    }
+        div.packliste h1{
+            font-size:20pt;
+            margin:0;
+        }
+
+        div.packliste table th {
+            padding:5px 5PX 5PX 5PX;
+            text-align:left;
+            border:none;
+            font-size: 11Px;
+        }
+        
+        div.packliste table td {
+            padding:5px 5PX 5PX 5PX;
+            text-align:center;
+            border:none;
+            font-size: 11Px;
+        }
+
+        div.packliste table > tbody > tr:first-child>td{
+            text-align:left;
+        }
+    #AuftragsdatenPrint {
+        display:block;
+    }
+        
+        #AuftragsdatenPrint h2{
+            font-size: 16Px;
+        }
+    
+        #AuftragsdatenPrint table thead{
+                font-weight: bold;
+            }
+            #AuftragsdatenPrint table th{
+                font-size: 12Px;
+            }
+            #AuftragsdatenPrint table td{
+                font-size: 12Px;
+                padding:5Px 5Px 5Px 5PX;
+            }
+
+    h1.hTitel {
+        display: none;
+    }
+
+    
+
+    .DisableLayer {
+        display: none;
+    }
+
+    div.appMainArea {
+        display: none;
+    }
+
+    div.Buttons {
+        display:none;
+    }
+
+    h2 {
+        display:none;
+    }
+    
+    title {
+        display:none;
+    }
+
+    div.printArt {
+        display:none;
+        
+    }
+    div.printArt table > tbody > tr:first-child > td:first-child{
+            text-align:left;
+    }
+    #PacketLabelScreen {
+        display:none;
+    }
+    #PacketLabelPrint {
+        display:table-cell;
+    }
+    
+}
+
+@media screen {
+    .hidden {
+        display:none;
+    }
+
+    #PacklisteNachSuche{
+        display:none;
+    }
+
+    div.packliste {
+        display: none;
+    }
+    #AuftragsdatenPrint {
+        display:none;
+    }
+    #PacketLabelPrint {
+        display:none;
+    }
+    #AuftragsmailDruckenText {
+        display:none;
+    }
+}
+
+
+hr {
+    margin: 2PX 0PX 2PX 0PX;
+}
+
+
+
+/*---------------------NavigationBars----------------------------------------------------------------------------*/
+
+a, input[type="submit"], input[type="button"]{
+    margin: 0 0 0 10px;
+    color: black;
+    font-weight:bold;
+    text-decoration:none;
+    background-color:ButtonFace; 
+    display:inline-block;
+    padding:4px 9px 4px 9px; 
+    font-size:12PX;
+    border: 1px solid darkgray;
+    border-radius:3px;
+    font-family: Arial;
+    cursor: pointer;
+}
+
+a:hover, input[type="submit"]:hover, input[type="button"]:hover{
+    color:steelblue;
+    border: 1px solid steelblue;
+}
+
+ div.Buttons a:disabled, input[type="submit"]:disabled, input[type="button"]:disabled{
+     opacity:0.6;
+     color:black;
+     border: 1px solid darkgray;
+     cursor: initial;
+}
+
+
+ul.Head {
+    display:  inline-block;
+    text-align:left;
+    margin: 10px 0 0 20px; 
+    padding:0;
+    text-decoration:none;
+}
+
+
+    ul.Head li{
+        display: inline-block;
+    }
+        ul.Head li a{
+            background-color: gainsboro;
+            padding:4PX 10px;
+            border: solid 1Px white;
+            opacity:1;
+            margin-top:0px;
+            border-radius: 2px;
+            color: black;
+            font-size:15px;
+            font-weight: 600;
+            opacity:0.6;
+
+        }
+            ul.Head li a:hover{
+                opacity:1;
+            }
+
+        ul.Head li.navHeadAct a{
+            background-color: gainsboro;
+            opacity:1;
+
+        }
+
+/*---------------------Applikation Area----------------------------------------------------------------------------*/
+
+div.mainFunctions {
+    background-color:floralwhite;
+}
+
+hr.borderMax {
+    border:none;
+    height:0.3%;
+    width:100%;
+    margin:0;
+    padding:0;
+}
+
+hr.borderMin {
+    border:none;
+    height:0.2%;
+    width:100%;
+    margin:0;
+    padding:0;
+}
+
+section.SiteHeader {
+    height:2.5%;
+    background-color: lightsteelblue;
+    padding-left:15Px;
+    padding-top:8px
+}
+
+    section.SiteHeader h2 {
+        margin:0;
+        padding:0;
+        color: black;
+        font-size: 13Px;
+    }
+
+div.appMainArea{
+    background-color:floralwhite; 
+    margin: 0;
+    padding:0;
+    height:84%;
+    /*min-height:83.8%;*/
+    overflow-y: auto;
+    padding-left:15Px;
+}
+
+    h3 {
+        color: black;
+        background-color: none;
+        font-size: 14Px;
+        padding:3Px 5px 3PX 10Px;
+        margin: 0;
+    }
+
+
+    div.DisableLayer {
+        position: absolute;
+	    left: 0px;
+	    top: 10%;
+        background-color:gray;
+        z-index:1;
+        height:84.1%;
+        width:100%;
+        opacity:0.8;
+        margin:0;
+        /*border-bottom:black solid 3PX;
+        border-top:black solid 3PX;*/
+    }
+
+    div.DisableLayerAll {
+        position: absolute;
+	    left: 0px;
+	    top: 0px;
+        background-color:gray;
+        z-index:1;
+        height:100%;
+        width:100%;
+        opacity:0.8;
+        margin:0;
+        /*border-bottom:black solid 3PX;
+        border-top:black solid 3PX;*/
+    }
+    
+    div.ButtonToplayer {
+        background-color:lavender;
+        position: absolute;
+	    left: 0px;
+	    top: 10.1%;
+        z-index:2;
+        height:6.2%;
+        width:97%;
+        /*width:100%;*/
+        border-bottom:black solid 2PX;
+        padding:3PX 0Px 0PX 3%;
+        /*margin:0;*/
+    }
+
+          
+
+        div.ButtonToplayer table td {
+            padding:10PX 0Px 0PX 10px;
+        }
+
+
+    div.appMainArea table {
+        margin: 10PX 0PX 10PX 10PX;
+        border-collapse:collapse;
+    }
+
+    div.appMainArea table th {
+        padding:3px 6PX 3PX 6PX;
+        text-align: left;
+        font-size: 11Px;
+    }
+
+    div.appMainArea table td {
+        padding:1px 3PX 1PX 3PX;
+        text-align: left;
+        font-size: 11Px;
+    }
+
+div.AuflistungNotFixed {
+    margin:10Px 10Px 10Px 10Px;
+    padding:0;
+    clear:left;
+}
+    div.AuflistungNotFixed table {
+            /*background-color:white;*/
+            display:block;
+            width:100%;
+            min-width:100%;
+            max-width:100%;
+            /*max-height:100%;
+            height:100%;*/
+            margin:0;
+        }    
+        div.AuflistungNotFixed table tr.white {
+            background-color:white;
+        }
+
+        div.AuflistungNotFixed table tr.grey {
+            background-color:WhiteSmoke;
+        }
+        
+        div.AuflistungNotFixed table th {
+            background-color:dimgray;
+            color:white;
+            border-top:solid 2PX black;
+            border-bottom:solid 1PX black;
+            position: relative;
+        }
+        div.AuflistungNotFixed table td {
+            padding:3px 6PX 3PX 6PX;
+            text-align:left;
+            border-top:solid 1PX black;
+            border-bottom:solid 1PX black;
+        }
+        div.AuflistungNotFixed table td.Button {
+            border: none;
+            background-color:rgb(220,230,242);
+        }
+
+div.Auflistung {
+    max-height:90%;
+    height:90%;
+    margin:10Px 10Px 10Px 10Px;
+    padding:0;
+    clear:left;
+}
+
+        div.Auflistung table {
+            display:block;
+            height:100%;
+            margin:0;
+        }
+
+        div.Auflistung table thead{
+             overflow-y: scroll;
+        }
+
+        div.Auflistung table tbody{
+            display:block;
+            max-height:90%;
+            height:90%;
+            min-height:90%;
+            overflow-y: auto;
+        }
+    
+        div.Auflistung table tr.white {
+            background-color:white;
+        }
+
+        div.Auflistung table tr.grey {
+            background-color:WhiteSmoke;
+
+        }
+        
+        div.Auflistung table th {
+            background-color:dimgray;
+            color:white;
+            border-top:solid 2PX black;
+            border-bottom:solid 1PX black;
+            position: relative;
+            padding:2px 2PX 2PX 4PX;
+        }
+
+        div.Auflistung table td {
+            padding:2px 2PX 2PX 4PX;
+            text-align:left;
+            border-top:solid 1PX black;
+            border-bottom:solid 1PX black;
+        }
+
+        div.Auflistung table tr:hover {
+            background-color:lightblue;
+            /*opacity:0.8;*/
+
+        }
+
+        div.Auflistung table td.Button {
+            border: none;
+            background-color:rgb(220,230,242);
+        }
+
+
+#KontainerSchnellinfo{
+    display:none;
+    position:absolute;
+    /*z-index:25;*/
+    background-color:white;
+    border:2px gray solid;
+    padding:10px;
+    margin: 0 0 0 20px;
+
+}
+
+#KontainerSchnellinfo table{
+    background-color:white;
+    margin: 0 0 0 10px;
+    font-size: 14px;
+}
+
+#KontainerSchnellinfo table tr{
+    background-color:white;
+    margin: 0 0 0 10px;
+    border:none;
+}
+
+#KontainerSchnellinfo table tr td{
+    background-color:white;
+    padding: 5px 0 0 10px;
+    border:none;
+    font-size: 14px;
+}
+
+.redDot{
+    height:15px;
+    width:15px;
+    background-color:red;
+    border-radius:20px;
+}
+
+.greenDot{
+    height:15px;
+    width:15px;
+    background-color:green;
+    border-radius:20px;
+}
+
+.LegendeSchnellInfo{
+
+}
+
+div.Kundendetails {
+    display:inline-block;
+    position:relative;   
+    background-color:none;
+    border: none;
+}
+
+div.Standarddaten {
+    float: left; 
+    border:2Px solid;
+    opacity:1;
+    background-color: white;
+    margin:4PX 0PX 4PX 5PX;
+}
+    div.Standarddaten h3 {
+        background-color: Purple;
+        color:white;
+        margin: 0px 0px 0px 0px;
+        text-align:center;
+        padding-bottom: 1PX;
+        font-size: 13Px;
+        border-bottom:solid 1PX black;
+    }
+
+    
+
+div.Messeverlauf {
+    margin: 20PX 0PX 0Px 60PX;
+    float: left; 
+    opacity:1;
+    background-color: white;
+}
+        div.Messeverlauf h3 {
+            background-color: black;
+            background:linear-gradient(top, blue, #adf);
+            /*background:-moz-linear-gradient(left, green,blue, gray);*/
+            color:white;
+            margin: 0px 0px 0px 0px;
+            text-align:left;
+            padding-bottom: 1PX;
+            font-size: 15Px;
+        }
+        div.Messeverlauf table {
+            display:block;
+            margin:0Px;
+            padding:0px;
+            background-color:none;
+            
+        }
+            div.Messeverlauf table td{
+                height: 30PX;
+                min-height : 100PX;
+                margin:0Px;
+                padding:0px;
+                text-align:center;
+            }
+
+div.Bestellzeitraum {
+    display:inline-block;
+    min-height: 50PX;
+    min-width: 180PX;
+    line-height: 50PX;
+    background-color: green;
+    margin:0Px;
+    padding:0px;
+    text-align:center;
+    vertical-align:central;
+    font-size: 20PX;
+    font-weight: bold;
+    color:white;
+}
+div.Messezeitraum {
+    display:block;
+    min-height: 50PX;
+    min-width: 180PX;
+    background-color: blue;
+    margin:0Px;
+    padding:0px;
+    font-size: 20PX;
+    font-weight: bold;
+    color:white;
+    line-height: 50PX;
+}
+div.Abrechnungszeitraum {
+    display:block;
+    min-height: 50PX;
+    min-width: 180PX;
+    background-color: gray;
+    margin:0Px;
+    padding:0px;
+    font-size: 20PX;
+    font-weight: bold;
+    color:white;
+    line-height: 50PX;
+}
+
+div.clear {
+    clear:left;
+    clear:right;
+}
+        div.printArt table th {
+            padding:5px 20PX 5PX 20PX;
+            text-align:center;
+            border:none;
+            font-size: 15Px;
+        }
+        
+        div.printArt table td {
+            padding:5px 20PX 5PX 20PX;
+            text-align:center;
+            border:none;
+            font-size: 15Px;
+        }
+
+
+div.ButtonsAnmeldung{
+    margin:20PX 0PX 10PX 0PX; 
+    /*font-size:12px;*/
+}
+
+div.Buttons {
+    background-color: steelblue;
+    margin:0;
+    height: 5.5%;
+    padding:3px 0  0 20PX;
+    font-size: 12px;
+}   
+
+div.Buttons table{
+    display:inline-block;
+    padding:0;
+    margin:0;
+}  
+        
+
+#AuftragsdatenDialog {
+
+}
+
+    #AuftragsdatenDialog table{
+        padding: 5Px;
+    }
+
+    #AuftragsdatenDialog table td{
+        padding: 5Px;
+    }
+
+input.confirm {
+    margin: 20PX 0px 10PX 20PX;
+    font-weight: bold;
+}
+
+.Einlesedialog {
+    resize: none;
+    display:inline;
+    width: 100%;
+    height:100%;
+}
+
+/*------------------------Größen TextBox-----------------------------*/
+
+.Tb_Artikelmenge
+{
+    width:50PX;
+    max-width:50PX;
+    min-width:50PX;
+}
+
+.small {
+    width:50PX;
+    max-width:50PX;
+    min-width:50PX;
+}
+
+.Tmenge {
+    width:50PX;
+    max-width:50PX;
+    min-width:50PX;
+}
+
+.AdressePLZ {
+    width:50PX;
+    max-width:50PX;
+    min-width:50PX;
+}
+
+.large {
+    width:220PX;
+    max-width:220PX;
+    min-width:220PX;
+}
+
+.extralarge {
+    width:500PX;
+    max-width:500PX;
+    min-width:500PX;
+}
+
+.superwide {
+    width:1000Px;
+    max-width:1000Px;
+    min-width:1000Px;
+}
+
+.Tb_Pr {
+    width:50PX;
+    max-width:50PX;
+    min-width:50PX;
+}
+
+.Tb_Ge {
+    width:50PX;
+    max-width:50PX;
+    min-width:50PX;
+}
+
+.CBMenge {
+    margin-right: 20Px ;
+    margin-left: 20Px;
+    vertical-align: central;
+}
+
+.medium {
+    max-width:75PX;
+    width:75PX;
+    min-width:75PX;
+}
+
+.redbig {
+    font-weight:bold;
+    color:red;
+    font-size: 14Px;
+}
+
+.redverybig {
+    padding: 10px 0 10px 20px;
+    font-weight:bold;
+    color:red;
+    font-size: 14Px;
+}
+
+.BermerkungInput{
+    resize:none;
+    width:1000px;
+    height:50PX; 
+    font-weight:bold;
+    margin:10Px 0Px 5Px 10Px" 
+}
+
+.green {
+       background-color:lightgreen;
+       color:black;
+}
+
+.red {
+       background-color:lightsalmon;
+       color:black;
+}
+
+.backgreen {
+       background-color:green;
+       color:white;
+}
+
+.backblue {
+       background-color:dodgerblue;
+}
+
+.backgray {
+       background-color:gray;
+}
+
+
+.backorange {
+       background-color:orange;
+       color:white;
+}
+
+.backred {
+       background-color:red;
+}
+
+.emphasized {
+    font-weight:bolder;
+}
+
+div.eingerueckt {
+    margin-left: 30PX;
+}
+
+/* --------------------------   XML Dateien Einlesen Dialog*/
+#DialogEinlesenXMLFiles{
+
+}
+
+#DialogEinlesenXMLFiles h3{
+    font-size: 14px;
+    padding: 5px 0 5px 0;
+}
+
+#XmlFilenameList{
+    height:200px;
+    overflow-y:auto;
+    display:block;
+    font-size:13px;
+}
+
+#XmlFilenameList tbody{
+
+}
+
+
+
+#XmlFilenameList tbody tr:hover{
+    background-color:lightblue;
+    cursor:default;
+}
+
+.XmlFilenameList_Selected{
+    background-color:lightblue;
+}
+
+
+
+
+#XMLDateiInhalt{
+    font-size:11px;
+    display:block;
+    height:175px;
+    resize:none;
+    width:100%;
+}
+
+#XMLEinleseProtokoll{
+    font-size:11px;
+    display:block;
+    height:175px;
+    resize:none;
+    width:100%;
+}
+
+
+
+/* --------------------------   styles for validation helpers */
+.field-validation-error {
+    color: #e80c4d;
+    font-weight: bold;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+input.input-validation-error {
+    border: 1px solid #e80c4d;
+}
+
+input[type="checkbox"].input-validation-error {
+    border: 0 none;
+}
+
+.validation-summary-errors {
+    color: #e80c4d;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.validation-summary-errors li{
+    list-style-type: none;
+}
+
+/*.validation-summary-valid {
+    display: none;
+}*/
+
+
+.ui-autocomplete {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color:black;
+        background-color:white;
+        font-family:Arial;
+        font-size:14px;
+}
+
+.ui-datepicker {
+    font-size: 12Px;
+}
+    .ui-datepicker a {
+        font-size: 12Px;
+        padding:0;
+        margin:0;
+    }
+
+    .ui-datepicker input[type="button"] {
+        font-size: 12Px;
+        padding:0;
+        margin:0;
+        border:none;
+    }
+
+.ui-dialog-titlebar-close {
+  display:none;
+}
+
+/*.ui-button {
+   height:25pt!important;
+   font-size: 50Px;
+}*/ 
+ 
+.ui-dialog-buttonpane{
+    font-size:12pt!important;
+    margin:0;
+    padding:0;
+}
+.ui-dialog { 
+    z-index: 2 !important ;
+    /*font-size:20px;*/
+}
+/*.ui-front { z-index: 1 !important; }*/
+.ui-widget-overlay {
+    z-index: 1 !important; 
+}
+
+
+div.printArt {
+    background-color:white !important;
+    opacity:1!important;
+    padding:0 0 0 0;
+    margin: 0 0 0 0;
+    font-size:12pt;
+    border: solid 3px;
+    padding: 0 10px 0 10px;
+    /*position:absolute;
+        left:0;
+        top:0;*/
+}
+    div.printArt h1{
+        font-size:24pt;
+    }
+    div.printArt table{
+        font-size:20pt;
+    }
+
+
+.successMessage{
+    color: green;
+    background-color: white;
+    border: 1Px solid green;
+    max-width: 40%;
+    /*margin: 100px 0 0 50px;*/
+    padding: 5PX 10PX 5PX 10PX;
+    font-size: 13PX;
+}
+
+.errorMessage{
+    color: red;
+    background-color: white;
+    border: 1Px solid red;
+    max-width: 40%;
+    padding: 5PX 10PX 5PX 10PX;
+    font-size: 13PX;
+}
+
+
+

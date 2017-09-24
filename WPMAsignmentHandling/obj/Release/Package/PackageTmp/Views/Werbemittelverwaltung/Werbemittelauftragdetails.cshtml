@@ -1,0 +1,907 @@
+﻿@model WPMAsignmentHandling.Models.Werbemittelauftrag
+
+
+@{
+    ViewBag.Title = "Werbemittelauftragdetails";
+    
+   
+}
+
+@section Ueberschrift{
+   Werbemittelauftragdetails - @Model.Kennzeichnung
+}
+
+<div class="appMainArea" id="Auftragsdaten"> 
+    <h3>Bestelldatum: @Html.DisplayFor(model => model.Bestelldatum)</h3><h3>Erstellungsdatum: @Html.DisplayFor(model => model.Erstellungsdatum)</h3>
+    <hr style="clear:both"/>
+     @Html.Partial("Messedetails", Model.messe)
+        <hr style="clear:both"/>
+    <h3>Kunde</h3>
+    <div id="Kundendetails" class ="Kundendetails"> 
+       <div class="Standarddaten">
+            <h3>Auftraggeber</h3>
+            <table>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Auftraggeberadresse.Name)
+                    </th>
+                    <td>
+                        @Model.Auftraggeberadresse.Name
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Auftraggeberadresse.Name2)
+                    </th>
+                    <td>
+                        @Model.Auftraggeberadresse.Name2
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Auftraggeberadresse.Name3)
+                    </th>
+                    <td>
+                        @Model.Auftraggeberadresse.Name3  
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Auftraggeberadresse.Strasse)
+                    </th>
+                    <td>
+                        @Model.Auftraggeberadresse.Strasse  
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Auftraggeberadresse.Ort) 
+                    </th>
+                    <td>
+                        @Model.Auftraggeberadresse.PLZ @Model.Auftraggeberadresse.Ort
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Auftraggeberadresse.Land) 
+                    </th>
+                    <td>
+                        @Model.Auftraggeberadresse.Land.land 
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Auftraggeberadresse.Telefon)
+                    </th>
+                    <td>
+                        @Model.Auftraggeberadresse.Telefon
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Auftraggeberadresse.EMail)
+                    </th>
+                    <td>
+                        @Model.Auftraggeberadresse.EMail
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+       <div class="Standarddaten">
+           <h3>Lieferadresse</h3>
+           @if (Model.Lieferadresse != null)
+           {
+               <table id="Lieferadresse">
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Lieferadresse.Name)
+                        </th>
+                        <td>
+                            @Model.Lieferadresse.Name
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Lieferadresse.Name2)
+                        </th>
+                        <td>
+                            @Model.Lieferadresse.Name2
+                        </td>
+                    </tr>
+                   <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Lieferadresse.Name3)
+                        </th>
+                        <td>
+                            @Model.Lieferadresse.Name3
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Lieferadresse.Strasse)
+                        </th>
+                        <td>
+                            @Model.Lieferadresse.Strasse 
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Lieferadresse.Ort) 
+                        </th>
+                        <td>
+                            @Model.Lieferadresse.PLZ @Model.Lieferadresse.Ort
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Lieferadresse.Land) 
+                        </th>
+                        <td>
+                            @Model.Lieferadresse.Land.land
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Lieferadresse.Telefon)
+                        </th>
+                        <td>
+                            @Model.Lieferadresse.Telefon
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Lieferadresse.EMail)
+                        </th>
+                        <td>
+                            @Model.Lieferadresse.EMail
+                        </td>
+                    </tr>
+                </table>
+           }
+           else
+           {
+               <table id="LiWie">
+                    <tr>
+                        <td>
+                            Wie Auftraggeber
+                        </td>                       
+                    </tr>
+                </table>
+           }
+        </div>
+    
+      
+       <div class="Standarddaten">
+           <h3>Rechnungsadresse</h3> 
+           @if (Model.Rechnungsadresse != null)
+           {
+               <table id="Rechnungsadresse">
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Rechnungsadresse.Name)
+                        </th>
+                        <td>
+                             @Model.Rechnungsadresse.Name
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Rechnungsadresse.Name2)
+                        </th>
+                        <td>
+                            @Model.Rechnungsadresse.Name2
+                        </td>
+                    </tr>
+                   <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Rechnungsadresse.Name3)
+                        </th>
+                        <td>
+                            @Model.Rechnungsadresse.Name3  
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Rechnungsadresse.Strasse)
+                        </th>
+                        <td>
+                            @Model.Rechnungsadresse.Strasse  
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Rechnungsadresse.Ort) 
+                        </th>
+                        <td>
+                            @Model.Rechnungsadresse.PLZ @Model.Rechnungsadresse.Ort
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Rechnungsadresse.Land) 
+                        </th>
+                        <td>
+                            @Model.Rechnungsadresse.Land.land 
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Rechnungsadresse.Telefon)
+                        </th>
+                        <td>
+                            @Model.Rechnungsadresse.Telefon
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Rechnungsadresse.EMail)
+                        </th>
+                        <td>
+                            @Model.Rechnungsadresse.EMail
+                        </td>
+                    </tr>
+                </table>
+           }
+           else
+           {
+               <table id="ReWie">
+                    <tr>
+                        <td>
+                            <input type="hidden" id="ReWieH" name="ReWieH" value="true" />
+                            Wie Auftraggeber
+                        </td>                       
+                    </tr>
+                </table>
+           }
+           </div>
+
+       <div class="Standarddaten">
+           <h3>Austelleradresse</h3>
+           @if (Model.Austelleradresse != null)
+           {
+               <table id="Austelleradresse">
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Austelleradresse.Name)
+                        </th>
+                        <td>
+                             @Model.Austelleradresse.Name2
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Austelleradresse.Name2)
+                        </th>
+                        <td>
+                            @Model.Austelleradresse.Name2
+                        </td>
+                    </tr>
+                   <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Austelleradresse.Name3)
+                        </th>
+                        <td>
+                            @Model.Austelleradresse.Name3  
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Austelleradresse.Strasse)
+                        </th>
+                        <td>
+                            @Model.Austelleradresse.Strasse  
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Austelleradresse.Ort) 
+                        </th>
+                        <td>
+                            @Model.Austelleradresse.PLZ @Model.Austelleradresse.Ort
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Austelleradresse.Land) 
+                        </th>
+                        <td>
+                            @Model.Austelleradresse.Land.land
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Austelleradresse.Telefon)
+                        </th>
+                        <td>
+                            @Model.Austelleradresse.Telefon
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Austelleradresse.EMail)
+                        </th>
+                        <td>
+                            @Model.Austelleradresse.EMail
+                        </td>
+                    </tr>
+                </table>
+           }
+           else
+           {
+               <table id="AuWie">
+                    <tr>
+                        <td>
+                            <input type="hidden" id="AuWieH" name="AuWieH" value="true" />
+                            Wie Auftraggeber
+                        </td>                       
+                    </tr>
+                </table>
+           }
+                
+        </div>
+    </div>
+        <hr />
+    <div class="AuflistungNotFixed" id="Auftragsartikel">    
+        <table>
+        <tr>
+            <th>
+
+            </th>
+            <th>
+                @Html.DisplayName("Artikelnummer")
+            </th>
+        <th>
+            @Html.DisplayName("Artikelart")
+        </th>
+        <th>
+            @Html.DisplayName("Name")
+        </th>
+        <th>
+            @Html.DisplayName("Format")
+        </th>
+        <th>
+            @Html.DisplayName("Sprache")
+        </th>
+        <th>
+            @Html.DisplayName("Gewicht")
+        </th>
+        <th>
+            @Html.DisplayName("Lagerplatz")
+        </th>
+        <th>
+            @Html.DisplayName("Bestand")
+        </th>
+        <th>
+            @Html.DisplayName("Auftragsmenge (Bögen)")
+        </th>
+        <th>
+            @Html.DisplayName("Bereits geliefert")
+        </th>
+        <th>
+            @Html.DisplayName("Zusatz")
+        </th>
+        <th>
+            @Html.DisplayName("Bemerkung")
+        </th>
+    </tr>
+        @{int count = 0;}
+        @if (Model != null)
+        {
+            int i =0;
+        
+            foreach (var item in Model.Auftragsmengen)
+            {
+                i++;
+                count++;
+                string color = "white";
+                if (count % 2 == 0)
+                {
+                    color = "grey";
+                } 
+                
+        <tr class="@color">
+            <td>
+                @if (item != null && !String.IsNullOrEmpty(item.artikel.Bildpfad) && @System.IO.File.Exists(Server.MapPath("~/images/Artikelbilder/" + item.artikel.Bildpfad)))
+                {
+                    <img id="Artikelbild" onmouseover="showDivImageDisplay(this);" onmouseout="hideDivImageDisplay();" src="~/images/Artikelbilder/@item.artikel.Bildpfad" style="max-height:25PX; height:25PX;">
+                }
+                else
+                {
+                    <img id="Artikelbild" onmouseover="showDivImageDisplay(this);" onmouseout="hideDivImageDisplay();" src="~/images/NoPicture.png" style="max-height:20PX; height:20PX;">
+                }
+
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.artikel.Artikelnummer)
+            </td>
+            <td>
+               @Html.DisplayFor(modelItem => item.artikel.artikelart.Art)
+            </td>
+            <td>
+               @Html.DisplayFor(modelItem => item.artikel.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.artikel.Format)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.artikel.Sprache.Sprache)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.artikel.Gewicht) g
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.artikel.Lagerplatz)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.artikel.Bestand)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.menge) @{string boegenText = "";}
+                            @if (item.artikel.artikelart.ArtikelartID == 2 || item.artikel.artikelart.ArtikelartID == 3 || item.artikel.artikelart.ArtikelartID == 37)
+                            {
+                                int boegen = item.menge / 20;
+                                if (item.menge % 20 > 0)
+                                {
+                                    boegen++;
+                                }
+                                boegenText = "(" + (boegen).ToString() +")";
+                            }
+                            @boegenText
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.gelieferteMenge)
+            </td>
+            <td>
+                    @Html.DisplayFor(modelItem => item.artikel.artikelart.Bemerkung)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.artikel.Bemerkung)
+                </td>
+        </tr>
+        }
+    }
+        </table>
+    </div>
+        <hr />
+    @if (Model.Pakete.Count() == 0)
+    {
+        <table>
+             <tr id="message">
+                <td class="redbig">
+                  Noch keine Pakete versendet!
+                </td>       
+             </tr>          
+        </table>                
+    }
+    <table id="Pakete">
+                <tr>
+                    @{int co = 0;}
+                    @foreach (var paket in Model.Pakete)
+                    {
+
+                        string Versandart = paket.Versandart; string oneSelected = ""; string twoSelected = ""; string threeSelected = ""; string fourSelected = "";
+                        string fiveSelected = ""; string sixSelected = ""; string sevenSelected = ""; string eightSelected = ""; string nineSelected = "";
+                        switch (Versandart)
+                        {
+                            case "Brief": oneSelected = "selected";
+                                break;
+                            case "DHL": twoSelected = "selected";
+                                break;
+                            case "DHL Express": threeSelected = "selected";
+                                break;
+                            case "Brief International": fourSelected = "selected";
+                                break;
+                            case "DHL International": fiveSelected = "selected";
+                                break;
+                            case "DHL Internat. Express": sixSelected = "selected";
+                                break;
+                            case "Messecar": sevenSelected = "selected";
+                                break;
+                            case "Kurier": eightSelected = "selected";
+                                break;
+                            case "Abholung": nineSelected = "selected";
+                                break;
+                        }
+                        co++;
+                        <td style="vertical-align:top">
+                        <div class="Standarddaten" >
+                            <h3>Paket @co.ToString()</h3>
+                                <table>
+                                    <tr><td colspan="3"><hr /></td></tr>
+                                    <tr>
+                                        <th>
+                                            
+                                            Versandart 
+                                            <input type="hidden" value="@paket.PaketID" id="paketID_@paket.PaketID" />
+                                        </th>
+                                        <td>
+                                            <label id="LabelVersandart_@paket.PaketID">@paket.Versandart</label>
+                                            <select id="Versandart_@paket.PaketID" style="display:none" autocomplete="off">
+                                                <option value="0">Bitte Wählen...</option>
+                                                <option @oneSelected value="1">Brief</option>
+                                                <option @twoSelected value="2">DHL</option>
+                                                <option @threeSelected value="3">DHL Express</option>
+                                                <option @fourSelected value="4">Brief International</option>
+                                                <option @fiveSelected value="5">DHL International</option>
+                                                <option @sixSelected value="6">DHL Internat. Express</option>
+                                                <option @sevenSelected value="7">Messecar</option>
+                                                <option @eightSelected value="8">Kurier</option>
+                                                <option @nineSelected value="9">Abholung</option>
+                                            </select>
+                                            @*<input type="text" value="@paket.Versandart" id="Versandart_@paket.PaketID" style="display:none"/>*@
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Gewicht
+                                        </th>
+                                        <td>
+                                            <label id="LabelGewicht_@paket.PaketID">@paket.Gewicht.ToString("0.000")</label>
+                                            <input type="text" value="@paket.Gewicht" id="Gewicht_@paket.PaketID" style="display:none" class="small"/> kg
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Preis
+                                        </th>
+                                        <td>
+                                            <label id="LabelPreis_@paket.PaketID">@paket.Preis.ToString("0.00") </label>
+                                            <input type="text" value="@paket.Preis" id="Preis_@paket.PaketID" style="display:none" class="small"/> €
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Paketnummer
+                                        </th>
+                                        @if (paket.Versandart != "Brief" && paket.Versandart != "Brief International" && paket.Versandart != "Abholung" && paket.Versandart != "Messecar" && paket.Versandart != "Kurier")
+                                        {
+                                            <td>
+                                                @{string nummer = paket.Paketnummer;}
+                                                @{string firstpart = "http://nolp.dhl.de/nextt-online-public/set_identcodes.do?lang=de&idc=";}
+                                                @{string lastpart = "&rfn=&extendedSearch=true";}
+                                                @{string link = firstpart+nummer+lastpart;}
+                                                <a href="@link" target="_blank" id="LabelPaketnummer_@paket.PaketID"> @paket.Paketnummer</a>
+                                                <input type="text" value="@paket.Paketnummer" id="Paketnummer_@paket.PaketID" style="display:none" class="medium"/>
+                                            </td>
+                                        }else{
+                                            if (paket.Versandart != "Kurier")
+                                            {
+                                                <td>
+                                                    <label id="LabelPaketnummer_@paket.PaketID">@paket.Paketnummer</label>
+                                                    <label id="Paketnummer_@paket.PaketID" style="display:none">@paket.Paketnummer</label>
+                                                </td>
+                                            }else
+                                            {
+                                                <td>
+                                                    <label id="LabelPaketnummer_@paket.PaketID">ka</label>
+                                                    <input type="text" value="@paket.Paketnummer" id="Paketnummer_@paket.PaketID" style="display:none" class="medium"/>
+                                                </td>
+                                            }
+                                        }
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            Versanddatum 
+                                        </th>
+                                        <td>
+                                            <label id="LabelVersanddatum_@paket.PaketID">@paket.Versanddatum.ToString("dd.MM.yy") </label>
+                                            <input type="text" value="@paket.Versanddatum.ToString("dd.MM.yy")" id="Versanddatum_@paket.PaketID" style="display:none" class="small" /> 
+                                        </td>
+                                    </tr>
+                                    <tr><td colspan="2"><hr /></td></tr>
+                                    @foreach(var item in paket.artikelmenge ){
+                                        
+                                            <tr>
+                                                <th>
+                                                   @item.artikel.artikelart.Art "@item.artikel.Name"
+                                                </th>
+                                                <td>
+                                                   @item.menge Stück
+                                                </td>                       
+                                            </tr>
+                                    }
+                                    <tr ><td colspan="2"><hr /></td></tr>
+                                    @{var Rueckchecked = ""; var Rueckdatum = "-"; var Rueckkosten = "-";
+                                      if (paket.Ruecklaeufer) { Rueckdatum = paket.Ruecksendedatum.ToString("dd.MM.yy"); Rueckchecked = "checked='checked'"; Rueckkosten = paket.Zusatzkosten.ToString("0.00"); }}
+                                    <tr class="ruecklaeufer">
+                                        <td colspan="2" style="vertical-align:middle">
+                                            <label style="margin-right:3Px">Rückläufer </label>
+                                            <input type="checkbox" id="Rueckcheck_@paket.PaketID" name="Rueckcheck_@paket.PaketID" disabled="disabled" style="margin-right:12Px" class="rueckcheck" @Rueckchecked />
+                                            <label>Datum: </label>
+                                            <label id="RueckdatumLabel_@paket.PaketID" style="margin-right:12Px">@Rueckdatum </label>
+                                            <input type="text" value="@Rueckdatum" id="Rueckdatum_@paket.PaketID" style="display:none; margin-right:12Px" disabled="disabled" class="small" /> 
+                                            <label>Kosten: </label>
+                                            <label id="RueckkostenLabel_@paket.PaketID" style="margin-right:10Px">@Rueckkosten  </label>
+                                            <input type="text" value="@Rueckkosten" id="Rueckkosten_@paket.PaketID" style="display:none; margin-right:0Px" disabled="disabled" class="small" />€ 
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            Bemerkung <input type="text" value="@paket.Bemerkung" id="PaBemerkung_@paket.PaketID" style=" margin-right:5px 0px 5px 10px" disabled="disabled" class="large" />
+                                        </td>
+                                    </tr>
+                                    <tr class="ruecklaeufer"><td colspan="2"><hr /></td></tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <input type="button" value="Paketdaten Ändern" id="aendern_@paket.PaketID" class="aendern" />
+                                            <input type="button" value="Änderung Speichern" id="aenderungSpeichern_@paket.PaketID" class="aenderungSpeichern" style="display:none"/>
+                                            <input type="button" value="Abbrechen" id="abbrechen_@paket.PaketID" class="abbrechen" style="display:none"/>            
+                                            <input type="button" value="Paket Löschen" id="Loeschen_@paket.PaketID" class="loeschen"/>
+                                        </td>
+                                    </tr>
+                            </table>
+                            </div>
+                        </td>
+                    }
+                    
+                </tr>
+    </table>
+    <table>
+        <tr>
+            <th>
+                Bemerkung
+            </th>
+            <td>
+                <textarea name="Bermerkung" id="Bemerkung" style="width:600px; height:60px;" readonly="readonly">@Model.Bemerkung</textarea>
+                @*<input type="text" id="Bemerkung" name="Bemerkung" value="@Model.Bemerkung" class="extralarge" />*@
+            </td>
+        </tr>
+    </table>
+    
+</div>
+<div class="Buttons">
+<table >
+    <tr>
+        <td>
+            @Html.ActionLink("Fertig", "Index", "Werbemittelverwaltung")
+        </td>
+        <td style="min-width:30px"></td>
+        <td>
+            <input type="Button" id="BtnAuftragsmail" value="Mail/Datamatrix Anzeigen" />
+        </td>
+        <td style="min-width:30px"></td>
+        @if (Model.Stat.ID < 3) 
+        {
+            <td><input type="button" id="AuftragAbschliesen" name="AuftragAbschliesen" value="Auftrag Abschließen" /></td> 
+        }
+        else
+        {
+            <td><input type="button" id="AuftragAbschliesen" name="AuftragAbschliesen" value="Auftrag Abschließen" disabled="disabled" /></td>
+        }
+        
+        @if (Model.Pakete.Count() > 0)
+        {
+            <td class="redbig" style="min-width:30px">
+                Kann nicht mehr gelöscht werden.
+            </td>
+        }
+        else
+        {
+            <td>
+                <input type="button" id="AuftragLoeschen" name="AuftragLoeschen" value="Auftrag Löschen" />
+            </td>
+        }
+    </tr>
+</table>
+</div>
+<div id="DialogEinlesen">
+    <textarea id="Einlesedialog" class="Einlesedialog"  readonly="readonly">@Model.Auftragsmailtext</textarea>
+</div>
+
+<div id="AuftragsmailDruckenText">
+    <pre style="width:19cm">@Model.Auftragsmailtext</pre>
+</div>
+
+<script type="text/javascript">
+
+    @foreach (var Paket in Model.Pakete)
+    {
+        @: var PaketID = "@Paket.PaketID"; $(function () { $("#Versanddatum_" + PaketID).datepicker({ dateFormat: 'dd.mm.yy' }); });
+        @: var PaketID = "@Paket.PaketID"; $(function () { $("#Rueckdatum_" + PaketID).datepicker({ dateFormat: 'dd.mm.yy' }); });
+    }
+
+    $('#BtnAuftragsmail').on('click', function () {
+        $('#DialogEinlesen').dialog('open');
+
+    });
+
+    $('#DialogEinlesen').dialog({
+        autoOpen: false,
+        width: 900,
+        height: 500,
+        resizable: true,
+        title: 'Auftragsmail-Text',
+        buttons: {
+            'Drucken': function () {
+                $(this).dialog('close');
+                window.print();
+            },
+            'Fertig': function (e) {
+                $(this).dialog('close');
+            }
+
+        }
+    });
+
+
+
+    $('.aendern').on('click', function () {
+        var BTid = $(this).attr("id");
+        var startindex = BTid.lastIndexOf("_") + 1;
+        var id = BTid.substr(startindex, BTid.length);
+        $('#Versandart_' + id).show();
+        $('#LabelVersandart_' + id).hide();
+        $('#Gewicht_' + id).show();
+        $('#LabelGewicht_' + id).hide();
+        $('#Preis_' + id).show();
+        $('#LabelPreis_' + id).hide();
+        $('#Paketnummer_' + id).show();
+        $('#LabelPaketnummer_' + id).hide();
+        $('#Versanddatum_' + id).show();
+        $('#LabelVersanddatum_' + id).hide();
+        $('#aenderungSpeichern_' + id).show();
+        $('#aendern_' + id).hide();
+        $('#abbrechen_' + id).show();
+        $('#Loeschen_' + id).hide();
+
+        $('#Rueckcheck_' + id).prop('disabled', false);
+        $('#Rueckkosten_' + id).show();
+        $('#RueckkostenLabel_' + id).hide();
+        $('#Rueckdatum_' + id).show();
+        $('#RueckdatumLabel_' + id).hide();
+        if ($('#Rueckcheck_' + id).prop('checked') == true) {
+            $('#Rueckkosten_' + id).prop('disabled', false);
+            $('#Rueckdatum_' + id).prop('disabled', false);
+            $('#PaBemerkung_' + id).prop('disabled', false);
+        }
+    });
+
+    $('.rueckcheck').on('change', function () {
+        var BTid = $(this).attr("id");
+        var startindex = BTid.lastIndexOf("_") + 1;
+        var id = BTid.substr(startindex, BTid.length);
+        if ($('#Rueckcheck_' + id).prop('checked') == true) {
+            $('#Rueckkosten_' + id).prop('disabled', false);
+            $('#Rueckdatum_' + id).prop('disabled', false);
+            $('#PaBemerkung_' + id).prop('disabled', false);
+        } else {
+            $('#Rueckkosten_' + id).prop('disabled', true);
+            $('#Rueckdatum_' + id).prop('disabled', true);
+            $('#PaBemerkung_' + id).prop('disabled', true);
+        }
+    });
+
+    $('.aenderungSpeichern').on('click', function () {
+        var BTid = $(this).attr("id");
+        var startindex = BTid.lastIndexOf("_") + 1;
+        var id = BTid.substr(startindex, BTid.length);
+        if ($('#Versandart_' + id).val() == 0) {
+            alert("keine Versandart gewählt!");
+            return false;
+        }
+        var paketID = $('#paketID_' + id).val();
+        var preis = $('#Preis_' + id).val();
+        var versandart = $('#Versandart_' + id + " option:selected").text();
+        var paketnummer = $('#Paketnummer_' + id).val();
+        var gewicht = $('#Gewicht_' + id).val();
+        var versanddatum = $('#Versanddatum_' + id).val();
+        var ruecklaeufer = $('#Rueckcheck_' + id).prop('checked');
+        var rueckkosten = $('#Rueckkosten_' + id).val();
+        var rueckdatum = $('#Rueckdatum_' + id).val();
+        var paBemerkung = $('#PaBemerkung_' + id).val();
+
+        $.ajax({
+            url: "/Werbemittelverwaltung/PaketDatenÄndern",
+            type: 'Post',
+            async: true,
+            cache: false,
+            datatype: 'Json',
+            timeout: 30000,
+            data: {
+                PaketID: paketID, Preis: preis, Gewicht: gewicht, Paketnummer: paketnummer, Versandart: versandart, Versanddatum: versanddatum,
+                Ruecklaeufer: ruecklaeufer, Rueckpreis: rueckkosten, Rueckdatum: rueckdatum, Bemerkung:paBemerkung
+            },
+            error: function (err) {
+                alert(err);
+            },
+            success: function () {
+                window.location.reload(true);
+            }
+        });
+    });
+
+    $('.abbrechen').on('click', function () {
+        var BTid = $(this).attr("id");
+        var startindex = BTid.lastIndexOf("_") + 1;
+        var id = BTid.substr(startindex, BTid.length);
+        $('#Versandart_' + id).hide();
+        $('#LabelVersandart_' + id).show();
+        $('#Gewicht_' + id).hide();
+        $('#LabelGewicht_' + id).show();
+        $('#Preis_' + id).hide();
+        $('#LabelPreis_' + id).show();
+        $('#Paketnummer_' + id).hide();
+        $('#LabelPaketnummer_' + id).show();
+        $('#Versanddatum_' + id).hide();
+        $('#LabelVersanddatum_' + id).show();
+        $('#aenderungSpeichern_' + id).hide();
+        $('#aendern_' + id).show();
+        $('#abbrechen_' + id).hide();
+        $('#Loeschen_' + id).show();
+
+        $('#Rueckcheck_' + id).prop('disabled', true);
+        $('#Rueckkosten_' + id).hide();
+        $('#RueckkostenLabel_' + id).show();
+        $('#Rueckdatum_' + id).hide();
+        $('#RueckdatumLabel_' + id).show();
+        $('#PaBemerkung_' + id).prop('disabled', true);
+    });
+
+    $('.loeschen').on('click', function () {
+        var BTid = $(this).attr("id");
+        var startindex = BTid.lastIndexOf("_") + 1;
+        var id = BTid.substr(startindex, BTid.length);
+        var paketID = $('#paketID_' + id).val();
+        $('<div></div>').appendTo('body').html('<div><h3 style="margin-top:50PX;text-align:center">Soll das Paket wirklich gelöscht werden?</h2></div>')
+           .dialog({
+               autoOpen: true,
+               width: 700,
+               height: 250,
+               resizable: true,
+               title: 'Sicherheitsabfrage',
+               type: 'GET',
+               crossDomain: true,
+               buttons: {
+                   'Ja': function (e) {
+                       $(this).dialog('close');
+                       window.location.href = "/Werbemittelverwaltung/PaketLoeschen?PaketID=" + paketID;
+                   },
+                   'Nein': function (e) {
+                       $(this).dialog('close');
+                   }
+               },
+           });
+    });
+
+    $('#AuftragLoeschen').click(function () {
+        $('<div></div>').appendTo('body').html('<div><h3 style="margin-top:50PX;text-align:center">Soll der Auftrag wirklich gelöscht werden?</h2></div>')
+           .dialog({
+               autoOpen: true,
+               width: 700,
+               height: 250,
+               resizable: true,
+               title: 'Sicherheitsabfrage',
+               buttons: {
+                   'Ja': function (e) {
+                       $(this).dialog('close');
+                       window.location.href = "/Werbemittelverwaltung/AuftragLoeschen?WerbemittelauftragsID=@Model.WerbemittelauftragID";
+                   },
+                   'Nein': function (e) {
+                       $(this).dialog('close');
+                   }
+               }
+           });
+    });
+
+    $('#AuftragAbschliesen').click(function () {
+        $('<div></div>').appendTo('body').html('<div><h3 style="margin-top:50PX;text-align:center">Soll der Auftrag frühzeitig abgeschlossen werden? Nicht versendete Artikel werden storniert</h2></div>')
+           .dialog({
+               autoOpen: true,
+               width: 700,
+               height: 250,
+               resizable: true,
+               title: 'Sicherheitsabfrage',
+               buttons: {
+                   'Ja': function (e) {
+                       $(this).dialog('close');
+                       window.location.href = "/Werbemittelverwaltung/AuftragAbschliesen?WerbemittelauftragsID=@Model.WerbemittelauftragID";
+                   },
+                   'Nein': function (e) {
+                       $(this).dialog('close');
+                   }
+               }
+           });
+    });
+
+</script>

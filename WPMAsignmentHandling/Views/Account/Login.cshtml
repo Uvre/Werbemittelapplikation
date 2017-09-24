@@ -1,0 +1,99 @@
+﻿@model WPMAsignmentHandling.Models.LoginViewModel
+
+@{
+    ViewBag.Title = "Login";
+    string Action = "Login";
+    if (ViewBag.NotConfirmed != null)
+    {
+        Action = "ResendConfirmationMail";
+    }
+}
+
+@section Ueberschrift{
+    Werbemittelapplikation Direct Mail Service Winkhardt
+}
+
+<div class="appMainArea">
+    <fieldset style="background-color:white; margin:0; padding-left:10PX; margin-right:15PX; text-align:left">
+        <legend>Benutzeranmeldung</legend>
+        @if (ViewBag.ConfirmationResend != null)
+        {
+            <span class="successMessage">Eine neue Mail zum Bestätigen Ihrer Anmeldung wurde an an die Adresse (@ViewBag.Email) versandt. Bitte überprüfen Sie Postfach und Spamordner.</span>
+            <br />
+            <br /><a href="/Home">Zurück zum Login</a>
+        }
+        else
+        {
+            using (Html.BeginForm(@Action, "Account", FormMethod.Post, new { id = "LoginForm", ReturnUrl = ViewBag.ReturnUrl }))
+            {
+                //@Html.AntiForgeryToken()
+                if (ViewBag.NotConfirmed == null)
+                { 
+                    @Html.ValidationSummary(true)
+                    <table style="background-color:white; margin:0; padding:0">
+                        <tr>
+                            <th>
+                                @Html.LabelFor(m => m.Email)
+                            </th>
+                            <td>
+                                @Html.TextBoxFor(m => m.Email, new { @class = "large" })
+                            </td>
+                            <td>
+                                @Html.ValidationMessageFor(m => m.Email)
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                @Html.LabelFor(m => m.Password)
+                            </th>
+                            <td>
+                                @Html.PasswordFor(m => m.Password, new { @class = "large" })
+                            </td>
+                            <td>
+                                @Html.ValidationMessageFor(m => m.Password)
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="ButtonsAnmeldung">
+                        <input type="button" value="Login" id="Login" style="margin-right:30PX" />
+                        Hier @Html.ActionLink("Registrieren", "Register", "Account")
+                        @if (ViewBag.MailExists == true)
+                        {
+                            @Html.ActionLink("Passwort vergessen?", "ForgotPassword", "Account")
+                        }
+                    </div>
+                }
+                else
+                {
+                    @Html.HiddenFor(m => Model.Email)
+                    <span class="errorMessage">Ihre Email-Adresse ist noch nicht bestätigt. Eine Email zum Bestätigen Ihrer Adresse wurde an @ViewBag.Email versandt. Bitte überprüfen Sie Postfach und Spamordner.</span>
+                    <br />
+                    <br /><input type="submit" value="Erneut versenden" />
+                }
+            }
+        }
+    </fieldset>   
+</div>
+
+
+
+<script>
+    $('#Login').on('click', function () {
+        $.ajax({
+            url: "/Account/checkUserLoggedIn",
+            type: 'Post',
+            async: true,
+            cache: false,
+            datatype: 'Json',
+            timeout: 30000,
+            success: function (e) {
+                if (e) {
+                    window.location.href = "/Home";
+                } else {
+                    $('#LoginForm').submit();
+                }
+            }
+        });
+    });
+</script>
+

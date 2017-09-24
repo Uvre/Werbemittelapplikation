@@ -1,0 +1,464 @@
+﻿@model IEnumerable<WPMAsignmentHandling.Models.Werbemittelauftrag>
+
+@{var Artikel = new List<WPMAsignmentHandling.Models.Artikel>(); string heading3 = "Artikelbestand";}
+@if (Model != null && Model.Count() > 0)
+{
+    foreach (var auftrag in Model)
+    {
+        foreach (var artikel in auftrag.Auftragsmengen)
+        {
+            if (Artikel.Count == 0)
+            {
+                Artikel.Add(artikel.artikel);
+            }
+            else
+            {
+                if (Artikel.SingleOrDefault(r => r.ArtikelID == artikel.artikel.ArtikelID) == null)
+                {
+                    Artikel.Add(artikel.artikel);
+                }
+            }
+        }
+    }
+
+    if (!Model.Any(r => r.Stat.ID < 3))
+    {
+        heading3 = "Versanddatum";
+    }
+}
+
+<table id ="AuftraegeTable" class="AuflistungTabelle">
+        <thead>
+                <tr>
+                    <th>
+                        
+                    </th>
+                    <th>
+                        
+                    </th>
+                    <th >
+                        @Html.DisplayName("Status")
+                    </th>
+                    <th >
+                        @Html.DisplayName("Dringlichkeit")
+                    </th>
+                    <th>
+                        @Html.DisplayName(heading3)
+                    </th>
+                    <th >
+                        @Html.DisplayName("Kennzeichnung")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Messename")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Name")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Name2")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Name3")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Strasse")
+                    </th>
+                    <th>
+                        @Html.DisplayName("PLZ")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Ort")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Land")
+                    </th>
+                    <th>
+                        @Html.DisplayName("Messebeginn")
+                    </th>
+                    @*<th>
+                        @Html.DisplayName("Bemerkung")
+                    </th>*@
+                </tr>
+            </thead>
+        <tbody>
+            @{int countRow = 0;}
+            @if (Model != null) { 
+                foreach (var item in Model)
+                {
+                    WPMAsignmentHandling.Models.Kontakdaten Kontakt = item.Auftraggeberadresse;
+                    if (item.Lieferadresse != null)
+                    {
+                        Kontakt = item.Lieferadresse;
+                    }
+                    countRow++;
+                    string color = "white";
+                    if (countRow % 2 == 0)
+                    {
+                        color = "grey";
+                    }
+                    <tr id="AuftraegeRadio_@item.WerbemittelauftragID" class="@color">
+                        <td>
+                            @countRow 
+                        </td>
+                        <td>
+                            <input type="radio" name="AuftragAuswahl" id="AuftragAuswahl" value ="@item.WerbemittelauftragID.ToString()" class="AuftragsWahl"/>
+                        </td>
+                        @{ string status = ""; string dringlichkeit = ""; string artikelbestand = ""; string TextArtikelbestand = "";}
+                        @if(item.Stat.ID < 3){
+                            if (DateTime.Now > item.messe.Enddatum)
+                            {
+                                status = "restmengen";
+                                dringlichkeit = "backgray";
+                                artikelbestand = "backgray";
+                            }
+                            else
+                            {
+                                int day = 0;
+                                if (DateTime.Now.DayOfYear < item.Erstellungsdatum.DayOfYear)
+                                {
+                                    day = DateTime.Now.DayOfYear + 365;
+                                    if (DateTime.Now.Year % 4 == 0)
+                                    {
+                                        day += 1;
+                                    }
+                                }
+                                else
+                                {
+                                    day = DateTime.Now.DayOfYear;
+                                }
+                                if ((day - item.Erstellungsdatum.DayOfYear) < 1)
+                                {
+                                    dringlichkeit = "backgreen";
+                                }
+                                if ((day - item.Erstellungsdatum.DayOfYear) >= 1 && (day - item.Erstellungsdatum.DayOfYear) < 2)
+                                {
+                                    dringlichkeit = "backorange";
+                                }
+                                if ((day - item.Erstellungsdatum.DayOfYear) >= 2)
+                                {
+                                    dringlichkeit = "backred";
+                                }
+                                int count = 0;
+                                int nichtVerschickte = 0;
+                                foreach (var artikel in item.Auftragsmengen)
+                                {
+                                    if (artikel.menge > artikel.gelieferteMenge)
+                                    {
+                                        nichtVerschickte++;
+                                    }
+                                
+                                    if (artikel.menge > artikel.artikel.Bestand && artikel.menge > artikel.gelieferteMenge)
+                                    {
+                                        count++;
+                                    }
+                                }
+                                
+                                if (count == nichtVerschickte && count != 0)
+                                {
+                                    artikelbestand = "backred";
+                                    TextArtikelbestand = "nicht ausreichend";
+                                }
+                                if (count < nichtVerschickte && count != 0)
+                                {
+                                    artikelbestand = "backorange";
+                                    TextArtikelbestand = "teilw. ausreichend";
+                                }
+                                if (count == 0)
+                                {
+                                    if (nichtVerschickte != 0)
+                                    {
+                                        artikelbestand = "backgreen";
+                                        TextArtikelbestand = "ausreichend";                                    
+                                    }
+                                }
+                                if (artikelbestand == "backgreen")
+                                {
+                                        status = "Packen";
+                                }
+                                if (artikelbestand == "backorange")
+                                {
+                                    status = "Teillieferung";
+                                
+                                }
+                                if (artikelbestand == "backred")
+                                {
+                                    if (dringlichkeit == "backred")
+                                    {
+                                        status = "Nachfragen";
+                                    
+                                    }
+                                    else
+                                    {
+                                        status = "Auf Artikel warten";
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            status = item.Stat.wert;
+                            if (item.Stat.ID == 3)
+                            {
+                                dringlichkeit = "backblue";
+                                artikelbestand = "backblue";
+                            }
+                            if (item.Stat.ID == 4)
+                            {
+                                dringlichkeit = "backgray";
+                                artikelbestand = "backgray";
+                            }
+                            TextArtikelbestand = item.Versanddatum.ToString("dd.MM.yyyy");
+                        }
+
+                        <td class="Status">
+                           <label id="status_@item.WerbemittelauftragID">@status</label> 
+                        </td>
+                        <td class="@dringlichkeit" >
+                            @Html.DisplayFor(modelItem => item.Bestelldatum)
+                        </td>
+                        <td class="@artikelbestand" auftrag-id="@item.WerbemittelauftragID" hover-id="Artikelbestand">
+                            @TextArtikelbestand 
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Kennzeichnung)
+                        </td>
+                        <td style="text-align:left">
+                           <b>@Html.DisplayFor(modelItem => item.messe.Name)</b> 
+                        </td>
+                        <td style="text-align:left">
+                            @Html.DisplayFor(modelItem => Kontakt.Name) 
+                        </td>
+                        <td style="text-align:left">
+                            @Html.DisplayFor(modelItem => Kontakt.Name2)
+                        </td>
+                        <td style="text-align:left">
+                            @Html.DisplayFor(modelItem => Kontakt.Name3)
+                        </td>
+                        <td style="text-align:left">
+                            @Html.DisplayFor(modelItem => Kontakt.Strasse) 
+                        </td>
+                        <td style="text-align:left">
+                            @Html.DisplayFor(modelItem => Kontakt.PLZ) 
+                        </td>
+                        <td style="text-align:left">
+                            @Html.DisplayFor(modelItem => Kontakt.Ort) 
+                        </td>
+                        <td style="text-align:left">
+                            @Html.DisplayFor(modelItem => Kontakt.Land.land) 
+                        </td>
+                         <td>
+                             @{double days = 0;} 
+                             @if (DateTime.Now < item.messe.Startdatum)
+                             {
+                                 days = Math.Ceiling((item.messe.Startdatum - DateTime.Now).TotalDays);
+                             }
+                            @Html.DisplayName(days + " Tage") 
+                        </td>
+                        @*<td>
+                            @Html.DisplayFor(modelItem => item.Bemerkung)
+                        </td>*@
+                    </tr>
+                }
+            }
+            </tbody>
+    </table>
+
+
+<div id="PacklisteNachSuche" class="PacklisteNachSuche">
+    <h3>Packliste</h3>
+    <table>
+        <tr>
+            <th>
+                Messe
+            </th>
+            <th>
+                Artikelart
+            </th>
+            <th>
+                Artikelname
+            </th>
+            <th>
+                Sprache
+            </th>
+            <th>
+                Format
+            </th>
+            <th>
+                Lagerplatz
+            </th>
+            <th>
+                Bestand
+            </th>
+            <th>
+                Menge
+            </th>
+        </tr>
+        @if (Model != null)
+        {
+            List<WPMAsignmentHandling.Models.Artikel> Artikell = Artikel.Where(r => r.Messe != null).OrderBy(r => r.Messe.Name).ThenBy(r => r.artikelart.Art).ToList();
+            List<WPMAsignmentHandling.Models.Artikel> OrderedArtikel = Artikell.Concat(Artikel.Where(r => r.Messe == null).OrderBy(r => r.artikelart.Art).ToList()).ToList();
+            foreach (var item in OrderedArtikel)
+            {
+                int menge = 0;
+                foreach (var auftrag in Model)
+                {
+                    foreach (var artikel in auftrag.Auftragsmengen)
+                    {
+                        if (artikel.artikel.ArtikelID == item.ArtikelID)
+                        {
+                            menge += artikel.menge - artikel.gelieferteMenge;
+                        }
+                    }
+                }
+                if (menge > 0)
+                {
+                    <tr>
+                        @if (item.MesseartikelAllgemein)
+                        {
+                            <td>
+                                Allgemein
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                @item.Messe.Name
+                            </td>
+                        }
+                        <td style="text-align:left">
+                            @item.artikelart.Art
+                        </td>
+                        <td>
+                            @item.Name
+                        </td>
+                        <td>
+                            @item.Sprache.Sprache
+                        </td>
+                        <td>
+                            @item.Format
+                        </td>
+                        <td>
+                            @item.Lagerplatz
+                        </td>
+                        <td>
+                            @item.Bestand
+                        </td>
+                        <td>
+                            @{string BestandzuGering = "!!!";}
+                            @menge
+                            @if (item.Bestand < menge)
+                            {
+                                @BestandzuGering
+                            }
+                        </td>
+
+                    </tr>
+                }
+            }
+        }
+        else
+        {
+            <tr>
+                <td>
+                    Keine Auftäge ausgewählt!
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+
+<div id="KontainerSchnellinfo">
+    
+</div>
+
+
+<script>
+    $('[hover-id="Artikelbestand"').hover(function () {
+        var postition = $(this).next().offset();
+        $.ajax({
+            url: '@Url.Action("getAuftragsartikelLageberbestand", "Werbemittelverwaltung")',
+            type: 'POST',
+            //dataType: 'json',
+            data: { AuftragID: $(this).attr('auftrag-id') },
+            success: function (result) {
+                $('#AuftragsID').remove();
+                $('#KontainerSchnellinfo').append(
+                    '<div id="AuftragsID">'
+                    + result
+                    + '</div>');
+                $('#KontainerSchnellinfo').css(postition);
+                $('#KontainerSchnellinfo').show();
+            },
+            statusCode: {
+                404: function (content) { alert('cannot find resource'); },
+                505: function (content) { alert('internal server error'); }
+            },
+            error: function (req, status, errorObj) {
+                alert('Information konnte nicht geladen werden');
+            }
+        });
+    }, function () {
+        $('#AuftragsID').remove();
+        $('#KontainerSchnellinfo').hide();
+    }
+    );
+
+
+    $('#printArt').html($('#PacklisteNachSuche').html());
+    $.tablesorter.addParser({
+        // set a unique id
+        id: 'Messebeginn',
+        is: function (s) {
+            // return false so this parser is not auto detected
+            return false;
+        },
+        format: function (s) {
+            // format your data for normalization
+            s.replace("Tage", "").replace(" ", "");
+            var t = parseInt(s);
+            return t;
+        },
+        // set type, either numeric or text
+        type: 'numeric'
+    });
+
+    $.tablesorter.addParser({
+        // set a unique id
+        id: 'DateSorter',
+        is: function (s) {
+            // return false so this parser is not auto detected
+            return false;
+        },
+        format: function (s) {
+            s = s.replace(/\D/g, "");
+            var d = s.substring(0, 2);
+            var m = s.substring(2, 4);
+            var y = s.substring(4, 8);
+            var bla = parseInt(y + m + d);
+            return bla;
+        },
+        // set type, either numeric or text
+        type: 'numeric'
+    });
+
+    $(".AuflistungTabelle").tablesorter({
+        headers: {
+            3: {
+                sorter: 'DateSorter'
+            }
+            ,
+            14: {
+                sorter: 'Messebeginn'
+            }
+        }
+    });
+
+    $(".AuflistungTabelle").bind("sortEnd", function () {
+        var i = 0;
+        $(".AuflistungTabelle tr").each(function (i) {
+            $(this).find('td').eq(0).text(i);
+        });
+    });
+    setTableHeaderSize();
+</script>

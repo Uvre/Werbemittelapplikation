@@ -1,0 +1,412 @@
+﻿@model WPMAsignmentHandling.Models.Werbemittelauftrag
+
+
+@{ICollection<WPMAsignmentHandling.Models.Artikel> ArtikelAllgemein = null;
+  List<WPMAsignmentHandling.Models.Artikel> allArtikel = new List<WPMAsignmentHandling.Models.Artikel>();
+  //var allArtikelordered = new List<WPMAsignmentHandling.Models.Artikel>();
+  WPMAsignmentHandling.Models.Messe messe = null;
+  ICollection<WPMAsignmentHandling.Models.Artikel> paketArtikel = new List<WPMAsignmentHandling.Models.Artikel>(); }
+@if (ViewContext.Controller.ViewBag.ArtikelAllgemein != null)
+{
+    ArtikelAllgemein = ViewContext.Controller.ViewBag.ArtikelAllgemein;
+    if (ViewData["Messe"] != null)
+    {
+        messe = (WPMAsignmentHandling.Models.Messe)ViewData["Messe"];
+        if (messe.isLandesmesse)
+        {
+            allArtikel = messe.artikel.OrderBy(r => r.artikelart.Art).ThenBy(r => r.Name).ToList();
+        }
+        else
+        {
+            allArtikel = messe.artikel.Concat(ArtikelAllgemein).OrderBy(r => r.MesseartikelAllgemein == true).ThenBy(r => r.artikelart.Art).ThenBy(r => r.Name).ToList();
+        }
+    }
+    else
+    {
+        if (Model != null)
+        {
+            if (Model.messe.isLandesmesse)
+            {
+                System.Diagnostics.Debug.WriteLine("messe: " + Model.messe.artikel.Count());
+                allArtikel = Model.messe.artikel.OrderBy(r => r.artikelart.Art).ThenBy(r => r.Name).ToList();
+            }
+            else
+            {
+                allArtikel = Model.messe.artikel.Concat(ArtikelAllgemein).OrderBy(r => r.MesseartikelAllgemein == true).ThenBy(r => r.artikelart.Art).ThenBy(r => r.Name).ToList();
+            }
+        }
+    }
+}
+else
+{
+    if (ViewData["Messe"] != null)
+    {
+        messe = (WPMAsignmentHandling.Models.Messe)ViewData["Messe"];
+        allArtikel = messe.artikel.OrderBy(r => r.artikelart.Art).ThenBy(r => r.Name).ToList();
+    }
+    else
+    {
+        if (Model != null)
+        {
+            allArtikel = Model.messe.artikel.OrderBy(r => r.artikelart.Art).ThenBy(r => r.Name).ToList();
+        }
+    }
+} 
+
+@*@{allArtikel = allArtikel.OrderBy(r => r.artikelart.Art).ThenBy(r => r.Name).ToList()}*@
+
+@if (Model != null && Model.Pakete.Count > 0)
+{
+    foreach (var paket in Model.Pakete)
+    {
+        foreach (var artikel in paket.artikelmenge)
+        {
+            paketArtikel.Add(artikel.artikel);
+        }
+    }
+}              
+
+<div class="AuflistungNotFixed" id="Auftragsartikel">
+    
+<table id="Auftragsartikeltable" >
+    <thead>
+    <tr>
+        <th>
+
+        </th>
+        <th>
+            @Html.DisplayName("Stückzahl")
+        </th>
+        <th>
+            @Html.DisplayName("Artikelnummer")
+        </th>
+        <th>
+            @Html.DisplayName("Messe")
+        </th>
+        <th>
+            @Html.DisplayName("Artikelart")
+        </th>
+        <th>
+            @Html.DisplayName("Name")
+        </th>
+        <th>
+            @Html.DisplayName("Sprache")
+        </th>
+         <th>
+            @Html.DisplayName("Format")
+        </th>
+        <th>
+            @Html.DisplayName("Gewicht")
+        </th>
+        <th>
+            @Html.DisplayName("Verpackungseinheit")
+        </th>
+        <th>
+            @Html.DisplayName("Kartoninhalt")
+        </th>
+        <th>
+            @Html.DisplayName("Lagerplatz")
+        </th>
+        <th>
+            @Html.DisplayName("Bestand")
+        </th>
+        <th>
+            @Html.DisplayName("Auftragsmenge (A4 Bögen)")
+        </th>
+        <th>
+            @Html.DisplayName("Zusatz")
+        </th>
+        <th>
+            @Html.DisplayName("Bemerkung")
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    @{int count = 0;}
+    @if (ViewData["Messe"] != null)
+    {
+        int i = 0;
+
+        foreach (var item in allArtikel)
+        {
+            if (item.Active) { 
+            i++;
+            count++;
+            string color = "white";
+            if (count % 2 == 0)
+            {
+                color = "grey";
+            }
+            <tr id="auftragsmenge_@i" class="@color">
+                <td>
+                    @if (item != null && !String.IsNullOrEmpty(item.Bildpfad) && @System.IO.File.Exists(Server.MapPath("~/images/Artikelbilder/" + item.Bildpfad)))
+                    {
+                        <img id="Artikelbild" onmouseover="showDivImageDisplay(this);" onmouseout="hideDivImageDisplay();" src="~/images/Artikelbilder/@item.Bildpfad" style="max-height:25PX; height:25PX;">
+                    }
+                    else
+                    {
+                        <img id="Artikelbild" onmouseover="showDivImageDisplay(this);" onmouseout="hideDivImageDisplay();" src="~/images/NoPicture.png" style="max-height:25PX; height:25PX;">
+                    }
+
+                </td>
+                <td>
+                    <input type="text" id="tb_@i" value="0" class="Tb_Artikelmenge"/> Stück
+                    <input type="hidden" id="AID_@i" name="AID_@i" value="@item.ArtikelID" />
+                    @{bool bkm = false;}
+                        @if (item.artikelart.ArtikelartID == 2 || item.artikelart.ArtikelartID == 3 || item.artikelart.ArtikelartID == 37)
+                        {
+                            bkm = true;
+                        }
+                    <input type="hidden" id="BKM_@i" value="@bkm.ToString()" />
+                </td>
+                <td>
+                    @item.Artikelnummer 
+                </td>
+                @if(item.Messe != null){
+                    <td >
+                        @item.Messe.Name
+                    </td>
+                }else{
+                     <td >
+                         Allgemein
+                    </td>
+                }
+                <td style="text-align:left">
+                    @Html.DisplayFor(modelItem => item.artikelart.Art)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Sprache.Sprache)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Format)
+                </td>
+                <td>
+                    @item.Gewicht g
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Verpackungseinheit)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Kartoninhalt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Lagerplatz)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Bestand)
+                </td>
+                <td>
+                    <label id="l_@i">0</label>
+                    <input type="hidden" id="AA_@i" name="AA_@i" value="0" />
+                    
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.artikelart.Bemerkung)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Bemerkung)
+                </td>
+            </tr>
+        }
+        }
+    }
+    else
+    {
+        if (Model != null)
+        {
+            int i = 0;
+
+            foreach (var item in allArtikel)
+            {
+                if (item.Active) { 
+                i++;
+                count++;
+                bool gesperrt = false;
+                string color = "white";
+                if (count % 2 == 0)
+                {
+                    color = "grey";
+                }
+                int Auftragsmenge = 0;
+                if (Model.Auftragsmengen.SingleOrDefault(r => r.artikel.ArtikelID == item.ArtikelID) != null)
+                {
+                    
+                    Auftragsmenge = Model.Auftragsmengen.Single(r => r.artikel.ArtikelID == item.ArtikelID).menge;
+                     color = "green";
+                    
+                }
+                if (paketArtikel.Where(r => r.ArtikelID == item.ArtikelID).Count() > 0)
+                {
+                    color = "red";
+                    gesperrt = true;
+                }
+                
+                <tr id="auftragsmenge_@i" class="@color">
+                    <td>
+                        @if (item != null && !String.IsNullOrEmpty(item.Bildpfad) && @System.IO.File.Exists(Server.MapPath("~/images/Artikelbilder/" + item.Bildpfad)))
+                        {
+                            <img id="Artikelbild" onmouseover="showDivImageDisplay(this);" onmouseout="hideDivImageDisplay();" src="~/images/Artikelbilder/@item.Bildpfad" style="max-height:25PX; height:25PX;">
+                        }
+                        else
+                        {
+                            <img id="Artikelbild" onmouseover="showDivImageDisplay(this);" onmouseout="hideDivImageDisplay();" src="~/images/NoPicture.png" style="max-height:20PX; height:20PX;">
+                        }
+
+                    </td>
+                    <td>
+                        @if (gesperrt)
+                        {
+                            @Auftragsmenge <span> Stück (verpackt)</span>
+                        }
+                        else
+                        {
+                            <input type="text" id="tb_@i" value="@Auftragsmenge" class="Tb_Artikelmenge"/> <span>Stück</span>
+                        }
+                        @*<input type="text" id="tb_@i" value="@Auftragsmenge" class="Tb_Artikelmenge"/> Stück*@
+                        <input type="hidden" id="AA_@i" name="AA_@i" value="@Auftragsmenge" />
+                        <input type="hidden" id="AID_@i" name="AID_@i" value="@item.ArtikelID" />
+                        @{bool bkm = false;}
+                        @if (item.artikelart.ArtikelartID == 2 || item.artikelart.ArtikelartID == 3 || item.artikelart.ArtikelartID == 37)
+                        {
+                            bkm = true;
+                        }
+                        <input type="hidden" id="BKM_@i" value="@bkm.ToString()" />
+                    </td>
+                    <td>
+                        @item.Artikelnummer
+                    </td>
+                    @if(item.Messe != null){
+                        <td >
+                            @item.Messe.Name
+                        </td>
+                    }else{
+                         <td >
+                             Allgemein
+                        </td>
+                    }
+                    <td style="text-align:left">
+                        @Html.DisplayFor(modelItem => item.artikelart.Art)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Sprache.Sprache)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Format)
+                    </td>
+                    <td>
+                        @item.Gewicht g
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Verpackungseinheit)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Kartoninhalt)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Lagerplatz)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Bestand)
+                    </td>
+                    <td>
+                       <label id="l_@i">@Auftragsmenge</label>
+                        <span id="boegen_@i">
+                            @{string boegenText = "";}
+                            @if (item.artikelart.ArtikelartID == 2 || item.artikelart.ArtikelartID == 3 || item.artikelart.ArtikelartID == 37)
+                            {
+                                int boegen = Auftragsmenge / 20;
+                                if (Auftragsmenge % 20 > 0)
+                                {
+                                    boegen++;
+                                }
+                                boegenText = "(" + (boegen).ToString() +")";
+                            }
+                            @boegenText
+                        </span>
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.artikelart.Bemerkung)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Bemerkung)
+                    </td>
+                </tr>
+            }
+            }
+        }
+        else
+        {
+            <tr>
+                <td class="redbig"  colspan="9">
+                    Keine Messe gewählt oder für die Messe sind keine Artikel hinterlegt
+                </td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
+</div>
+     
+
+<script type="text/javascript">
+
+    $('.Tb_Artikelmenge').on("keydown", function (e) {
+        checkInputNumber(e);
+        return;
+    });
+
+    $('.Tb_Artikelmenge').on('keyup', function () {
+
+        var startindex = $(this).attr("id").indexOf('_') + 1;
+        var BTid = $(this).attr("id");
+        var id = BTid.substr(startindex, BTid.length);
+        if ($('#tb_' + id).val().length == 0) {
+            $('#tb_' + id).val('0');
+        }
+        var menge = parseInt(($('#tb_' + id).val()));
+        if (menge > 0) {
+            $('#auftragsmenge_' + id).attr('class', 'green');
+        } else {
+            if (parseInt(id) % 2 == 0){
+                if($('#auftragsmenge_' + id).attr('class', 'grey'));
+            }else{
+                if($('#auftragsmenge_' + id).attr('class', 'white'));
+            }
+        }
+        $('#l_' + id).text($('#tb_' + id).val());
+        $('#AA_' + id).val($('#tb_' + id).val());
+        var boegenText = '';
+        if ($('#BKM_' + id).val() == "True") {
+            var boegen = menge / 20
+            if (menge % 20 > 0) {
+                boegen++;
+            }
+            boegenText = "(" + parseInt(boegen).toString() + ")";
+        }
+        $('#boegen_'+id).text(boegenText);
+    });
+
+    $('.Tb_Artikelmenge').focus(function () {
+        $(this).select();
+    });
+
+    $('.Tb_Artikelmenge').focusout(function () {
+        if ($(this).val() == "") {
+            var startindex = $(this).attr("id").indexOf('_') + 1;
+            var BTid = $(this).attr("id");
+            var id = BTid.substr(startindex, BTid.length);
+            $(this).val('0');
+            $('#l_' + id).text('0');
+            $('#AA_' + id).val('0');
+        }
+    });
+</script>
+
+
+
