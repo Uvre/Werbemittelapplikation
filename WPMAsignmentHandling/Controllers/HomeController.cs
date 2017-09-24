@@ -18,6 +18,7 @@ namespace WPMAsignmentHandling.Controllers
     public class HomeController : Controller
     {
         DMS_Winkhardt_DB dms = new DMS_Winkhardt_DB();
+        private string unUsedVariable = "";
 
         private bool checkXMLElementIsOncePresent(XmlDocument xmlDoc, String ElementName)
         {
